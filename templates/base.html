@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %} <!-- TITLE HERE --> {% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="flex flex-col gap-3 bg-slate-100">
+    <header class="text-center py-3"><a href="/">[MarkThisDown]</a></header>
+    <main
+      class="container max-w-4xl border border-black mx-auto p-6 rounded-xl"
+    >
+      {% block main %} <!-- CONTENT HERE --> {% endblock %}
+    </main>
+    <footer class="text-center">
+      &copy; 2025 MarkThisDown. Created by Edward Vonschondorf
+    </footer>
+    {% block scripts %} <!-- SCRIPTS HERE --> {% endblock %}
+  </body>
+</html>
