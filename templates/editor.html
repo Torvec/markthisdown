@@ -1,39 +1,40 @@
-{% extends "base.html" %}
-
-{% block title %} Editor | MarkThisDown {% endblock%}
-
+{% extends "base.html" %} {% block title %} Editor | MarkThisDown {% endblock%}
 {%block css%}
 <link
   rel="stylesheet"
   href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"
 />
-{% endblock %}
-
-{% block main %}
+{% endblock %} {% block main %}
 <h1 class="mb-6 text-xl font-bold">Editor</h1>
 <p>File: <span id="fileName"></span></p>
 <div id="editor" class="mb-6"></div>
-<form method="POST" id="theForm">
-  <!-- The MD content from the editor is saved in this -->
+<!-- <form method="POST" id="theForm">
+  The MD content from the editor is saved in this
   <input type="hidden" name="markdownContent" id="markdownContent" />
-  <div class="flex gap-3">
+</form> -->
+<div class="flex gap-3">
+  <form method="post" action="/save" id="saveForm" class="w-full">
     <button
       type="submit"
       class="w-full block border border-purple-600 py-3 rounded-xl cursor-pointer"
     >
       Save
     </button>
+  </form>
+  <form method="post" action="/reset" id="resetForm" class="w-full">
     <button
-      type="reset"
+      type="submit"
       class="w-full block border border-green-600 py-3 rounded-xl cursor-pointer"
     >
       Reset
     </button>
-  </div>
-</form>
-{% endblock %}
+  </form>
+</div>
 
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+  const initialMarkdown = {{ content | tojson | safe }};
+</script>
 <script src="/static/editor-controls.js"></script>
 {% endblock %}

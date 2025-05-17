@@ -1,27 +1,35 @@
-{% extends "base.html" %}
+{% extends "base.html" %} 
 
 {% block title %} Dashboard | MarkThisDown {% endblock%} 
 
 {% block main %}
-  <h1 class="mb-6 text-xl font-bold">Dashboard</h1>
-  <div class="flex gap-3 text-center mb-6">
-    <a
-      href="/editor"
-      class="block border border-purple-600 py-3 w-full rounded-xl">
-      New Markdown File
-    </a>
+<h1 class="mb-6 text-xl font-bold">Dashboard</h1>
+<div class="flex gap-3 text-center mb-6">
+  <a
+    href="/editor"
+    class="block border border-purple-600 py-3 w-full rounded-xl"
+  >
+    New Markdown File
+  </a>
+  <form method="post" enctype="multipart/form-data" id="fileForm" action="/open" class="w-full">
     <input
       type="file"
-      id="editFile"
-      name="editFile"
+      id="theFile"
+      name="theFile"
       accept="text/markdown, text/mdx, application/mdx"
-      class="block border border-green-600 py-3 w-full rounded-xl cursor-pointer" />
-  </div>
-  <h2 class="font-medium text-lg text-center mb-3">Previously Editted:</h2>
-  <ul class="text-center space-y-1.5">
-    <li>File 1</li>
-    <li>File 2</li>
-    <li>File 3</li>
-    <li>etc.</li>
-  </ul>
+      class="block border border-green-600 py-3 w-full rounded-xl cursor-pointer"
+    />
+  </form>
+</div>
+<h2 class="font-medium text-lg text-center mb-3">Previously Editted:</h2>
+<ul class="text-center space-y-1.5">
+  <li>File 1</li>
+  <li>File 2</li>
+  <li>File 3</li>
+  <li>etc.</li>
+</ul>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/open-file.js"></script>
 {% endblock %}
