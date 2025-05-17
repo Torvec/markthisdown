@@ -1,8 +1,20 @@
-{% extends "base.html" %} {% block title %} Editor | MarkThisDown {% endblock%}
+{% extends "base.html" %}
+
+{% block title %} Editor | MarkThisDown {% endblock%}
+
+{%block css%}
+<link
+  rel="stylesheet"
+  href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"
+/>
+{% endblock %}
+
 {% block main %}
 <h1 class="mb-6 text-xl font-bold">Editor</h1>
+<p>File: <span id="fileName"></span></p>
 <div id="editor" class="mb-6"></div>
 <form method="POST" id="theForm">
+  <!-- The MD content from the editor is saved in this -->
   <input type="hidden" name="markdownContent" id="markdownContent" />
   <div class="flex gap-3">
     <button
@@ -19,27 +31,9 @@
     </button>
   </div>
 </form>
-{% endblock %} {% block scripts %}
+{% endblock %}
+
+{% block scripts %}
 <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    // Initialize the editor
-    const editor = new toastui.Editor({
-      el: document.querySelector("#editor"),
-      height: "500px",
-      initialEditType: "markdown",
-      previewStyle: "vertical",
-    });
-    editor.getMarkdown();
-    // Take the content of the Editor and set it to the hidden input before submitting
-    document.getElementById("theForm").addEventListener("submit", () => {
-      const markdown = editor.getMarkdown();
-      document.getElementById("markdownContent").value = markdown;
-    });
-    // Clear the editor on pressing reset
-    document.getElementById("theForm").addEventListener("reset", () => {
-      editor.setMarkdown("");
-    });
-  });
-</script>
+<script src="/static/editor-controls.js"></script>
 {% endblock %}
