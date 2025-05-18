@@ -6,14 +6,15 @@
 />
 {% endblock %} {% block main %}
 <h1 class="mb-6 text-xl font-bold">Editor</h1>
-<p>File: <span id="fileName"></span></p>
+<p>File: {{filename}}</p>
 <div id="editor" class="mb-6"></div>
 <!-- <form method="POST" id="theForm">
   The MD content from the editor is saved in this
   <input type="hidden" name="markdownContent" id="markdownContent" />
 </form> -->
 <div class="flex gap-3">
-  <form method="post" action="/save" id="saveForm" class="w-full">
+  <!-- <form method="post" action="/save" id="saveForm" class="w-full"> -->
+  <form method="post" id="saveForm" class="w-full">
     <button
       type="submit"
       class="w-full block border border-purple-600 py-3 rounded-xl cursor-pointer"

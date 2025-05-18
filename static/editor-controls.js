@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Use the URL search params to set the file name being editted
-  const params = new URLSearchParams(document.location.search);
-  const fileNameParam = params.get("fileName");
-  const fileNameEl = document.getElementById("fileName");
-  fileNameEl.textContent = fileNameParam || "Filename Not Found";
-
   const storageKey = "markthisdown_key";
   const savedData = localStorage.getItem(storageKey);
 
@@ -23,18 +17,22 @@ document.addEventListener("DOMContentLoaded", () => {
   //   ? editor.setMarkdown("")
   //   : editor.setMarkdown(JSON.parse(savedData));
 
-  // Save markdown content from editor into local storage for persistance
+  // Intercept form submission to trigger file download instead
   document.getElementById("saveForm").addEventListener("submit", (event) => {
     event.preventDefault();
-    const markdown = editor.getMarkdown();
-    localStorage.setItem(storageKey, JSON.stringify(markdown));
-  });
-
-  // Clear the editor on pressing reset
-  document.getElementById("resetForm").addEventListener("reset", () => {
-    // editor.setMarkdown("");
-    // localStorage.setItem(storageKey, "");
-    // document.getElementById("resetForm").submit();
-    console.log("Reset")
+    // Create a Blob from the editor's markdown content
+    const blobURL = URL.createObjectURL(
+      new Blob([editor.getMarkdown()], { type: "text/markdown" })
+    );
+    // Create a temporary <a> element to simulate a download link
+    const anchorEl = document.createElement("a");
+    // Set the href to the Blob URL
+    anchorEl.href = blobURL;
+    // Set the download attribute to prompt file saving with a default filename
+    anchorEl.download = "test.md";
+    // Simulate a click to trigger the browser's Save As dialog
+    anchorEl.click();
+    // Revoke the Blob URL to free memory
+    URL.revokeObjectURL(blobURL);
   });
 });
