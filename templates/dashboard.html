@@ -35,5 +35,11 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="/static/open-file.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("theFile").addEventListener("change", () => {
+    document.getElementById("fileForm").submit();
+  });
+});
+</script>
 {% endblock %}
