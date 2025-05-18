@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
+import re
 
 app = Flask(__name__)
 
@@ -10,30 +11,43 @@ ALLOWED_EXTENSIONS = {'md'}
 def dashboard():
     return render_template("dashboard.html")
 
+@app.route("/new")
+def newFile():
+    if len(session) > 0:
+        session.clear()
+    return redirect(url_for("editor"))
+
 @app.route("/open", methods=["POST", "GET"])
 def openFile():
     if request.method == "POST":
         file = request.files["theFile"]
         extension = file.filename.rsplit('.', 1)[1]
         if extension not in ALLOWED_EXTENSIONS:
-            # TODO: This flash should show on the dashboard page somehow
-            # flash(f"{extension} is not allowed!")
+            flash(f"Only .md files are supported!")
             return redirect(url_for('dashboard'))
-        contents = file.read().decode("utf-8")
+        frontmatter = ""
+        content = file.read().decode("utf-8")
+        match = re.search(r"(?s)^---[\r\n]+.*?^---[\r\n]+", content, re.MULTILINE)
+        if match:
+            frontmatter = match.group()
+            content = content[len(frontmatter):].lstrip()
         fileName = file.filename
         session["fileName"] = fileName
-        session["fileContents"] = contents
+        session["frontmatter"] = frontmatter
+        session["fileContents"] = content
     return redirect(url_for('editor'))
 
 @app.route("/editor")
 def editor():
     filename = session.get("fileName")
+    frontmatter = session.get("frontmatter")
     content = session.get("fileContents")
-    return render_template("editor.html", filename=filename, content=content)
+    return render_template("editor.html", filename=filename, frontmatter=frontmatter, content=content)
 
-@app.route("/save")
+@app.route("/saved")
 def saveFile():
     session.pop("fileName", None)
+    session.pop("frontmatter", None)
     session.pop("fileContents", None)
     return redirect(url_for('dashboard'))
 
@@ -41,11 +55,9 @@ def saveFile():
 def resetEditor():
     if request.method == "POST":
         session.pop("fileName", None)
+        session.pop("frontmatter", None)
         session.pop("fileContents", None)
     return redirect(url_for('editor'))
 
 #! TO-DO'S
-# Saving an editted or created file
-# Track and display previously opened files
-# Make sure you can only open .md files and nothing else on browser side and flask side and prevent a redirect to the editor if the user tries to open anything other than a .md file
-# Get the filename to display on editor page
+# For markdown files with front matter, split it up so that only the content shows up in the editor and the front matter is split up by key-value pairs and are editable 

@@ -4,9 +4,20 @@
 
 {% block main %}
 <h1 class="mb-6 text-xl font-bold">Dashboard</h1>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="bg-red-200">
+      {% for message in messages %}
+        <li class="text-center font-bold text-lg">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <div class="flex gap-3 text-center mb-6">
   <a
-    href="/editor"
+    href="/new"
     class="block border border-purple-600 py-3 w-full rounded-xl"
   >
     New Markdown File
@@ -21,13 +32,6 @@
     />
   </form>
 </div>
-<h2 class="font-medium text-lg text-center mb-3">Previously Editted:</h2>
-<ul class="text-center space-y-1.5">
-  <li>File 1</li>
-  <li>File 2</li>
-  <li>File 3</li>
-  <li>etc.</li>
-</ul>
 {% endblock %}
 
 {% block scripts %}
