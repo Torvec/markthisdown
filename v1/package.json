@@ -1,0 +1,27 @@
+{
+  "name": "markthisdown",
+  "version": "1.0.0",
+  "description": "A local only markdown editor.",
+  "keywords": [
+    "markdown"
+  ],
+  "homepage": "https://github.com/Torvec/markthisdown#readme",
+  "bugs": {
+    "url": "https://github.com/Torvec/markthisdown/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Torvec/markthisdown.git"
+  },
+  "license": "MIT",
+  "author": "Edward Vonschondorf",
+  "type": "commonjs",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "electron": "^36.2.1"
+  }
+}
