@@ -1,44 +1,31 @@
 {
   "name": "markthisdown",
   "version": "1.0.0",
-  "description": "A local only markdown editor.",
-  "keywords": [
-    "markdown"
-  ],
-  "homepage": "https://github.com/Torvec/markthisdown#readme",
-  "bugs": {
-    "url": "https://github.com/Torvec/markthisdown/issues"
+  "description": "A minimalist markdown editor and viewer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "mon": "npx electronmon .",
+    "twcli": "npx @tailwindcss/cli -i ./source.css -o ./styles.css --watch"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Torvec/markthisdown.git"
   },
-  "license": "MIT",
+  "keywords": [
+    "markdown"
+  ],
   "author": "Edward Vonschondorf",
-  "type": "commonjs",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish"
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Torvec/markthisdown/issues"
   },
+  "homepage": "https://github.com/Torvec/markthisdown#readme",
   "devDependencies": {
-    "@electron-forge/cli": "^7.8.1",
-    "@electron-forge/maker-deb": "^7.8.1",
-    "@electron-forge/maker-rpm": "^7.8.1",
-    "@electron-forge/maker-squirrel": "^7.8.1",
-    "@electron-forge/maker-zip": "^7.8.1",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
-    "@electron-forge/plugin-fuses": "^7.8.1",
-    "@electron-forge/publisher-github": "^7.8.1",
-    "@electron/fuses": "^1.8.0",
     "electron": "^36.2.1"
   },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.7",
-    "electron-squirrel-startup": "^1.0.1",
-    "tailwindcss": "^4.1.7",
-    "update-electron-app": "^3.1.1"
+    "tailwindcss": "^4.1.7"
   }
 }

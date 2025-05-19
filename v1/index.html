@@ -11,12 +11,180 @@
       http-equiv="X-Content-Security-Policy"
       content="default-src 'self'; script-src 'self'"
     />
-    <title>Hello from Electron renderer!</title>
+    <title>MarkThisDown</title>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
-  <body>
-    <h1>Test</h1>
-    <p>👋</p>
-    <p id="info"></p>
+  <body class="bg-neutral-800 text-neutral-100">
+    <header class="p-3 bg-neutral-900 mb-12">
+      <div class="flex items-center gap-9 max-w-6xl mx-auto">
+        <div>
+          <h1
+            class="text-xl font-bold border-b-4 w-max border-sky-500 font-mono flex gap-1.5"
+          >
+            <span class="text-base font-sans text-neutral-300 block"
+              >[{ }]</span
+            >
+            <span class="block">MarkThisDown</span>
+          </h1>
+          <p class="text-xs text-neutral-400">
+            A minimalist markdown editor/viewer
+          </p>
+        </div>
+        <nav class="flex gap-1.5 p-3 justify-center text-sm">
+          <button
+            id="dashboardBtn"
+            class="border border-sky-500/50 py-1.5 px-3 hover:bg-sky-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer"
+          >
+            Dashboard
+          </button>
+          <button
+            id="editorBtn"
+            class="border border-sky-500/50 py-1.5 px-3 hover:bg-sky-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer"
+          >
+            Editor
+          </button>
+          <button
+            id="aboutBtn"
+            class="border border-sky-500/50 py-1.5 px-3 hover:bg-sky-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer"
+          >
+            About
+          </button>
+          <button
+            id="settingsBtn"
+            class="border border-sky-500/50 py-1.5 px-3 hover:bg-sky-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer"
+          >
+            Settings
+          </button>
+        </nav>
+      </div>
+    </header>
+    <main class="max-w-4xl container mx-auto">
+      <!-- DASHBOARD PAGE -->
+      <section
+        id="dashboard"
+        class="hidden space-y-1 max-w-2xl mx-auto text-center"
+      >
+        <h2 class="text-lg font-semibold uppercase">Dashboard</h2>
+        <div class="flex gap-1">
+          <div class="space-y-1.5 bg-purple-900/20 p-4 w-1/2">
+            <button
+              id="newFileBtn"
+              class="border border-purple-500 py-1.5 px-3 hover:bg-purple-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer w-full block"
+            >
+              New Markdown File
+            </button>
+            <div class="flex items-center gap-1.5 justify-center">
+              <input name="fmCheckbox" id="fmCheckbox" type="checkbox" />
+              <label for="fmCheckbox" class="text-sm text-neutral-300"
+                >Add Frontmatter</label
+              >
+            </div>
+          </div>
+          <div class="bg-blue-900/20 p-4 w-1/2">
+            <button
+              id="editFileBtn"
+              class="border border-blue-500 py-1.5 px-3 hover:bg-purple-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer block w-full"
+            >
+              Edit Markdown File
+            </button>
+          </div>
+        </div>
+        <div class="bg-sky-900/20 p-4">
+          <h3 class="font-medium uppercase text-neutral-300 mb-3">
+            Recently Opened:
+          </h3>
+          <ul id="recentlyOpened" class="border border-neutral-600 p-3">
+            <!-- File list items here -->
+          </ul>
+        </div>
+      </section>
+      <!-- EDITOR PAGE -->
+      <section id="editor" class="text-center">
+        <h2 class="text-lg font-semibold uppercase mb-6">Editor</h2>
+        <h3 class="text-left font-medium uppercase mb-3">Filename.md</h3>
+        <textarea
+          name="fmEditor"
+          id="fmEditor"
+          class="border border-black block w-full min-h-48 p-4 mb-3"
+        >
+        Add frontmatter content...
+        </textarea>
+        <textarea
+          name="mdEditor"
+          id="mdEditor"
+          class="border border-black block w-full min-h-96 p-4 mb-3"
+        >
+        Add markdown content...
+        </textarea>
+        <div class="flex gap-1">
+          <div class="bg-green-900/20 p-4 w-1/2">
+            <button
+              id="saveFileBtn"
+              class="border border-green-500 py-1.5 px-3 hover:bg-green-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer w-full block"
+            >
+              Save Markdown
+            </button>
+          </div>
+          <div class="bg-red-900/20 p-4 w-1/2">
+            <button
+              id="clearEditorBtn"
+              class="border border-red-500 py-1.5 px-3 hover:bg-red-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer block w-full"
+            >
+              Clear Editor
+            </button>
+          </div>
+        </div>
+      </section>
+      <!-- ABOUT PAGE -->
+      <section id="about" class="hidden">
+        <!-- EXAMPLE FROM ABOUT ON VS CODE:
+              Version: 1.100.2 (system setup)
+              Commit: 848b80aeb52026648a8ff9f7c45a9b0a80641e2e
+              Date: 2025-05-14T21:47:40.416Z
+              Electron: 34.5.1
+              ElectronBuildId: 11369351
+              Chromium: 132.0.6834.210
+              Node.js: 20.19.0
+              V8: 13.2.152.41-electron.0
+              OS: Windows_NT x64 10.0.26100
+              -->
+        <h2>About</h2>
+      </section>
+      <!-- SETTINGS PAGE -->
+      <section id="settings" class="hidden">
+        <h2>Settings</h2>
+        <!-- Where all the settings will go -->
+      </section>
+    </main>
+
+    <!-- <p id="info"></p>
+    <div class="flex justify-center items-center gap-3">
+      <button
+        id="inc"
+        class="border border-black rounded p-3 bg-green-300 cursor-pointer active:scale-90 transition-transform duration-150 ease-in-out"
+      >
+        Increment
+      </button>
+      <button
+        id="dec"
+        class="border border-black rounded p-3 bg-red-300 cursor-pointer active:scale-90 transition-transform duration-150 ease-in-out"
+      >
+        Decrement
+      </button>
+      <button
+        id="saver"
+        class="border border-black rounded p-3 bg-purple-300 cursor-pointer active:scale-90 transition-transform duration-150 ease-in-out"
+      >
+        Save Number
+      </button>
+      <button
+        id="clear"
+        class="border border-black rounded p-3 bg-purple-300 cursor-pointer active:scale-90 transition-transform duration-150 ease-in-out"
+      >
+        Clear Number
+      </button>
+    </div>
+    <span id="num" class="block text-xl font-bold"></span> -->
   </body>
   <script src="./renderer.js"></script>
 </html>
