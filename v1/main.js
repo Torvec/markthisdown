@@ -40,7 +40,8 @@ function createAboutWindow() {
   aboutWindow.loadFile(path.join(__dirname, "about.html"));
 }
 
-ipcMain.handle("save-file-dialog", async () => {
+ipcMain.handle("save-file-dialog", () => {
+  // TODO: conditionally add frontmatter textarea if fmCheckbox.checked is true
   const newFilePath = dialog.showSaveDialogSync({
     title: "Save Markdown File",
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
@@ -50,18 +51,19 @@ ipcMain.handle("save-file-dialog", async () => {
     return;
   }
   const fileName = path.basename(newFilePath);
-  await fs.promises.writeFile(newFilePath, "");
-  const fileContents = await fs.promises.readFile(newFilePath, {
+  fs.writeFileSync(newFilePath, "");
+  const fileContents = fs.readFileSync(newFilePath, {
     encoding: "utf8",
   });
-  const file = {
+  const frontmatter = "---\n\n---\n";
+  return {
     name: fileName,
-    content: fileContents,
+    frontmatter: frontmatter,
+    body: fileContents,
   };
-  return file;
 });
 
-ipcMain.handle("open-file-dialog", async () => {
+ipcMain.handle("open-file-dialog", () => {
   const openedFile = dialog.showOpenDialogSync({
     title: "Open Markdown File",
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
@@ -72,14 +74,25 @@ ipcMain.handle("open-file-dialog", async () => {
     return;
   }
   const fileName = path.basename(openedFile[0]);
-  const fileContents = await fs.promises.readFile(openedFile[0], {
+  const fileContents = fs.readFileSync(openedFile[0], {
     encoding: "utf8",
   });
-  const file = {
+  let frontmatter = null;
+  let body = fileContents;
+  // Matches anything that starts with '---\n or \r' and ends with '---\n or \r' and everything in between
+  const regex = /^---\r?\n[\s\S]*?\r?\n---/;
+  const match = fileContents.match(regex);
+  if (match) {
+    // match() return an array
+    frontmatter = match[0];
+    // Extract everything after frontmatter and trim any leading whitespace
+    body = fileContents.slice(frontmatter.length).trimStart();
+  }
+  return {
     name: fileName,
-    content: fileContents,
+    frontmatter: frontmatter,
+    body: body,
   };
-  return file;
 });
 
 // MENU BAR

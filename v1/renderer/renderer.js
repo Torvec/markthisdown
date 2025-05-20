@@ -10,11 +10,13 @@ const clearEditorBtn = getById("clearEditorBtn");
 const dashboard = getById("dashboard");
 const editor = getById("editor");
 
-const displayFilename = getById("filenameHeader");
-const displayContent = getById("mdEditor");
+const renderFilename = getById("filenameHeader");
+const renderFrontmatter = getById("fmEditor");
+const renderBody = getById("mdEditor");
 
 let filename = "untitled.md";
-let fileContent = "Content";
+let frontmatter = "---\n\n---\n";
+let body = "Content";
 
 // Events
 dashboardBtn.addEventListener("click", () => showView("dashboard"));
@@ -25,9 +27,11 @@ newFileBtn.addEventListener("click", async () => {
   const saveFileDialog = await fileAPI.saveFileDialog();
   if (saveFileDialog !== undefined) {
     filename = saveFileDialog.name;
-    fileContent = saveFileDialog.content;
-    displayFilename.innerText = filename;
-    displayContent.value = fileContent;
+    frontmatter = saveFileDialog.frontmatter;
+    body = saveFileDialog.body;
+    renderFilename.innerText = filename;
+    renderFrontmatter.value = frontmatter;
+    renderBody.value = body;
     showView("editor");
   }
 });
@@ -36,9 +40,11 @@ editFileBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
   if (openFileDialog !== undefined) {
     filename = openFileDialog.name;
-    fileContent = openFileDialog.content;
-    displayFilename.innerText = filename;
-    displayContent.value = fileContent;
+    frontmatter = openFileDialog.frontmatter;
+    body = openFileDialog.body;
+    renderFilename.innerText = filename;
+    renderFrontmatter.value = frontmatter;
+    renderBody.value = body;
     showView("editor");
   }
 });
