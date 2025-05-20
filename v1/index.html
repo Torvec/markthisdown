@@ -44,12 +44,6 @@
           >
             Editor
           </button>
-          <button
-            id="settingsBtn"
-            class="border border-sky-500/50 py-1.5 px-3 hover:bg-sky-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer"
-          >
-            Settings
-          </button>
         </nav>
       </div>
     </header>
@@ -93,20 +87,18 @@
       <!-- EDITOR PAGE -->
       <section id="editor" class="hidden text-center">
         <h2 class="text-lg font-semibold uppercase mb-6">Editor</h2>
-        <h3 class="text-left font-medium uppercase mb-3">Filename.md</h3>
+        <h3 id="filenameHeader" class="text-left font-medium mb-3"></h3>
         <textarea
           name="fmEditor"
           id="fmEditor"
           class="border border-black block w-full min-h-48 p-4 mb-3"
         >
-        Add frontmatter content...
         </textarea>
         <textarea
           name="mdEditor"
           id="mdEditor"
           class="border border-black block w-full min-h-96 p-4 mb-3"
         >
-        Add markdown content...
         </textarea>
         <div class="flex gap-1">
           <div class="bg-green-900/20 p-4 w-1/2">
@@ -126,11 +118,6 @@
             </button>
           </div>
         </div>
-      </section>
-      <!-- SETTINGS PAGE -->
-      <section id="settings" class="hidden">
-        <h2>Settings</h2>
-        <!-- Where all the settings will go -->
       </section>
     </main>
   </body>

@@ -1,4 +1,4 @@
-// const { contextBridge } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
 // ! This does not work like how i thought it would, will come back to it later
 // contextBridge.exposeInMainWorld("aboutInfo", {
@@ -10,3 +10,8 @@
 //   osArch: () => os.arch(),
 //   osRelease: () => os.release(),
 // });
+
+contextBridge.exposeInMainWorld("fileAPI", {
+  saveFileDialog: () => ipcRenderer.invoke("save-file-dialog"),
+  openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
+});
