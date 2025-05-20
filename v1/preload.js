@@ -1,8 +1,12 @@
-const { contextBridge, ipcRenderer } = require("electron");
+// const { contextBridge } = require("electron");
 
-// contextBridge.exposeInMainWorld("versions", {
-//   node: () => process.versions.node,
-//   chrome: () => process.versions.chrome,
+// ! This does not work like how i thought it would, will come back to it later
+// contextBridge.exposeInMainWorld("aboutInfo", {
 //   electron: () => process.versions.electron,
-//   ping: () => ipcRenderer.invoke("ping"),
+//   chrome: () => process.versions.chrome,
+//   node: () => process.versions.node,
+//   v8: () => process.versions.v8,
+//   osType: () => os.type(),
+//   osArch: () => os.arch(),
+//   osRelease: () => os.release(),
 // });

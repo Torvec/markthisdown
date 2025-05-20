@@ -1,11 +1,11 @@
-const { app, BrowserWindow, ipcMain, Menu } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const path = require("node:path");
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
 
-const createWindow = () => {
-  const win = new BrowserWindow({
+function createMainWindow() {
+  const mainWin = new BrowserWindow({
     width: 1280,
     height: 1280,
     title: "MarkThisDown",
@@ -14,22 +14,68 @@ const createWindow = () => {
     },
   });
 
-  win.loadFile("index.html");
+  mainWin.loadFile("index.html");
 
-  if (isDev) {
-    win.webContents.openDevTools();
-  }
-};
+  if (isDev) mainWin.webContents.openDevTools();
+}
 
-// Removes the default menu bar
-Menu.setApplicationMenu(null);
+function createAboutWindow() {
+  const aboutWindow = new BrowserWindow({
+    width: 480,
+    height: 480,
+    resizable: false,
+    fullscreenable: false,
+    minimizable: false,
+    closable: true,
+    title: "About MarkThisDown",
+    // webPreferences: {
+    //   preload: path.join(__dirname, "preload.js"),
+    // },
+  });
+  aboutWindow.setMenuBarVisibility(false);
+  aboutWindow.setAutoHideMenuBar(true);
+  aboutWindow.loadFile(path.join(__dirname, "about.html"));
+}
+
+const menu = [];
+
+if (isMac) {
+  menu.push({
+    label: app.name,
+    submenu: [{ label: "About", click: createAboutWindow }],
+  });
+}
+
+menu.push({ role: "fileMenu" });
+
+if (!isMac) {
+  menu.push({
+    label: "Help",
+    submenu: [{ label: "About", click: createAboutWindow }],
+  });
+}
+
+if (isDev) {
+  menu.push({
+    label: "Developer",
+    submenu: [
+      { role: "reload" },
+      { role: "forcereload" },
+      { type: "separator" },
+      { role: "toggledevtools" },
+    ],
+  });
+}
 
 app.whenReady().then(() => {
-//   ipcMain.handle("ping", () => "Some text from the main process");
-  createWindow();
+  createMainWindow();
+
+  const mainMenu = Menu.buildFromTemplate(menu);
+  Menu.setApplicationMenu(mainMenu);
+
   // Opens a window if none are open (mac)
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
   });
 });
 
