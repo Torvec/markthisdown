@@ -8,4 +8,4 @@ The proof of concept/experimentation version of the app, requires python to use.
 
 ## v1 - Electron
 
-The production ready version of the app built with electron. COMING SOON!
+A local only, minimalist, markdown editor app built with electron! **COMING SOON!**
