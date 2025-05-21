@@ -4,6 +4,7 @@ const path = require("node:path");
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
+const recentFiles = "./recent-files.json";
 
 function createMainWindow() {
   const mainWin = new BrowserWindow({
@@ -40,8 +41,38 @@ function createAboutWindow() {
   aboutWindow.loadFile(path.join(__dirname, "about.html"));
 }
 
+/*
+FILE HANDLING REQUIREMENTS:
+# Recent Files Feature
+- Need a recent-files.json file that will be saved in userData
+- Anytime the user opens a file or saves a new one the recent-file.json will be updated
+- recent-files.json Will only track the last 10 to 15 or so files opened/edited/created
+- Need to check if recent-files.json exists
+  - If not, create it with an empty array []
+  - If it does, read it, pass the output to the renderer via preload, renderer will parse the json and loop through all of the contents to render a button for each file that can be clicked to open the file and hae it's contents rendered in the editor (dashboard screen --> editor screen)
+  - If the recent-files.json is empty just output a string saying no files used recently or something along those lines
+# New File Feature
+
+# Open File Feature
+
+# Save File Feature
+
+*/
+
+async function recentFilesExists() {
+  try {
+    const recentFilesPath = path.join(
+      app.getPath("userData"),
+      "recent-files.json"
+    );
+    await fs.promises.access(recentFilesPath, fs.constants.F_OK);
+    console.log("It exists!");
+  } catch {
+    console.log("Does not exist :/");
+  }
+}
+
 ipcMain.handle("save-file-dialog", () => {
-  // TODO: conditionally add frontmatter textarea if fmCheckbox.checked is true
   const newFilePath = dialog.showSaveDialogSync({
     title: "Save Markdown File",
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
@@ -95,6 +126,20 @@ ipcMain.handle("open-file-dialog", () => {
   };
 });
 
+ipcMain.handle("get-recent-files", async () => {
+  try {
+    // const recentFilesPath = path.join(app.getPath("userData"), recentFiles);
+    const readRecentFiles = await fs.promises.readFile(recentFiles, {
+      encoding: "utf-8",
+    });
+    return readRecentFiles;
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+ipcMain.handle("set-recent-files", () => {});
+
 // MENU BAR
 const menu = [];
 if (isMac) {
@@ -124,6 +169,7 @@ if (isDev) {
 
 // STARTING THE APP
 app.whenReady().then(() => {
+  recentFilesExists();
   createMainWindow();
 
   // Sets up the menu bar

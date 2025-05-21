@@ -1,15 +1,18 @@
-// Buttons
+// Controls
 const dashboardBtn = getById("dashboardBtn");
 const editorBtn = getById("editorBtn");
 const newFileBtn = getById("newFileBtn");
 const editFileBtn = getById("editFileBtn");
 const saveFileBtn = getById("saveFileBtn");
 const clearEditorBtn = getById("clearEditorBtn");
+const fmToggle = getById("fmToggle");
 
-// Sections (aka pages)
+// Views
 const dashboard = getById("dashboard");
 const editor = getById("editor");
 
+// Data outputs
+const recentFiles = getById("recentFiles");
 const renderFilename = getById("filenameHeader");
 const renderFrontmatter = getById("fmEditor");
 const renderBody = getById("mdEditor");
@@ -19,9 +22,8 @@ let frontmatter = "---\n\n---\n";
 let body = "Content";
 
 // Events
-dashboardBtn.addEventListener("click", () => showView("dashboard"));
-
-editorBtn.addEventListener("click", () => showView("editor"));
+// dashboardBtn.addEventListener("click", () => showView("dashboard"));
+// editorBtn.addEventListener("click", () => showView("editor"));
 
 newFileBtn.addEventListener("click", async () => {
   const saveFileDialog = await fileAPI.saveFileDialog();
@@ -49,6 +51,26 @@ editFileBtn.addEventListener("click", async () => {
   }
 });
 
+fmToggle.addEventListener("change", () => {
+  if (fmToggle.checked) {
+    console.log("checked");
+  } else {
+    console.log("unchecked");
+  }
+});
+
+async function renderRecentlyOpened() {
+  // if length === 0 render some text saying no recent files found
+  // otherwise, loop through the list and render each as a button that can
+  // trigger an event to open the file, read it, and then render it in the editor
+  const fileList = await fileAPI.getRecentFiles();
+  const parsed = JSON.parse(fileList).map(
+    ({ fileName, filePath }) =>
+      (recentFiles.innerHTML += `<button class="cursor-pointer space-x-3 p-3 bg-neutral-900"><span class="font-medium">${fileName}:</span><span class="text-neutral-400">${filePath}</span></button>`)
+  );
+  return parsed;
+}
+
 function showView(viewId) {
   const views = ["dashboard", "editor"];
   views.forEach((id) => {
@@ -66,3 +88,5 @@ function showView(viewId) {
 function getById(id) {
   return document.getElementById(id);
 }
+
+renderRecentlyOpened();
