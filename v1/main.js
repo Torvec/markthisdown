@@ -4,7 +4,6 @@ const path = require("node:path");
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
-const recentFiles = "./recent-files.json";
 
 function createMainWindow() {
   const mainWin = new BrowserWindow({
@@ -67,43 +66,164 @@ function createAboutWindow() {
   - app.getPath("userData") -> where the recent file list will be created/saved
 # confirm an action:
   - dialog.showMessageBox({options})
+# check anything before quitting the app:
+  - app.before-quit
 */
+
+/* # App Startup:
+- Check for `recent-files.json` in `app.getPath("userData")`
+  - If not found:
+    - Create the file with an empty array: `[]`
+  - If found:
+    - Read its contents
+    - Filter out any entries that point to non-existent files
+    - Pass valid recent files to the renderer via `preload`
+    - Renderer will render buttons for each entry
+    - If the list is empty, show a message like "No recent files"
+*/
+
+/* # Create New File:
+- A temporary in-memory object is created:
+  - `filename = "untitled.md"`
+  - `filePath = null`
+  - `isSaved = false`
+  - `content = ""`
+- Ask whether frontmatter is needed:
+  - Yes: enable frontmatter editor, pre-fill with `---\n\n---`
+  - No: hide frontmatter editor, show button to enable it later
+- Navigate to the editor screen immediately
+- Show a visual indicator: "Unsaved file" or similar
+*/
+
+/* # First Time Save / Save As:
+- Show `dialog.showSaveDialog()` to select location and filename
+- Save content using `fs.writeFile()`
+- Update internal editor state:
+  - Set `filePath`, `filename`, `isSaved = true`
+- Add file to top of recent-files list
+  - Normalize path (`path.resolve()`)
+  - Deduplicate if already present
+  - Save updated recent-files.json
+*/
+
+/* # Save Modified File:
+- If file is already saved (`isSaved = true`):
+  - Overwrite it directly with `fs.writeFile()`
+  - Update lastModified timestamp in recent-files.json
+- If file is still unsaved:
+  - Redirect to First Time Save flow
+*/
+
+/* # Open Existing File:
+- Show `dialog.showOpenDialog()` for user to pick a file
+- Read file with `fs.readFile()`
+- Parse for frontmatter (`---`) and body content
+  - Populate frontmatter editor and markdown editor separately
+- Normalize and save file path to recent-files.json
+- Navigate to editor screen
+- If opened via recent-files button:
+  - Skip dialog — load file immediately using its path
+*/
+
+/* # Exit / App Close:
+- On `app.before-quit`, check:
+  - If any open file has unsaved changes (`isDirty`)
+    - Show dialog: "You have unsaved changes. Save before exiting?"
+    - Options: Save / Discard / Cancel
+  - If user cancels: cancel quit
+- Consider auto-saving `untitled.md` content to memory or localStorage (optional)
+  - Only restore if app crashed or exited unexpectedly
+*/
+
+/* # Additions:
+- Track and show lastOpened or lastModified in recent-files.json
+- Add a "Clear Recent Files" button in Settings or Dashboard
+- Handle invalid or corrupted recent-files.json gracefully
+- Add “Reload Last File on Startup” setting
+- Add "Reveal in Folder" or "Open in Default App" using shell.openPath
+*/
+
+// TODO: Check if the JSON file is valid/is an array after parsing/file is readable (not corrupted/locked)
+/*
+Checks if recent-files.json exists in userData directory, 
+If accesssync doesn't throw, then recent-files.json is filtered of any files that don't exist anymore
+Else create it and write an empty array into it
+Return the file path of recent-file.json
+*/
+function recentFilesJSONExists() {
+  const recentFilesJSONPath = path.join(
+    app.getPath("userData"),
+    "recent-files.json"
+  );
+  try {
+    fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
+    filterExistingRecentFiles(recentFilesJSONPath);
+  } catch {
+    fs.writeFileSync(recentFilesJSONPath, "[]");
+  }
+  return recentFilesJSONPath;
+}
 
 /*
-App states
-# Startup:
-  - Looks for recent-files.json in "userData"
-    - Does not exist: create it with an empty array []
-    - Exists: read it, verify files still exist, send contents to renderer via preload
-# Create New File:
-  - Filename is untitled.md by default
-  - Select whether it has frontmatter or not
-    - Yes: Enable front matter editor and add --- and --- to front matter editor
-    - No: Front matter editor disabled and a frontmatter editor button will show in it's place
-  - Go to editor screen immediately
-    - Some kind of indicator that the file needs to be saved and named
-
-# First Time Save/Save As:
-
-# Save Modified File:
-
-# Open Existing File:
-
-# Exit
+Reads and parses the file into an array then filters the array of any files that don't exist anymore
+If the array needed to be modified then write the file with the new array
+Either way, return the recent-file.json filepath
 */
-
-async function recentFilesExists() {
-  try {
-    const recentFilesPath = path.join(
-      app.getPath("userData"),
-      "recent-files.json"
-    );
-    await fs.promises.access(recentFilesPath, fs.constants.F_OK);
-    console.log("It exists!");
-  } catch {
-    console.log("Does not exist :/");
+function filterExistingRecentFiles(recentFilesJSONPath) {
+  const fileContents = readAndParseFile(recentFilesJSONPath);
+  let modified = false;
+  const filteredFilesList = fileContents.filter((item) => {
+    try {
+      fs.accessSync(item.filepath, fs.constants.F_OK);
+      return true;
+    } catch {
+      modified = true;
+      return false;
+    }
+  });
+  if (modified) {
+    writeAndStringifyFile(recentFilesJSONPath, filteredFilesList);
   }
+  return recentFilesJSONPath;
 }
+
+/*
+  Checks for duplicate entries and caps the list at 10 items
+*/
+function updateRecentFilesList(recentFilesPath, addedFilePath) {
+  const fileContents = readAndParseFile(recentFilesPath);
+  const addedFileName = path.basename(addedFilePath);
+  const fileListItem = { filename: addedFileName, filepath: addedFilePath };
+  const maxSize = 10;
+  for (let i = 0; i < fileContents.length; i++) {
+    if (fileContents[i].filepath === fileListItem.filepath) {
+      fileContents.splice(i, 1);
+      break;
+    }
+  }
+  fileContents.unshift(fileListItem);
+  if (fileContents.length > maxSize) fileContents.pop();
+  writeAndStringifyFile(recentFilesPath, fileContents);
+}
+
+const readAndParseFile = (filepath) =>
+  JSON.parse(fs.readFileSync(filepath, "utf8"));
+
+const writeAndStringifyFile = (filepath, data) =>
+  fs.writeFileSync(filepath, JSON.stringify(data));
+
+ipcMain.handle("get-recent-files", () => {
+  try {
+    // const recentFilesList = fs.readFileSync(recentFilesJSONExists(), {
+    //   encoding: "utf-8",
+    // });
+    // const parsedFileList = JSON.parse(recentFilesList);
+    return readAndParseFile(recentFilesJSONExists());
+  } catch (err) {
+    console.error(err.message);
+    return [];
+  }
+});
 
 ipcMain.handle("save-file-dialog", () => {
   const newFilePath = dialog.showSaveDialogSync({
@@ -137,6 +257,7 @@ ipcMain.handle("open-file-dialog", () => {
     console.log("No file selected");
     return;
   }
+  updateRecentFilesList(recentFilesJSONExists(), openedFile[0]);
   const fileName = path.basename(openedFile[0]);
   const fileContents = fs.readFileSync(openedFile[0], {
     encoding: "utf8",
@@ -158,20 +279,6 @@ ipcMain.handle("open-file-dialog", () => {
     body: body,
   };
 });
-
-ipcMain.handle("get-recent-files", async () => {
-  try {
-    // const recentFilesPath = path.join(app.getPath("userData"), recentFiles);
-    const readRecentFiles = await fs.promises.readFile(recentFiles, {
-      encoding: "utf-8",
-    });
-    return readRecentFiles;
-  } catch (err) {
-    console.error(err.message);
-  }
-});
-
-ipcMain.handle("set-recent-files", () => {});
 
 // MENU BAR
 const menu = [];
@@ -202,7 +309,6 @@ if (isDev) {
 
 // STARTING THE APP
 app.whenReady().then(() => {
-  recentFilesExists();
   createMainWindow();
 
   // Sets up the menu bar
