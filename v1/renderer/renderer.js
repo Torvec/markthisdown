@@ -60,14 +60,11 @@ fmToggle.addEventListener("change", () => {
 });
 
 async function renderRecentlyOpened() {
-  // if length === 0 render some text saying no recent files found
-  // otherwise, loop through the list and render each as a button that can
-  // trigger an event to open the file, read it, and then render it in the editor
   const fileList = await fileAPI.getRecentFiles();
-  const parsed = JSON.parse(fileList).map(
-    ({ fileName, filePath }) =>
-      (recentFiles.innerHTML += `<button class="cursor-pointer space-x-3 p-3 bg-neutral-900"><span class="font-medium">${fileName}:</span><span class="text-neutral-400">${filePath}</span></button>`)
-  );
+  const parsed = JSON.parse(fileList).map(({ fileName, filePath }) => {
+    const buttonHTML = `<button class="cursor-pointer space-x-3 p-3 bg-neutral-900"><span class="font-medium">${fileName}:</span><span class="text-neutral-400">${filePath}</span></button>`;
+    return (recentFiles.innerHTML += buttonHTML);
+  });
   return parsed;
 }
 

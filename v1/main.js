@@ -42,21 +42,54 @@ function createAboutWindow() {
 }
 
 /*
-FILE HANDLING REQUIREMENTS:
-# Recent Files Feature
-- Need a recent-files.json file that will be saved in userData
-- Anytime the user opens a file or saves a new one the recent-file.json will be updated
-- recent-files.json Will only track the last 10 to 15 or so files opened/edited/created
-- Need to check if recent-files.json exists
-  - If not, create it with an empty array []
-  - If it does, read it, pass the output to the renderer via preload, renderer will parse the json and loop through all of the contents to render a button for each file that can be clicked to open the file and hae it's contents rendered in the editor (dashboard screen --> editor screen)
-  - If the recent-files.json is empty just output a string saying no files used recently or something along those lines
-# New File Feature
+# check if a file exists: 
+  - fs.existsSync(filepath) OR fs.promises.access(filepath, fs.constants.F_OK)
+# check the extension:
+  - path.extname(filepath) === ".md"
+# check metadata of the file (last modified, is a file, size, etc.):
+  - stats = fs.promises.stat(filepath) -> stats.isFile(), stats.mtime
+# open a file: 
+  - dialog.showOpenDialogSync({options}) OR dialog.showOpenDialog({options})
+# save a new file/sava as: 
+  - dialog.showSaveDialogSync({options}) OR dialog.showSaveDialog({options})
+# read a file: 
+  - fs.readFileSync(filepath, {encoding}) OR fs.promises.readFile(filepath, {encoding})
+# write a file/save changes to an existing file: 
+  - fs.writeFileSync(filepath, data) OR fs.promises.writeFile(filepath, data)
+# get the file name:
+  - path.basename
+# get the full filepath:
+  - dialog.showOpenDialog and dialog.showSaveDialog both return the full file path when used, 
+  however the showOpenDialog saves it in an array and since i only intend to allow one file being open at a time then it will be located at position 0
+# normalize the filepath:
+  - path.resolve(filepath) -> use when adding a file to recent files list, when checking if a file exists in recent files list, when using showOpenDialog()
+# where the user data is:
+  - app.getPath("userData") -> where the recent file list will be created/saved
+# confirm an action:
+  - dialog.showMessageBox({options})
+*/
 
-# Open File Feature
+/*
+App states
+# Startup:
+  - Looks for recent-files.json in "userData"
+    - Does not exist: create it with an empty array []
+    - Exists: read it, verify files still exist, send contents to renderer via preload
+# Create New File:
+  - Filename is untitled.md by default
+  - Select whether it has frontmatter or not
+    - Yes: Enable front matter editor and add --- and --- to front matter editor
+    - No: Front matter editor disabled and a frontmatter editor button will show in it's place
+  - Go to editor screen immediately
+    - Some kind of indicator that the file needs to be saved and named
 
-# Save File Feature
+# First Time Save/Save As:
 
+# Save Modified File:
+
+# Open Existing File:
+
+# Exit
 */
 
 async function recentFilesExists() {
