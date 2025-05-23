@@ -70,17 +70,6 @@ function createAboutWindow() {
   - app.before-quit
 */
 
-/* # App Startup:
-- Check for `recent-files.json` in `app.getPath("userData")`
-  - If not found:
-    - Create the file with an empty array: `[]`
-  - If found:
-    - Read its contents
-    - Filter out any entries that point to non-existent files
-    - Pass valid recent files to the renderer via `preload`
-    - Renderer will render buttons for each entry
-    - If the list is empty, show a message like "No recent files"
-*/
 
 /* # Create New File:
 - A temporary in-memory object is created:
@@ -214,10 +203,6 @@ const writeAndStringifyFile = (filepath, data) =>
 
 ipcMain.handle("get-recent-files", () => {
   try {
-    // const recentFilesList = fs.readFileSync(recentFilesJSONExists(), {
-    //   encoding: "utf-8",
-    // });
-    // const parsedFileList = JSON.parse(recentFilesList);
     return readAndParseFile(recentFilesJSONExists());
   } catch (err) {
     console.error(err.message);
@@ -234,6 +219,7 @@ ipcMain.handle("save-file-dialog", () => {
     console.log("New File not created");
     return;
   }
+  updateRecentFilesList(recentFilesJSONExists(), newFilePath);
   const fileName = path.basename(newFilePath);
   fs.writeFileSync(newFilePath, "");
   const fileContents = fs.readFileSync(newFilePath, {

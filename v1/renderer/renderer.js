@@ -80,6 +80,7 @@ function getById(id) {
 
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
+  if (fileList.length === 0) recentFiles.innerHTML = `<p class="text-center text-neutral-500 italic">Recent Files List Empty</p>`
   fileList.forEach((file) => {
     const buttonHTML = `<button class="block w-full text-left cursor-pointer space-x-3 p-3 bg-neutral-900"><span class="font-medium">${file.filename}:</span><span class="text-neutral-400">${file.filepath}</span></button>`;
     return (recentFiles.innerHTML += buttonHTML);
