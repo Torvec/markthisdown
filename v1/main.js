@@ -134,10 +134,7 @@ Else create it and write an empty array into it
 Return the file path of recent-file.json
 */
 function getRecentFilesPath() {
-  const recentFilesJSONPath = path.join(
-    app.getPath("userData"),
-    "recent-files.json"
-  );
+  const recentFilesJSONPath = path.join(app.getPath("userData"), "recent-files.json");
   try {
     fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
     filterExistingRecentFiles(recentFilesJSONPath);

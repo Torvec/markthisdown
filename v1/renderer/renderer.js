@@ -72,7 +72,7 @@ saveFileBtn.addEventListener("click", async () => {
     renderBody.value = body;
     showView("editor");
   }
-})
+});
 
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
@@ -98,7 +98,7 @@ async function renderRecentFilesList() {
       "active:scale-90",
       "transition-all",
       "duration-150",
-      "ease-in-out"
+      "ease-in-out",
     );
     buttonEl.dataset.filepath = filepath;
     const spanFileNameEl = document.createElement("span");

@@ -6,7 +6,8 @@
   "scripts": {
     "start": "electron .",
     "mon": "npx electronmon .",
-    "twcli": "npx @tailwindcss/cli -i ./source.css -o ./styles.css --watch"
+    "twcli": "npx @tailwindcss/cli -i ./source.css -o ./styles.css --watch",
+    "prettier": "prettier --write ."
   },
   "repository": {
     "type": "git",
@@ -21,11 +22,13 @@
     "url": "https://github.com/Torvec/markthisdown/issues"
   },
   "homepage": "https://github.com/Torvec/markthisdown#readme",
-  "devDependencies": {
-    "electron": "^36.2.1"
-  },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.7",
     "tailwindcss": "^4.1.7"
+  },
+  "devDependencies": {
+    "electron": "^36.2.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11"
   }
 }
