@@ -22,41 +22,48 @@
       <!-- DASHBOARD PAGE -->
       <section
         id="dashboard"
-        class="max-w-xl mx-auto text-center bg-neutral-900 p-1 space-y-1"
+        class="mx-auto text-center bg-neutral-900 p-1 space-y-1"
       >
-        <h2 class="text-lg font-semibold uppercase bg-slate-800 py-3">
+        <h2
+          class="text-lg font-semibold uppercase bg-linear-to-b from-blue-950/50 to-transparent py-3"
+        >
           Dashboard
         </h2>
-        <div class="space-y-1.5 bg-purple-900/20 p-6">
-          <button
-            id="newFileBtn"
-            class="border border-purple-500 p-3 hover:bg-purple-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer w-full block"
+        <div class="flex gap-1">
+          <!-- NEW FILE -->
+          <div
+            class="w-1/2 space-y-1.5 p-6 bg-linear-to-br from-purple-900/20 from-10% to-transparent to-60%"
           >
-            New Markdown File
-          </button>
-          <div class="flex items-center gap-1.5 justify-center">
-            <input name="fmToggle" id="fmToggle" type="checkbox" />
-            <label for="fmToggle" class="text-sm text-neutral-300">
-              Add Frontmatter
-            </label>
+            <button
+              id="newFileBtn"
+              class="border border-purple-500/80 p-3 hover:bg-purple-500/10 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer w-full block"
+            >
+              New Markdown File
+            </button>
+            <div class="flex items-center gap-1.5 justify-center">
+              <input name="fmToggle" id="fmToggle" type="checkbox" />
+              <label for="fmToggle" class="text-sm text-neutral-300">
+                Add Frontmatter
+              </label>
+            </div>
+          </div>
+          <!-- EDIT FILE -->
+          <div
+            class="w-1/2 bg-linear-to-bl from-blue-900/20 from-10% to-transparent to-60% p-6"
+          >
+            <button
+              id="editFileBtn"
+              class="border border-blue-500/80 p-3 hover:bg-blue-500/10 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer block w-full"
+            >
+              Edit Markdown File
+            </button>
           </div>
         </div>
-        <div class="bg-blue-900/20 p-6">
-          <button
-            id="editFileBtn"
-            class="border border-blue-500 p-3 hover:bg-purple-200/30 active:scale-90 transition-all duration-150 ease-in-out cursor-pointer block w-full"
-          >
-            Edit Markdown File
-          </button>
-        </div>
-        <div class="bg-sky-900/20 p-6">
-          <h3 class="font-medium uppercase text-neutral-300 mb-3">
+        <div class="bg-linear-to-t from-rose-950/50 to-transparent p-6">
+          <h3 class="font-medium uppercase text-neutral-300 mb-3 text-sm">
             Open Recent:
           </h3>
-          <div
-            id="recentFiles"
-            class="overflow-hidden text-left space-y-1"
-          >
+          <div id="recentFiles" class="text-left space-y-1">
             <!-- File list items here -->
           </div>
         </div>

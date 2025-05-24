@@ -14,9 +14,7 @@ function createMainWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-
   mainWin.loadFile("index.html");
-
   if (isDev) mainWin.webContents.openDevTools();
 }
 
@@ -33,10 +31,8 @@ function createAboutWindow() {
     //   preload: path.join(__dirname, "preload.js"),
     // },
   });
-
   aboutWindow.setMenuBarVisibility(false);
   aboutWindow.setAutoHideMenuBar(true);
-
   aboutWindow.loadFile(path.join(__dirname, "about.html"));
 }
 
@@ -69,7 +65,6 @@ function createAboutWindow() {
 # check anything before quitting the app:
   - app.before-quit
 */
-
 
 /* # Create New File:
 - A temporary in-memory object is created:
@@ -132,7 +127,6 @@ function createAboutWindow() {
 - Add "Reveal in Folder" or "Open in Default App" using shell.openPath
 */
 
-// TODO: Check if the JSON file is valid/is an array after parsing/file is readable (not corrupted/locked)
 /*
 Checks if recent-files.json exists in userData directory, 
 If accesssync doesn't throw, then recent-files.json is filtered of any files that don't exist anymore
@@ -184,6 +178,7 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
   const maxSize = 10;
+
   for (let i = 0; i < fileContents.length; i++) {
     if (fileContents[i].filepath === fileListItem.filepath) {
       fileContents.splice(i, 1);
@@ -195,19 +190,46 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
 
-const readAndParseFile = (filepath) =>
-  JSON.parse(fs.readFileSync(filepath, "utf8"));
+function readAndParseFile(filepath) {
+  return JSON.parse(fs.readFileSync(filepath, "utf8"));
+}
 
-const writeAndStringifyFile = (filepath, data) =>
+function writeAndStringifyFile(filepath, data) {
   fs.writeFileSync(filepath, JSON.stringify(data));
+}
+
+function parseFileForEditors(filepath) {
+  const fileName = path.basename(filepath);
+  const fileContents = fs.readFileSync(filepath, {
+    encoding: "utf8",
+  });
+  let frontmatter = null;
+  let body = fileContents;
+  const regex = /^---\r?\n[\s\S]*?\r?\n---/;
+  const match = fileContents.match(regex);
+  if (match) {
+    frontmatter = match[0];
+    body = fileContents.slice(frontmatter.length).trimStart();
+  }
+  return {
+    name: fileName,
+    frontmatter: frontmatter,
+    body: body,
+  };
+}
 
 ipcMain.handle("get-recent-files", () => {
   try {
     return readAndParseFile(recentFilesJSONExists());
   } catch (err) {
     console.error(err.message);
-    return [];
+    return "[]";
   }
+});
+
+ipcMain.handle("open-recent-file", (_, filepath) => {
+  updateRecentFilesList(recentFilesJSONExists(), filepath);
+  return parseFileForEditors(filepath);
 });
 
 ipcMain.handle("save-file-dialog", () => {
@@ -220,8 +242,8 @@ ipcMain.handle("save-file-dialog", () => {
     return;
   }
   updateRecentFilesList(recentFilesJSONExists(), newFilePath);
-  const fileName = path.basename(newFilePath);
   fs.writeFileSync(newFilePath, "");
+  const fileName = path.basename(newFilePath);
   const fileContents = fs.readFileSync(newFilePath, {
     encoding: "utf8",
   });
@@ -233,6 +255,11 @@ ipcMain.handle("save-file-dialog", () => {
   };
 });
 
+/*
+match() return an array
+Extract everything after frontmatter and trim any leading whitespace
+Matches anything that starts with '---\n or \r' and ends with '---\n or \r' and everything in between
+*/
 ipcMain.handle("open-file-dialog", () => {
   const openedFile = dialog.showOpenDialogSync({
     title: "Open Markdown File",
@@ -244,26 +271,7 @@ ipcMain.handle("open-file-dialog", () => {
     return;
   }
   updateRecentFilesList(recentFilesJSONExists(), openedFile[0]);
-  const fileName = path.basename(openedFile[0]);
-  const fileContents = fs.readFileSync(openedFile[0], {
-    encoding: "utf8",
-  });
-  let frontmatter = null;
-  let body = fileContents;
-  // Matches anything that starts with '---\n or \r' and ends with '---\n or \r' and everything in between
-  const regex = /^---\r?\n[\s\S]*?\r?\n---/;
-  const match = fileContents.match(regex);
-  if (match) {
-    // match() return an array
-    frontmatter = match[0];
-    // Extract everything after frontmatter and trim any leading whitespace
-    body = fileContents.slice(frontmatter.length).trimStart();
-  }
-  return {
-    name: fileName,
-    frontmatter: frontmatter,
-    body: body,
-  };
+  return parseFileForEditors(openedFile[0]);
 });
 
 // MENU BAR

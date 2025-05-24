@@ -21,7 +21,6 @@ let filename = "untitled.md";
 let frontmatter = "---\n\n---\n";
 let body = "Content";
 
-// Events
 // dashboardBtn.addEventListener("click", () => showView("dashboard"));
 // editorBtn.addEventListener("click", () => showView("editor"));
 
@@ -40,7 +39,6 @@ newFileBtn.addEventListener("click", async () => {
 
 editFileBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
-  console.log(openFileDialog)
   if (openFileDialog !== undefined) {
     filename = openFileDialog.name;
     frontmatter = openFileDialog.frontmatter;
@@ -78,14 +76,57 @@ function getById(id) {
   return document.getElementById(id);
 }
 
+recentFiles.addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-filepath]");
+  if (!button) return;
+  const filepath = button.dataset.filepath;
+  const openFile = await fileAPI.openRecentFile(filepath);
+  filename = openFile.name;
+  frontmatter = openFile.frontmatter;
+  body = openFile.body;
+  renderFilename.innerText = filename;
+  renderFrontmatter.value = frontmatter;
+  renderBody.value = body;
+  showView("editor");
+});
+
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
-  if (fileList.length === 0) recentFiles.innerHTML = `<p class="text-center text-neutral-500 italic">Recent Files List Empty</p>`
-  fileList.forEach((file) => {
-    const buttonHTML = `<button class="block w-full text-left cursor-pointer space-x-3 p-3 bg-neutral-900"><span class="font-medium">${file.filename}:</span><span class="text-neutral-400">${file.filepath}</span></button>`;
-    return (recentFiles.innerHTML += buttonHTML);
+  if (fileList.length === 0) {
+    const paragraphEl = document.createElement("p");
+    paragraphEl.classList.add("text-center", "text-neutral-500", "italic");
+    paragraphEl.textContent = "Recent Files List Empty";
+    recentFiles.appendChild(paragraphEl);
+  }
+  fileList.forEach(({ filename, filepath }) => {
+    const buttonEl = document.createElement("button");
+    buttonEl.classList.add(
+      "block",
+      "w-full",
+      "text-left",
+      "cursor-pointer",
+      "space-x-3",
+      "p-3",
+      "bg-neutral-900",
+      "overflow-hidden",
+      "text-ellipsis",
+      "hover:bg-neutral-500/10",
+      "active:scale-90",
+      "transition-all",
+      "duration-150",
+      "ease-in-out"
+    );
+    buttonEl.dataset.filepath = filepath;
+    const spanFileNameEl = document.createElement("span");
+    spanFileNameEl.classList.add("font-medium");
+    spanFileNameEl.textContent = `${filename}`;
+    const spanFilePathEl = document.createElement("span");
+    spanFilePathEl.classList.add("text-neutral-400");
+    spanFilePathEl.textContent = `${filepath}`;
+    recentFiles.appendChild(buttonEl);
+    buttonEl.appendChild(spanFileNameEl);
+    buttonEl.appendChild(spanFilePathEl);
   });
-
   return fileList;
 }
 

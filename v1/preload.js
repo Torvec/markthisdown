@@ -15,4 +15,5 @@ contextBridge.exposeInMainWorld("fileAPI", {
   saveFileDialog: () => ipcRenderer.invoke("save-file-dialog"),
   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
   getRecentFiles: () => ipcRenderer.invoke("get-recent-files"),
+  openRecentFile: (filepath) => ipcRenderer.invoke("open-recent-file", filepath),
 });
