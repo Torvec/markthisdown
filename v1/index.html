@@ -27,7 +27,7 @@
               id="newFileBtn"
               class="block w-full cursor-pointer border border-purple-500/80 p-3 transition-all duration-150 ease-in-out hover:bg-purple-500/10 active:scale-90"
             >
-              New Markdown File
+              New File
             </button>
             <div class="flex items-center justify-center gap-1.5">
               <input name="fmToggle" id="fmToggle" type="checkbox" />
@@ -37,10 +37,10 @@
           <!-- EDIT FILE -->
           <div class="w-1/2 bg-linear-to-bl from-blue-900/20 from-10% to-transparent to-60% p-6">
             <button
-              id="editFileBtn"
+              id="openFileBtn"
               class="block w-full cursor-pointer border border-blue-500/80 p-3 transition-all duration-150 ease-in-out hover:bg-blue-500/10 active:scale-90"
             >
-              Edit Markdown File
+              Open File
             </button>
           </div>
         </div>
@@ -54,29 +54,40 @@
       <!-- EDITOR PAGE -->
       <section id="editor" class="hidden text-center">
         <h2 class="mb-6 text-lg font-semibold uppercase">Editor</h2>
-        <h3 id="filenameHeader" class="mb-3 text-left font-medium"></h3>
+        <div class="flex gap-3">
+          <h3 id="filenameHdr" class="mb-3 text-left font-medium"><!--filename here--></h3>
+          <span id="filepath" class="block text-neutral-500 italic"><!--filepath here--></span>
+        </div>
         <textarea
-          name="fmEditor"
-          id="fmEditor"
+          name="frontmatterContent"
+          id="frontmatterContent"
           class="mb-3 block min-h-48 w-full border border-black p-4"
         >
         </textarea>
         <textarea
-          name="mdEditor"
-          id="mdEditor"
+          name="bodyContent"
+          id="bodyContent"
           class="mb-3 block min-h-96 w-full border border-black p-4"
         >
         </textarea>
         <div class="flex gap-1">
-          <div class="w-1/2 bg-green-900/20 p-4">
+          <div class="w-1/3 bg-lime-900/20 p-4">
             <button
-              id="saveFileBtn"
-              class="block w-full cursor-pointer border border-green-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-green-200/30 active:scale-90"
+              id="saveAsFileBtn"
+              class="block w-full cursor-pointer border border-lime-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-lime-200/30 active:scale-90"
             >
-              Save Markdown
+              Save As
             </button>
           </div>
-          <div class="w-1/2 bg-red-900/20 p-4">
+          <div class="w-1/3 bg-emerald-900/20 p-4">
+            <button
+              id="saveFileBtn"
+              class="block w-full cursor-pointer border border-emerald-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-emerald-200/30 active:scale-90"
+            >
+              Save
+            </button>
+          </div>
+          <div class="w-1/3 bg-red-900/20 p-4">
             <button
               id="clearEditorBtn"
               class="block w-full cursor-pointer border border-red-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-red-200/30 active:scale-90"

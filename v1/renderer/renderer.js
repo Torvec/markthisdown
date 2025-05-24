@@ -1,28 +1,29 @@
 // Controls
-const newFileBtn = getById("newFileBtn");
-const editFileBtn = getById("editFileBtn");
-const saveFileBtn = getById("saveFileBtn");
-const clearEditorBtn = getById("clearEditorBtn");
-const fmToggle = getById("fmToggle");
+const newFileBtn = document.getElementById("newFileBtn");
+const openFileBtn = document.getElementById("openFileBtn");
+const saveAsFileBtn = document.getElementById("saveAsFileBtn");
+const saveFileBtn = document.getElementById("saveFileBtn");
+const clearEditorBtn = document.getElementById("clearEditorBtn");
+const fmToggle = document.getElementById("fmToggle");
 
 // Views
-const dashboard = getById("dashboard");
-const editor = getById("editor");
+const dashboard = document.getElementById("dashboard");
+const editor = document.getElementById("editor");
 
-// Data outputs
-const recentFiles = getById("recentFiles");
-const renderFilename = getById("filenameHeader");
-const renderFrontmatter = getById("fmEditor");
-const renderBody = getById("mdEditor");
+const recentFiles = document.getElementById("recentFiles");
 
-let filename = "untitled.md";
-let frontmatter = "---\n\n---\n";
-let body = "Content Here";
+const filenameHdr = document.getElementById("filenameHdr");
+const currentFilepath = document.getElementById("filepath");
+const frontmatterContent = document.getElementById("frontmatterContent");
+const bodyContent = document.getElementById("bodyContent");
 
 newFileBtn.addEventListener("click", () => {
-  renderFilename.innerText = filename;
-  renderFrontmatter.value = frontmatter;
-  renderBody.value = body;
+  setEditorFields({
+    filename: "untitled.md",
+    frontmatter: "---\nkey: value\n---\n",
+    body: "Content Goes Here",
+    saved: false,
+  });
   showView("editor");
 });
 
@@ -34,15 +35,10 @@ fmToggle.addEventListener("change", () => {
   }
 });
 
-editFileBtn.addEventListener("click", async () => {
+openFileBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
   if (openFileDialog !== undefined) {
-    filename = openFileDialog.name;
-    frontmatter = openFileDialog.frontmatter;
-    body = openFileDialog.body;
-    renderFilename.innerText = filename;
-    renderFrontmatter.value = frontmatter;
-    renderBody.value = body;
+    setEditorFields(openFileDialog);
     showView("editor");
   }
 });
@@ -52,64 +48,57 @@ recentFiles.addEventListener("click", async (event) => {
   if (!button) return;
   const filepath = button.dataset.filepath;
   const openFile = await fileAPI.openRecentFile(filepath);
-  filename = openFile.name;
-  frontmatter = openFile.frontmatter;
-  body = openFile.body;
-  renderFilename.innerText = filename;
-  renderFrontmatter.value = frontmatter;
-  renderBody.value = body;
+  setEditorFields(openFile);
   showView("editor");
 });
 
-saveFileBtn.addEventListener("click", async () => {
-  const saveFileDialog = await fileAPI.saveFileDialog();
+saveAsFileBtn.addEventListener("click", async () => {
+  const filepath =
+    currentFilepath.innerText !== "undefined" ? currentFilepath.innerText : "untitled.md";
+  const content = saveEditorContent();
+  const saveFileDialog = await fileAPI.saveFileDialog(filepath, content);
   if (saveFileDialog !== undefined) {
-    filename = saveFileDialog.name;
-    frontmatter = saveFileDialog.frontmatter;
-    body = saveFileDialog.body;
-    renderFilename.innerText = filename;
-    renderFrontmatter.value = frontmatter;
-    renderBody.value = body;
+    setEditorFields(saveFileDialog);
     showView("editor");
   }
 });
 
+saveFileBtn.addEventListener("click", async () => {
+  const filepath = currentFilepath.innerText;
+  const content = saveEditorContent();
+  const savedFile = await fileAPI.saveFile(filepath, content);
+  setEditorFields(savedFile);
+  showView("editor");
+});
+
+//! TODO: Implement functionality
+clearEditorBtn.addEventListener("click", async () => {
+  console.log("Clear Editor Button Clicked");
+});
+
+function setEditorFields({ filepath, filename, frontmatter, body }) {
+  filenameHdr.innerText = filename;
+  currentFilepath.innerText = filepath;
+  frontmatterContent.value = frontmatter;
+  bodyContent.value = body;
+}
+
+function saveEditorContent() {
+  const content = frontmatterContent.value + bodyContent.value;
+  return content;
+}
+
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
   if (fileList.length === 0) {
-    const paragraphEl = document.createElement("p");
-    paragraphEl.classList.add("text-center", "text-neutral-500", "italic");
-    paragraphEl.textContent = "Recent Files List Empty";
-    recentFiles.appendChild(paragraphEl);
+    const message = "Recent Files List Empty";
+    recentFiles.innerHTML = `<p class="text-center text-neutral-500 italic">${message}</p>`;
   }
   fileList.forEach(({ filename, filepath }) => {
-    const buttonEl = document.createElement("button");
-    buttonEl.classList.add(
-      "block",
-      "w-full",
-      "text-left",
-      "cursor-pointer",
-      "space-x-3",
-      "p-3",
-      "bg-neutral-900",
-      "overflow-hidden",
-      "text-ellipsis",
-      "hover:bg-neutral-500/10",
-      "active:scale-90",
-      "transition-all",
-      "duration-150",
-      "ease-in-out",
-    );
-    buttonEl.dataset.filepath = filepath;
-    const spanFileNameEl = document.createElement("span");
-    spanFileNameEl.classList.add("font-medium");
-    spanFileNameEl.textContent = `${filename}`;
-    const spanFilePathEl = document.createElement("span");
-    spanFilePathEl.classList.add("text-neutral-400");
-    spanFilePathEl.textContent = `${filepath}`;
-    recentFiles.appendChild(buttonEl);
-    buttonEl.appendChild(spanFileNameEl);
-    buttonEl.appendChild(spanFilePathEl);
+    recentFiles.innerHTML += `<button data-filepath="${filepath}" class="block w-full text-left cursor-pointer space-x-3 p-3 bg-neutral-900 overflow-hidden text-ellipsis hover:bg-neutral-500/10 active:scale-90 transition-all duration-150 ease-in-out">
+    <span class="font-medium">${filename}</span>
+    <span class="text-neutral-400">${filepath}</span>
+  </button>`;
   });
   return fileList;
 }
@@ -117,7 +106,7 @@ async function renderRecentFilesList() {
 function showView(viewId) {
   const views = ["dashboard", "editor"];
   views.forEach((id) => {
-    const el = getById(id);
+    const el = document.getElementById(id);
     if (id === viewId) {
       el.classList.remove("hidden");
       el.classList.add("block");
@@ -128,25 +117,8 @@ function showView(viewId) {
   });
 }
 
-function getById(id) {
-  return document.getElementById(id);
-}
-
 renderRecentFilesList();
 
 /*
-
-✅ New File button pressed -> 
-  ✅ defaults for filename, frontmatter, and body are inserted into their respective places -> 
-    ✅ User makes changes in editor and presses save -> 
-      ✅ save dialog shows up in the last folder used with untitled in the filename -> 
-        ✅ user saves the file after naming it and is back in the editor ->
-          ✅the filename should be updated,
-          🔳 the frontmatter content should still be there
-          🔳 the body content should still be there
-          ✅ when the user saves the file the recent-files list is updated also ->
-            🔳 on save as/save the filename, frontmatter value, and body value need to be captured
-            and the frontmatter and body need to be combined into one
-            🔳 Need a save as and save button next to each other and both will bring up the save 
-            dialog if the file hasn't been saved/titled at least once, after that save will just save over the file, but only if anything changed
+🔳 Need a save as and save button next to each other and both will bring up the save dialog if the file hasn't been saved/titled at least once, after that save will just save over the file, but only if anything changed
 */

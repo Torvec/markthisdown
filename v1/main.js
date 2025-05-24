@@ -167,15 +167,12 @@ function filterExistingRecentFiles(recentFilesJSONPath) {
   return recentFilesJSONPath;
 }
 
-/*
-  Checks for duplicate entries and caps the list at 10 items
-*/
+/* Checks for duplicate entries and caps the list at 10 items */
 function updateRecentFilesList(recentFilesPath, addedFilePath) {
   const fileContents = readAndParseFile(recentFilesPath);
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
   const maxSize = 10;
-
   for (let i = 0; i < fileContents.length; i++) {
     if (fileContents[i].filepath === fileListItem.filepath) {
       fileContents.splice(i, 1);
@@ -187,34 +184,36 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
 
+/* */
 function readAndParseFile(filepath) {
   return JSON.parse(fs.readFileSync(filepath, "utf8"));
 }
 
+/* */
 function writeAndStringifyFile(filepath, data) {
   fs.writeFileSync(filepath, JSON.stringify(data));
 }
 
+/* */
 function parseFileForEditors(filepath) {
-  const fileName = path.basename(filepath);
-  const fileContents = fs.readFileSync(filepath, {
-    encoding: "utf8",
-  });
+  const contents = fs.readFileSync(filepath, "utf8");
   let frontmatter = null;
-  let body = fileContents;
+  let body = contents;
   const regex = /^---\r?\n[\s\S]*?\r?\n---/;
-  const match = fileContents.match(regex);
+  const match = contents.match(regex);
   if (match) {
     frontmatter = match[0];
-    body = fileContents.slice(frontmatter.length).trimStart();
+    body = contents.slice(frontmatter.length).trimStart();
   }
   return {
-    name: fileName,
-    frontmatter: frontmatter,
-    body: body,
+    filepath,
+    filename: path.basename(filepath),
+    frontmatter,
+    body,
   };
 }
 
+/* */
 ipcMain.handle("get-recent-files", () => {
   try {
     return readAndParseFile(getRecentFilesPath());
@@ -224,40 +223,36 @@ ipcMain.handle("get-recent-files", () => {
   }
 });
 
+/* */
 ipcMain.handle("open-recent-file", (_, filepath) => {
   updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
 });
 
-ipcMain.handle("save-file-dialog", () => {
+/* */
+ipcMain.handle("save-file-dialog", (_, filepath, content) => {
   const newFilePath = dialog.showSaveDialogSync({
     title: "Save Markdown File",
-    defaultPath: "untitled.md",
+    defaultPath: filepath,
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
   });
   if (!newFilePath) {
     console.log("New File not created");
     return;
   }
+  fs.writeFileSync(newFilePath, content, "utf8");
   updateRecentFilesList(getRecentFilesPath(), newFilePath);
-  fs.writeFileSync(newFilePath, "");
-  // const fileName = path.basename(newFilePath);
-  // const fileContents = fs.readFileSync(newFilePath, {
-  //   encoding: "utf8",
-  // });
-  // const frontmatter = "---\n\n---\n";
-  // return {
-  //   name: fileName,
-  //   frontmatter: frontmatter,
-  //   body: fileContents,
-  // };
+  return parseFileForEditors(newFilePath);
 });
 
-/*
-match() return an array
-Extract everything after frontmatter and trim any leading whitespace
-Matches anything that starts with '---\n or \r' and ends with '---\n or \r' and everything in between
-*/
+/* */
+ipcMain.handle("save-file", (_, filepath, content) => {
+  fs.writeFileSync(filepath, content);
+  updateRecentFilesList(getRecentFilesPath(), filepath);
+  return parseFileForEditors(filepath);
+});
+
+/* */
 ipcMain.handle("open-file-dialog", () => {
   const openedFile = dialog.showOpenDialogSync({
     title: "Open Markdown File",
