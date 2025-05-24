@@ -1,6 +1,4 @@
 // Controls
-const dashboardBtn = getById("dashboardBtn");
-const editorBtn = getById("editorBtn");
 const newFileBtn = getById("newFileBtn");
 const editFileBtn = getById("editFileBtn");
 const saveFileBtn = getById("saveFileBtn");
@@ -19,21 +17,20 @@ const renderBody = getById("mdEditor");
 
 let filename = "untitled.md";
 let frontmatter = "---\n\n---\n";
-let body = "Content";
+let body = "Content Here";
 
-// dashboardBtn.addEventListener("click", () => showView("dashboard"));
-// editorBtn.addEventListener("click", () => showView("editor"));
+newFileBtn.addEventListener("click", () => {
+  renderFilename.innerText = filename;
+  renderFrontmatter.value = frontmatter;
+  renderBody.value = body;
+  showView("editor");
+});
 
-newFileBtn.addEventListener("click", async () => {
-  const saveFileDialog = await fileAPI.saveFileDialog();
-  if (saveFileDialog !== undefined) {
-    filename = saveFileDialog.name;
-    frontmatter = saveFileDialog.frontmatter;
-    body = saveFileDialog.body;
-    renderFilename.innerText = filename;
-    renderFrontmatter.value = frontmatter;
-    renderBody.value = body;
-    showView("editor");
+fmToggle.addEventListener("change", () => {
+  if (fmToggle.checked) {
+    console.log("checked");
+  } else {
+    console.log("unchecked");
   }
 });
 
@@ -50,32 +47,6 @@ editFileBtn.addEventListener("click", async () => {
   }
 });
 
-fmToggle.addEventListener("change", () => {
-  if (fmToggle.checked) {
-    console.log("checked");
-  } else {
-    console.log("unchecked");
-  }
-});
-
-function showView(viewId) {
-  const views = ["dashboard", "editor"];
-  views.forEach((id) => {
-    const el = getById(id);
-    if (id === viewId) {
-      el.classList.remove("hidden");
-      el.classList.add("block");
-    } else {
-      el.classList.remove("block");
-      el.classList.add("hidden");
-    }
-  });
-}
-
-function getById(id) {
-  return document.getElementById(id);
-}
-
 recentFiles.addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-filepath]");
   if (!button) return;
@@ -89,6 +60,19 @@ recentFiles.addEventListener("click", async (event) => {
   renderBody.value = body;
   showView("editor");
 });
+
+saveFileBtn.addEventListener("click", async () => {
+  const saveFileDialog = await fileAPI.saveFileDialog();
+  if (saveFileDialog !== undefined) {
+    filename = saveFileDialog.name;
+    frontmatter = saveFileDialog.frontmatter;
+    body = saveFileDialog.body;
+    renderFilename.innerText = filename;
+    renderFrontmatter.value = frontmatter;
+    renderBody.value = body;
+    showView("editor");
+  }
+})
 
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
@@ -130,4 +114,39 @@ async function renderRecentFilesList() {
   return fileList;
 }
 
+function showView(viewId) {
+  const views = ["dashboard", "editor"];
+  views.forEach((id) => {
+    const el = getById(id);
+    if (id === viewId) {
+      el.classList.remove("hidden");
+      el.classList.add("block");
+    } else {
+      el.classList.remove("block");
+      el.classList.add("hidden");
+    }
+  });
+}
+
+function getById(id) {
+  return document.getElementById(id);
+}
+
 renderRecentFilesList();
+
+/*
+
+✅ New File button pressed -> 
+  ✅ defaults for filename, frontmatter, and body are inserted into their respective places -> 
+    ✅ User makes changes in editor and presses save -> 
+      ✅ save dialog shows up in the last folder used with untitled in the filename -> 
+        ✅ user saves the file after naming it and is back in the editor ->
+          ✅the filename should be updated,
+          🔳 the frontmatter content should still be there
+          🔳 the body content should still be there
+          ✅ when the user saves the file the recent-files list is updated also ->
+            🔳 on save as/save the filename, frontmatter value, and body value need to be captured
+            and the frontmatter and body need to be combined into one
+            🔳 Need a save as and save button next to each other and both will bring up the save 
+            dialog if the file hasn't been saved/titled at least once, after that save will just save over the file, but only if anything changed
+*/

@@ -133,7 +133,7 @@ If accesssync doesn't throw, then recent-files.json is filtered of any files tha
 Else create it and write an empty array into it
 Return the file path of recent-file.json
 */
-function recentFilesJSONExists() {
+function getRecentFilesPath() {
   const recentFilesJSONPath = path.join(
     app.getPath("userData"),
     "recent-files.json"
@@ -220,7 +220,7 @@ function parseFileForEditors(filepath) {
 
 ipcMain.handle("get-recent-files", () => {
   try {
-    return readAndParseFile(recentFilesJSONExists());
+    return readAndParseFile(getRecentFilesPath());
   } catch (err) {
     console.error(err.message);
     return "[]";
@@ -228,31 +228,32 @@ ipcMain.handle("get-recent-files", () => {
 });
 
 ipcMain.handle("open-recent-file", (_, filepath) => {
-  updateRecentFilesList(recentFilesJSONExists(), filepath);
+  updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
 });
 
 ipcMain.handle("save-file-dialog", () => {
   const newFilePath = dialog.showSaveDialogSync({
     title: "Save Markdown File",
+    defaultPath: "untitled.md",
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
   });
   if (!newFilePath) {
     console.log("New File not created");
     return;
   }
-  updateRecentFilesList(recentFilesJSONExists(), newFilePath);
+  updateRecentFilesList(getRecentFilesPath(), newFilePath);
   fs.writeFileSync(newFilePath, "");
-  const fileName = path.basename(newFilePath);
-  const fileContents = fs.readFileSync(newFilePath, {
-    encoding: "utf8",
-  });
-  const frontmatter = "---\n\n---\n";
-  return {
-    name: fileName,
-    frontmatter: frontmatter,
-    body: fileContents,
-  };
+  // const fileName = path.basename(newFilePath);
+  // const fileContents = fs.readFileSync(newFilePath, {
+  //   encoding: "utf8",
+  // });
+  // const frontmatter = "---\n\n---\n";
+  // return {
+  //   name: fileName,
+  //   frontmatter: frontmatter,
+  //   body: fileContents,
+  // };
 });
 
 /*
@@ -270,7 +271,7 @@ ipcMain.handle("open-file-dialog", () => {
     console.log("No file selected");
     return;
   }
-  updateRecentFilesList(recentFilesJSONExists(), openedFile[0]);
+  updateRecentFilesList(getRecentFilesPath(), openedFile[0]);
   return parseFileForEditors(openedFile[0]);
 });
 
