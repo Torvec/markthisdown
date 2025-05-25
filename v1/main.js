@@ -4,6 +4,8 @@ const path = require("node:path");
 
 const isDev = process.env.NODE_ENV !== "production";
 const isMac = process.platform === "darwin";
+const recentFilesDir = "userData"
+const recentFilesName = "recent-files.json"
 
 function createMainWindow() {
   const mainWin = new BrowserWindow({
@@ -16,24 +18,7 @@ function createMainWindow() {
   });
   mainWin.loadFile(path.join(__dirname, "./renderer/index.html"));
   if (isDev) mainWin.webContents.openDevTools();
-}
-
-function createAboutWindow() {
-  const aboutWindow = new BrowserWindow({
-    width: 480,
-    height: 480,
-    resizable: false,
-    fullscreenable: false,
-    minimizable: false,
-    closable: true,
-    title: "About MarkThisDown",
-    // webPreferences: {
-    //   preload: path.join(__dirname, "preload.js"),
-    // },
-  });
-  aboutWindow.setMenuBarVisibility(false);
-  aboutWindow.setAutoHideMenuBar(true);
-  aboutWindow.loadFile(path.join(__dirname, "./renderer/about.html"));
+  mainWin.setMenu(null);
 }
 
 /*
@@ -63,8 +48,6 @@ function createAboutWindow() {
 
 /* # Save Modified File:
 - If file is already saved (`isSaved = true`):
-- If file is still unsaved:
-  - Redirect to First Time Save flow
 */
 
 /* # Exit / App Close:
@@ -77,12 +60,8 @@ function createAboutWindow() {
   - Only restore if app crashed or exited unexpectedly
 */
 
-// Checks if recent-files.json exists in userData directory, 
-// If accesssync doesn't throw, then recent-files.json is filtered of any files that don't exist anymore
-// Else create it and write an empty array into it
-// Return the file path of recent-file.json
 function getRecentFilesPath() {
-  const recentFilesJSONPath = path.join(app.getPath("userData"), "recent-files.json");
+  const recentFilesJSONPath = path.join(app.getPath(recentFilesDir), recentFilesName);
   try {
     fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
     filterExistingRecentFiles(recentFilesJSONPath);
@@ -92,9 +71,6 @@ function getRecentFilesPath() {
   return recentFilesJSONPath;
 }
 
-// Reads and parses the file into an array then filters the array of any files that don't exist anymore
-// If the array needed to be modified then write the file with the new array
-// Either way, return the recent-file.json filepath
 function filterExistingRecentFiles(recentFilesJSONPath) {
   const fileContents = readAndParseFile(recentFilesJSONPath);
   let modified = false;
@@ -113,7 +89,6 @@ function filterExistingRecentFiles(recentFilesJSONPath) {
   return recentFilesJSONPath;
 }
 
-// Checks for duplicate entries and caps the list at 10 items
 function updateRecentFilesList(recentFilesPath, addedFilePath) {
   const fileContents = readAndParseFile(recentFilesPath);
   const addedFileName = path.basename(addedFilePath);
@@ -130,11 +105,11 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
 
-function readAndParseFile(filepath) {
+const readAndParseFile = (filepath) => {
   return JSON.parse(fs.readFileSync(filepath, "utf8"));
 }
 
-function writeAndStringifyFile(filepath, data) {
+const writeAndStringifyFile = (filepath, data) => {
   fs.writeFileSync(filepath, JSON.stringify(data));
 }
 
@@ -142,8 +117,7 @@ function parseFileForEditors(filepath) {
   const contents = fs.readFileSync(filepath, "utf8");
   let frontmatter = null;
   let body = contents;
-  const regex = /^---\r?\n[\s\S]*?\r?\n---/;
-  const match = contents.match(regex);
+  const match = contents.match(/^---\r?\n[\s\S]*?\r?\n---/);
   if (match) {
     frontmatter = match[0];
     body = contents.slice(frontmatter.length).trimStart();
@@ -207,40 +181,9 @@ ipcMain.handle("open-file-dialog", () => {
   return parseFileForEditors(openedFile[0]);
 });
 
-// MENU BAR
-const menu = [];
-if (isMac) {
-  menu.push({
-    label: app.name,
-    submenu: [{ label: "About", click: createAboutWindow }],
-  });
-}
-menu.push({ role: "fileMenu" });
-if (!isMac) {
-  menu.push({
-    label: "Help",
-    submenu: [{ label: "About", click: createAboutWindow }],
-  });
-}
-if (isDev) {
-  menu.push({
-    label: "Developer",
-    submenu: [
-      { role: "reload" },
-      { role: "forcereload" },
-      { type: "separator" },
-      { role: "toggledevtools" },
-    ],
-  });
-}
-
 // STARTING THE APP
 app.whenReady().then(() => {
   createMainWindow();
-
-  // Sets up the menu bar
-  const mainMenu = Menu.buildFromTemplate(menu);
-  Menu.setApplicationMenu(mainMenu);
 
   // Opens a window if none are open (mac)
   app.on("activate", () => {

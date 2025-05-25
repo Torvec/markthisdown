@@ -11,90 +11,110 @@
   </head>
   <body class="flex h-screen items-center justify-center bg-neutral-800 text-neutral-100">
     <main class="container mx-auto max-w-4xl">
-      <!-- DASHBOARD PAGE -->
-      <section id="dashboard" class="mx-auto space-y-1 bg-neutral-900 p-1 text-center">
-        <h2
-          class="bg-linear-to-b from-blue-950/50 to-transparent py-3 text-lg font-semibold uppercase"
-        >
-          Dashboard
-        </h2>
-        <div class="flex gap-1">
+      <section id="editor" class="bg-neutral-900 p-2">
+        <!-- MENU BAR -->
+        <div class="grid grid-cols-6 gap-1">
           <!-- NEW FILE -->
-          <div
-            class="w-1/2 space-y-1.5 bg-linear-to-br from-purple-900/20 from-10% to-transparent to-60% p-6"
-          >
+          <div class="bg-linear-to-br from-purple-900/20 from-10% to-transparent to-60% p-3">
             <button
-              id="newFileBtn"
+              id="newBtn"
               class="block w-full cursor-pointer border border-purple-500/80 p-3 transition-all duration-150 ease-in-out hover:bg-purple-500/10 active:scale-90"
             >
-              New File
+              New
             </button>
-            <div class="flex items-center justify-center gap-1.5">
-              <input name="fmToggle" id="fmToggle" type="checkbox" />
-              <label for="fmToggle" class="text-sm text-neutral-300">Add Frontmatter</label>
-            </div>
           </div>
-          <!-- EDIT FILE -->
-          <div class="w-1/2 bg-linear-to-bl from-blue-900/20 from-10% to-transparent to-60% p-6">
+          <!-- OPEN FILE -->
+          <div class="bg-linear-to-br from-blue-900/20 from-10% to-transparent to-60% p-3">
             <button
-              id="openFileBtn"
+              id="openBtn"
               class="block w-full cursor-pointer border border-blue-500/80 p-3 transition-all duration-150 ease-in-out hover:bg-blue-500/10 active:scale-90"
             >
-              Open File
+              Open
             </button>
           </div>
-        </div>
-        <div class="bg-linear-to-t from-rose-950/50 to-transparent p-6">
-          <h3 class="mb-3 text-sm font-medium text-neutral-300 uppercase">Open Recent:</h3>
-          <div id="recentFiles" class="space-y-1 text-left">
-            <!-- Recent Files buttons list here -->
-          </div>
-        </div>
-      </section>
-      <!-- EDITOR PAGE -->
-      <section id="editor" class="hidden text-center">
-        <h2 class="mb-6 text-lg font-semibold uppercase">Editor</h2>
-        <div class="flex gap-3">
-          <h3 id="filenameHdr" class="mb-3 text-left font-medium"><!--filename here--></h3>
-          <span id="filepath" class="block text-neutral-500 italic"><!--filepath here--></span>
-        </div>
-        <textarea
-          name="frontmatterContent"
-          id="frontmatterContent"
-          class="mb-3 min-h-48 w-full border border-black p-4 hidden"
-        >
-        </textarea>
-        <textarea
-          name="bodyContent"
-          id="bodyContent"
-          class="mb-3 block min-h-96 w-full border border-black p-4"
-        >
-        </textarea>
-        <div class="flex gap-1">
-          <div class="w-1/3 bg-lime-900/20 p-4">
+          <!-- SAVE AS -->
+          <div class="bg-linear-to-br from-lime-900/20 from-10% to-transparent to-60% p-3">
             <button
-              id="saveAsFileBtn"
-              class="block w-full cursor-pointer border border-lime-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-lime-200/30 active:scale-90"
+              id="saveAsBtn"
+              class="block w-full cursor-pointer border border-lime-500 p-3 transition-all duration-150 ease-in-out hover:bg-lime-500/10 active:scale-90"
             >
               Save As
             </button>
           </div>
-          <div class="w-1/3 bg-emerald-900/20 p-4">
+          <!-- SAVE -->
+          <div class="bg-linear-to-br from-emerald-900/20 from-10% to-transparent to-60% p-3">
             <button
-              id="saveFileBtn"
-              class="block w-full cursor-pointer border border-emerald-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-emerald-200/30 active:scale-90"
+              id="saveBtn"
+              class="block w-full cursor-pointer border border-emerald-500 p-3 transition-all duration-150 ease-in-out hover:bg-emerald-500/10 active:scale-90"
             >
               Save
             </button>
           </div>
-          <div class="w-1/3 bg-red-900/20 p-4">
+          <!-- CLEAR -->
+          <div class="bg-linear-to-br from-red-900/20 from-10% to-transparent to-60% p-3">
             <button
-              id="clearEditorBtn"
-              class="block w-full cursor-pointer border border-red-500 px-3 py-1.5 transition-all duration-150 ease-in-out hover:bg-red-200/30 active:scale-90"
+              id="clearBtn"
+              class="block w-full cursor-pointer border border-red-500 p-3 transition-all duration-150 ease-in-out hover:bg-red-500/10 active:scale-90"
             >
-              Clear Editor
+              Clear
             </button>
           </div>
+          <!-- RECENT -->
+          <div
+            class="bg-linear-to-br relative from-neutral-600/20 from-10% to-transparent to-60% p-3"
+          >
+            <button
+              id="recentBtn"
+              class="block w-full cursor-pointer border border-neutral-500 p-3 transition-all duration-150 ease-in-out hover:bg-neutral-500/10 active:scale-90"
+            >
+              Recent
+            </button>
+            <div id="recentFiles" class="w-lg absolute right-0 top-16 z-10 hidden">
+              <!-- Recent Files buttons list here -->
+            </div>
+          </div>
+        </div>
+        <!-- FILE INFO -->
+        <div class="flex items-baseline gap-4">
+          <h3
+            id="filenameHdr"
+            class="border border-neutral-700 bg-neutral-950 px-4 py-2 font-medium"
+          >
+            <!--filename here-->
+          </h3>
+          <span id="filepath" class="block px-2 py-1 italic text-neutral-500">
+            <!--filepath here-->
+          </span>
+        </div>
+        <!-- FRONTMATTER EDITOR -->
+        <div class="relative">
+          <label
+            for="frontmatterContent"
+            class="absolute left-0 top-0 block w-max bg-neutral-500 px-2 py-1 font-mono uppercase text-neutral-900"
+          >
+            Frontmatter
+          </label>
+          <textarea
+            name="frontmatterContent"
+            id="frontmatterContent"
+            class="min-h-48 w-full resize-y border border-neutral-500 bg-neutral-800 px-4 pt-8 outline-0 focus-visible:bg-neutral-700/75"
+          >
+          </textarea>
+        </div>
+        <!-- BODY EDITOR -->
+        <div class="relative">
+          <label
+            for="bodyContent"
+            class="absolute left-0 top-0 block w-max bg-neutral-500 px-2 py-1 font-mono uppercase text-neutral-900"
+          >
+            Body
+          </label>
+          <textarea
+            name="bodyContent"
+            id="bodyContent"
+            class="block min-h-96 w-full resize-y border border-neutral-500 bg-neutral-800 px-4 pt-8 outline-0 focus-visible:bg-neutral-700/75"
+          >
+          </textarea>
         </div>
       </section>
     </main>

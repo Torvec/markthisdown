@@ -1,48 +1,58 @@
-// Controls
-const newFileBtn = document.getElementById("newFileBtn");
-const openFileBtn = document.getElementById("openFileBtn");
-const saveAsFileBtn = document.getElementById("saveAsFileBtn");
-const saveFileBtn = document.getElementById("saveFileBtn");
-const clearEditorBtn = document.getElementById("clearEditorBtn");
-const fmToggle = document.getElementById("fmToggle");
-
-// Views
-const dashboard = document.getElementById("dashboard");
-const editor = document.getElementById("editor");
-
+const newBtn = document.getElementById("newBtn");
+const openBtn = document.getElementById("openBtn");
+const saveAsBtn = document.getElementById("saveAsBtn");
+const saveBtn = document.getElementById("saveBtn");
+const clearBtn = document.getElementById("clearBtn");
+const recentBtn = document.getElementById("recentBtn");
 const recentFiles = document.getElementById("recentFiles");
-
 const filenameHdr = document.getElementById("filenameHdr");
 const currentFilepath = document.getElementById("filepath");
 const frontmatterContent = document.getElementById("frontmatterContent");
 const bodyContent = document.getElementById("bodyContent");
 
-newFileBtn.addEventListener("click", () => {
-  setEditorFields({
-    filename: "untitled.md",
-    frontmatter: frontmatterContent.checked ? "---\nkey: value\n---\n" : null,
-    body: "Content Goes Here",
-  });
-  showView("editor");
+const editorDefaults = {
+  filename: "untitled.md",
+  frontmatter: "---\nkey: value\n---\n",
+  body: "Body Content Here",
+};
+
+// EVENT LISTENERS
+
+document.addEventListener("DOMContentLoaded", () => {
+  setEditorFields(editorDefaults);
 });
 
-fmToggle.addEventListener("click", () => {
-  if (fmToggle.checked) {
-    frontmatterContent.classList.add("block");
-    frontmatterContent.classList.remove("hidden");
-  }
-  if (!fmToggle.checked) {
-    frontmatterContent.classList.remove("block");
-    frontmatterContent.classList.add("hidden");
-  }
+newBtn.addEventListener("click", () => {
+  setEditorFields(editorDefaults);
 });
 
-openFileBtn.addEventListener("click", async () => {
+openBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
-  if (openFileDialog !== undefined) {
-    setEditorFields(openFileDialog);
-    showView("editor");
-  }
+  if (openFileDialog !== undefined) setEditorFields(openFileDialog);
+});
+
+saveAsBtn.addEventListener("click", async () => {
+  const filepath =
+    currentFilepath.innerText !== "undefined" ? currentFilepath.innerText : "untitled.md";
+  const content = saveEditorContent();
+  const saveFileDialog = await fileAPI.saveFileDialog(filepath, content);
+  if (saveFileDialog !== undefined) setEditorFields(saveFileDialog);
+});
+
+saveBtn.addEventListener("click", async () => {
+  const filepath = currentFilepath.innerText;
+  const content = saveEditorContent();
+  const savedFile = await fileAPI.saveFile(filepath, content);
+  setEditorFields(savedFile);
+});
+
+//! TODO: Implement functionality
+clearBtn.addEventListener("click", async () => {
+  setEditorFields(editorDefaults);
+});
+
+recentBtn.addEventListener("click", async () => {
+  recentFiles.classList.toggle("hidden");
 });
 
 recentFiles.addEventListener("click", async (event) => {
@@ -50,33 +60,11 @@ recentFiles.addEventListener("click", async (event) => {
   if (!button) return;
   const filepath = button.dataset.filepath;
   const openFile = await fileAPI.openRecentFile(filepath);
+  recentFiles.classList.toggle("hidden");
   setEditorFields(openFile);
-  showView("editor");
 });
 
-saveAsFileBtn.addEventListener("click", async () => {
-  const filepath =
-    currentFilepath.innerText !== "undefined" ? currentFilepath.innerText : "untitled.md";
-  const content = saveEditorContent();
-  const saveFileDialog = await fileAPI.saveFileDialog(filepath, content);
-  if (saveFileDialog !== undefined) {
-    setEditorFields(saveFileDialog);
-    showView("editor");
-  }
-});
-
-saveFileBtn.addEventListener("click", async () => {
-  const filepath = currentFilepath.innerText;
-  const content = saveEditorContent();
-  const savedFile = await fileAPI.saveFile(filepath, content);
-  setEditorFields(savedFile);
-  showView("editor");
-});
-
-//! TODO: Implement functionality
-clearEditorBtn.addEventListener("click", async () => {
-  console.log("Clear Editor Button Clicked");
-});
+// UTILITY FUNCTIONS
 
 function setEditorFields({ filepath, filename, frontmatter, body }) {
   filenameHdr.innerText = filename;
@@ -94,30 +82,27 @@ async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
   if (fileList.length === 0) {
     const message = "Recent Files List Empty";
-    recentFiles.innerHTML = `<p class="text-center text-neutral-500 italic">${message}</p>`;
+    recentFiles.innerHTML = noRecentFilesP(message);
+    return fileList;
   }
-  fileList.forEach(({ filename, filepath }) => {
-    recentFiles.innerHTML += `<button data-filepath="${filepath}" class="block w-full text-left cursor-pointer space-x-3 p-3 bg-neutral-900 overflow-hidden text-ellipsis hover:bg-neutral-500/10 active:scale-90 transition-all duration-150 ease-in-out">
-    <span class="font-medium">${filename}</span>
-    <span class="text-neutral-400">${filepath}</span>
-  </button>`;
+  let buttons = "";
+  fileList.forEach((file) => {
+    buttons += recentFilesBtn(file.filename, file.filepath);
   });
+  recentFiles.innerHTML = buttons;
   return fileList;
 }
 
-function showView(viewId) {
-  const views = ["dashboard", "editor"];
-  views.forEach((id) => {
-    const el = document.getElementById(id);
-    if (id === viewId) {
-      el.classList.remove("hidden");
-      el.classList.add("block");
-    } else {
-      el.classList.remove("block");
-      el.classList.add("hidden");
-    }
-  });
-}
+const noRecentFilesP = (message) => {
+  return `<p class="text-center text-neutral-500 italic">${message}</p>`;
+};
+
+const recentFilesBtn = (filename, filepath) => {
+  return `<button data-filepath="${filepath}" class="flex w-full overflow-hidden text-left cursor-pointer space-x-3 p-3 bg-neutral-900 hover:bg-neutral-600 active:scale-90 transition-all duration-150 ease-in-out">
+    <span class="font-medium shrink-0">${filename}</span>
+    <span class="text-neutral-400 min-w-max">${filepath}</span>
+  </button>`;
+};
 
 renderRecentFilesList();
 
