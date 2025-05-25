@@ -21,45 +21,6 @@ function createMainWindow() {
   mainWin.setMenu(null);
 }
 
-/*
-# confirm an action:
-  - dialog.showMessageBox({options})
-# check anything before quitting the app:
-  - app.before-quit
-*/
-
-/* # Create New File:
-- A temporary in-memory object is created:
-  - `filename = "untitled.md"`
-  - `filePath = null`
-  - `isSaved = false`
-  - `content = ""`
-- Ask whether frontmatter is needed:
-  - Yes: enable frontmatter editor, pre-fill with `---\n\n---`
-  - No: hide frontmatter editor, show button to enable it later
-- Navigate to the editor screen immediately
-- Show a visual indicator: "Unsaved file" or similar
-*/
-
-/* # First Time Save / Save As:
-- Update internal editor state:
-  - Set `filePath`, `filename`, `isSaved = true`
-*/
-
-/* # Save Modified File:
-- If file is already saved (`isSaved = true`):
-*/
-
-/* # Exit / App Close:
-- On `app.before-quit`, check:
-  - If any open file has unsaved changes (`isDirty`)
-    - Show dialog: "You have unsaved changes. Save before exiting?"
-    - Options: Save / Discard / Cancel
-  - If user cancels: cancel quit
-- Consider auto-saving `untitled.md` content to memory or localStorage (optional)
-  - Only restore if app crashed or exited unexpectedly
-*/
-
 function getRecentFilesPath() {
   const recentFilesJSONPath = path.join(app.getPath(recentFilesDir), recentFilesName);
   try {

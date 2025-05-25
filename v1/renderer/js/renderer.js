@@ -7,11 +7,12 @@ const recentBtn = document.getElementById("recentBtn");
 const recentFiles = document.getElementById("recentFiles");
 const filenameHdr = document.getElementById("filenameHdr");
 const currentFilepath = document.getElementById("filepath");
-const frontmatterContent = document.getElementById("frontmatterContent");
+const fmContent = document.getElementById("fmContent");
 const bodyContent = document.getElementById("bodyContent");
 
 const editorDefaults = {
   filename: "untitled.md",
+  filepath: "unsaved",
   frontmatter: "---\nkey: value\n---\n",
   body: "Body Content Here",
 };
@@ -20,6 +21,7 @@ const editorDefaults = {
 
 document.addEventListener("DOMContentLoaded", () => {
   setEditorFields(editorDefaults);
+  renderRecentFilesList();
 });
 
 newBtn.addEventListener("click", () => {
@@ -28,7 +30,10 @@ newBtn.addEventListener("click", () => {
 
 openBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
-  if (openFileDialog !== undefined) setEditorFields(openFileDialog);
+  if (openFileDialog !== undefined) {
+    setEditorFields(openFileDialog);
+    renderRecentFilesList();
+  }
 });
 
 saveAsBtn.addEventListener("click", async () => {
@@ -36,7 +41,10 @@ saveAsBtn.addEventListener("click", async () => {
     currentFilepath.innerText !== "undefined" ? currentFilepath.innerText : "untitled.md";
   const content = saveEditorContent();
   const saveFileDialog = await fileAPI.saveFileDialog(filepath, content);
-  if (saveFileDialog !== undefined) setEditorFields(saveFileDialog);
+  if (saveFileDialog !== undefined) {
+    setEditorFields(saveFileDialog);
+    renderRecentFilesList();
+  }
 });
 
 saveBtn.addEventListener("click", async () => {
@@ -46,9 +54,9 @@ saveBtn.addEventListener("click", async () => {
   setEditorFields(savedFile);
 });
 
-//! TODO: Implement functionality
 clearBtn.addEventListener("click", async () => {
-  setEditorFields(editorDefaults);
+  const result = confirm("Are you sure?");
+  if (result) setEditorFields(editorDefaults);
 });
 
 recentBtn.addEventListener("click", async () => {
@@ -58,10 +66,18 @@ recentBtn.addEventListener("click", async () => {
 recentFiles.addEventListener("click", async (event) => {
   const button = event.target.closest("button[data-filepath]");
   if (!button) return;
-  const filepath = button.dataset.filepath;
-  const openFile = await fileAPI.openRecentFile(filepath);
+  const openFile = await fileAPI.openRecentFile(button.dataset.filepath);
   recentFiles.classList.toggle("hidden");
   setEditorFields(openFile);
+  renderRecentFilesList();
+});
+
+document.addEventListener("click", (event) => {
+  const clickedInsideRecentFiles = recentFiles.contains(event.target);
+  const clickedRecentBtn = recentBtn.contains(event.target);
+  if (!clickedInsideRecentFiles && !clickedRecentBtn) {
+    recentFiles.classList.add("hidden");
+  }
 });
 
 // UTILITY FUNCTIONS
@@ -69,12 +85,12 @@ recentFiles.addEventListener("click", async (event) => {
 function setEditorFields({ filepath, filename, frontmatter, body }) {
   filenameHdr.innerText = filename;
   currentFilepath.innerText = filepath;
-  frontmatterContent.value = frontmatter;
+  fmContent.value = frontmatter;
   bodyContent.value = body;
 }
 
 function saveEditorContent() {
-  const content = frontmatterContent.value + bodyContent.value;
+  const content = fmContent.value + bodyContent.value;
   return content;
 }
 
@@ -98,13 +114,11 @@ const noRecentFilesP = (message) => {
 };
 
 const recentFilesBtn = (filename, filepath) => {
-  return `<button data-filepath="${filepath}" class="flex w-full overflow-hidden text-left cursor-pointer space-x-3 p-3 bg-neutral-900 hover:bg-neutral-600 active:scale-90 transition-all duration-150 ease-in-out">
+  return `<button data-filepath="${filepath}" class="flex w-full overflow-hidden text-left cursor-pointer space-x-3 p-3 bg-neutral-900 hover:bg-neutral-600 transition-colors duration-150 ease-in-out">
     <span class="font-medium shrink-0">${filename}</span>
     <span class="text-neutral-400 min-w-max">${filepath}</span>
   </button>`;
 };
-
-renderRecentFilesList();
 
 /*
 🔳 Need a save as and save button next to each other and both will bring up the save dialog if the file hasn't been saved/titled at least once, after that save will just save over the file, but only if anything changed
