@@ -20,18 +20,20 @@ const bodyContent = document.getElementById("bodyContent");
 newFileBtn.addEventListener("click", () => {
   setEditorFields({
     filename: "untitled.md",
-    frontmatter: "---\nkey: value\n---\n",
+    frontmatter: frontmatterContent.checked ? "---\nkey: value\n---\n" : null,
     body: "Content Goes Here",
-    saved: false,
   });
   showView("editor");
 });
 
-fmToggle.addEventListener("change", () => {
+fmToggle.addEventListener("click", () => {
   if (fmToggle.checked) {
-    console.log("checked");
-  } else {
-    console.log("unchecked");
+    frontmatterContent.classList.add("block");
+    frontmatterContent.classList.remove("hidden");
+  }
+  if (!fmToggle.checked) {
+    frontmatterContent.classList.remove("block");
+    frontmatterContent.classList.add("hidden");
   }
 });
 

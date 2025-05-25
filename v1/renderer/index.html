@@ -6,7 +6,7 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./css/styles.css" />
     <title>MarkThisDown</title>
   </head>
   <body class="flex h-screen items-center justify-center bg-neutral-800 text-neutral-100">
@@ -31,7 +31,7 @@
             </button>
             <div class="flex items-center justify-center gap-1.5">
               <input name="fmToggle" id="fmToggle" type="checkbox" />
-              <label for="fmToggle" class="text-sm text-neutral-300"> Add Frontmatter </label>
+              <label for="fmToggle" class="text-sm text-neutral-300">Add Frontmatter</label>
             </div>
           </div>
           <!-- EDIT FILE -->
@@ -47,7 +47,7 @@
         <div class="bg-linear-to-t from-rose-950/50 to-transparent p-6">
           <h3 class="mb-3 text-sm font-medium text-neutral-300 uppercase">Open Recent:</h3>
           <div id="recentFiles" class="space-y-1 text-left">
-            <!-- File list items here -->
+            <!-- Recent Files buttons list here -->
           </div>
         </div>
       </section>
@@ -61,7 +61,7 @@
         <textarea
           name="frontmatterContent"
           id="frontmatterContent"
-          class="mb-3 block min-h-48 w-full border border-black p-4"
+          class="mb-3 min-h-48 w-full border border-black p-4 hidden"
         >
         </textarea>
         <textarea
@@ -99,5 +99,5 @@
       </section>
     </main>
   </body>
-  <script src="./renderer/renderer.js"></script>
+  <script src="./js/renderer.js"></script>
 </html>

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "mon": "npx electronmon .",
-    "twcli": "npx @tailwindcss/cli -i ./source.css -o ./styles.css --watch",
+    "twcli": "npx @tailwindcss/cli -i ./renderer/css/source.css -o ./renderer/css/styles.css --watch",
     "prettier": "prettier --write ."
   },
   "repository": {

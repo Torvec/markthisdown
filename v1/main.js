@@ -14,7 +14,7 @@ function createMainWindow() {
       preload: path.join(__dirname, "preload.js"),
     },
   });
-  mainWin.loadFile("index.html");
+  mainWin.loadFile(path.join(__dirname, "./renderer/index.html"));
   if (isDev) mainWin.webContents.openDevTools();
 }
 
@@ -33,33 +33,10 @@ function createAboutWindow() {
   });
   aboutWindow.setMenuBarVisibility(false);
   aboutWindow.setAutoHideMenuBar(true);
-  aboutWindow.loadFile(path.join(__dirname, "about.html"));
+  aboutWindow.loadFile(path.join(__dirname, "./renderer/about.html"));
 }
 
 /*
-# check if a file exists: 
-  - fs.existsSync(filepath) OR fs.promises.access(filepath, fs.constants.F_OK)
-# check the extension:
-  - path.extname(filepath) === ".md"
-# check metadata of the file (last modified, is a file, size, etc.):
-  - stats = fs.promises.stat(filepath) -> stats.isFile(), stats.mtime
-# open a file: 
-  - dialog.showOpenDialogSync({options}) OR dialog.showOpenDialog({options})
-# save a new file/sava as: 
-  - dialog.showSaveDialogSync({options}) OR dialog.showSaveDialog({options})
-# read a file: 
-  - fs.readFileSync(filepath, {encoding}) OR fs.promises.readFile(filepath, {encoding})
-# write a file/save changes to an existing file: 
-  - fs.writeFileSync(filepath, data) OR fs.promises.writeFile(filepath, data)
-# get the file name:
-  - path.basename
-# get the full filepath:
-  - dialog.showOpenDialog and dialog.showSaveDialog both return the full file path when used, 
-  however the showOpenDialog saves it in an array and since i only intend to allow one file being open at a time then it will be located at position 0
-# normalize the filepath:
-  - path.resolve(filepath) -> use when adding a file to recent files list, when checking if a file exists in recent files list, when using showOpenDialog()
-# where the user data is:
-  - app.getPath("userData") -> where the recent file list will be created/saved
 # confirm an action:
   - dialog.showMessageBox({options})
 # check anything before quitting the app:
@@ -80,33 +57,14 @@ function createAboutWindow() {
 */
 
 /* # First Time Save / Save As:
-- Show `dialog.showSaveDialog()` to select location and filename
-- Save content using `fs.writeFile()`
 - Update internal editor state:
   - Set `filePath`, `filename`, `isSaved = true`
-- Add file to top of recent-files list
-  - Normalize path (`path.resolve()`)
-  - Deduplicate if already present
-  - Save updated recent-files.json
 */
 
 /* # Save Modified File:
 - If file is already saved (`isSaved = true`):
-  - Overwrite it directly with `fs.writeFile()`
-  - Update lastModified timestamp in recent-files.json
 - If file is still unsaved:
   - Redirect to First Time Save flow
-*/
-
-/* # Open Existing File:
-- Show `dialog.showOpenDialog()` for user to pick a file
-- Read file with `fs.readFile()`
-- Parse for frontmatter (`---`) and body content
-  - Populate frontmatter editor and markdown editor separately
-- Normalize and save file path to recent-files.json
-- Navigate to editor screen
-- If opened via recent-files button:
-  - Skip dialog — load file immediately using its path
 */
 
 /* # Exit / App Close:
@@ -119,20 +77,10 @@ function createAboutWindow() {
   - Only restore if app crashed or exited unexpectedly
 */
 
-/* # Additions:
-- Track and show lastOpened or lastModified in recent-files.json
-- Add a "Clear Recent Files" button in Settings or Dashboard
-- Handle invalid or corrupted recent-files.json gracefully
-- Add “Reload Last File on Startup” setting
-- Add "Reveal in Folder" or "Open in Default App" using shell.openPath
-*/
-
-/*
-Checks if recent-files.json exists in userData directory, 
-If accesssync doesn't throw, then recent-files.json is filtered of any files that don't exist anymore
-Else create it and write an empty array into it
-Return the file path of recent-file.json
-*/
+// Checks if recent-files.json exists in userData directory, 
+// If accesssync doesn't throw, then recent-files.json is filtered of any files that don't exist anymore
+// Else create it and write an empty array into it
+// Return the file path of recent-file.json
 function getRecentFilesPath() {
   const recentFilesJSONPath = path.join(app.getPath("userData"), "recent-files.json");
   try {
@@ -144,11 +92,9 @@ function getRecentFilesPath() {
   return recentFilesJSONPath;
 }
 
-/*
-Reads and parses the file into an array then filters the array of any files that don't exist anymore
-If the array needed to be modified then write the file with the new array
-Either way, return the recent-file.json filepath
-*/
+// Reads and parses the file into an array then filters the array of any files that don't exist anymore
+// If the array needed to be modified then write the file with the new array
+// Either way, return the recent-file.json filepath
 function filterExistingRecentFiles(recentFilesJSONPath) {
   const fileContents = readAndParseFile(recentFilesJSONPath);
   let modified = false;
@@ -167,7 +113,7 @@ function filterExistingRecentFiles(recentFilesJSONPath) {
   return recentFilesJSONPath;
 }
 
-/* Checks for duplicate entries and caps the list at 10 items */
+// Checks for duplicate entries and caps the list at 10 items
 function updateRecentFilesList(recentFilesPath, addedFilePath) {
   const fileContents = readAndParseFile(recentFilesPath);
   const addedFileName = path.basename(addedFilePath);
@@ -184,17 +130,14 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
 
-/* */
 function readAndParseFile(filepath) {
   return JSON.parse(fs.readFileSync(filepath, "utf8"));
 }
 
-/* */
 function writeAndStringifyFile(filepath, data) {
   fs.writeFileSync(filepath, JSON.stringify(data));
 }
 
-/* */
 function parseFileForEditors(filepath) {
   const contents = fs.readFileSync(filepath, "utf8");
   let frontmatter = null;
@@ -213,7 +156,8 @@ function parseFileForEditors(filepath) {
   };
 }
 
-/* */
+// IPC Handlers
+
 ipcMain.handle("get-recent-files", () => {
   try {
     return readAndParseFile(getRecentFilesPath());
@@ -223,13 +167,11 @@ ipcMain.handle("get-recent-files", () => {
   }
 });
 
-/* */
 ipcMain.handle("open-recent-file", (_, filepath) => {
   updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
 });
 
-/* */
 ipcMain.handle("save-file-dialog", (_, filepath, content) => {
   const newFilePath = dialog.showSaveDialogSync({
     title: "Save Markdown File",
@@ -245,14 +187,12 @@ ipcMain.handle("save-file-dialog", (_, filepath, content) => {
   return parseFileForEditors(newFilePath);
 });
 
-/* */
 ipcMain.handle("save-file", (_, filepath, content) => {
   fs.writeFileSync(filepath, content);
   updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
 });
 
-/* */
 ipcMain.handle("open-file-dialog", () => {
   const openedFile = dialog.showOpenDialogSync({
     title: "Open Markdown File",
