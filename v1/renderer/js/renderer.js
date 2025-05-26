@@ -2,16 +2,30 @@ const filenameHdr = getById("filenameHdr");
 const currentFilepath = getById("filepath");
 const bodyContent = getById("bodyContent");
 
-const defaultFileState = {
+const fileState = {
   filename: "untitled.md",
-  filepath: "File Not Saved",
-  frontmatter: "---\nFrontmatter: Content\n---\n",
-  body: "Body Content",
+  filepath: "untitled.md",
+  hasFrontmatter: true,
+  isSaved: false,
+  isModified: false,
 };
+
+// const defaultFields = {
+//   filename: fileState.filename,
+//   filepath: fileState.filepath === fileState.filename ? "File Not Saved" : fileState.filepath,
+//   frontmatter: fileState.hasFrontmatter ? "---\nFrontmatter: Content\n---\n" : "",
+//   body: "Body Content",
+// };
 
 // ON INITIAL LOAD
 document.addEventListener("DOMContentLoaded", () => {
-  setEditorFields(defaultFileState);
+  setFmEditorState("enabled");
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = "---\nFrontmatter: Content\n---\n";
+  bodyContent.value = "Body Content";
+  fileState.isSaved = false;
+  fileState.isModified = false;
   renderRecentFilesList();
 });
 
@@ -24,130 +38,96 @@ const newFileUI = {
     noFM: getById("newNoFrontmatter"),
   },
 };
+onClick(newFileUI.button, () => toggleVisibility(newFileUI.optionsMenu));
 
-newFileUI.button.addEventListener("click", () => {
-  newFileUI.optionsMenu.classList.toggle("hidden");
+onClick(newFileUI.options.withFM, () => {
+  toggleVisibility(newFileUI.optionsMenu);
+  setFmEditorState("enabled");
+  fileState.filename = "untitled.md";
+  fileState.filepath = "untitled.md";
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = "---\nFrontmatter: Content\n---\n";
+  bodyContent.value = "Body Content";
+  fileState.isSaved = false;
+  fileState.isModified = false;
 });
 
-document.addEventListener("click", (event) =>
-  closeDropDownMenu(event, newFileUI.optionsMenu, newFileUI.button),
-);
-
-newFileUI.options.withFM.addEventListener("click", () => {
-  newFileUI.optionsMenu.classList.toggle("hidden");
-  setFrontmatterEditorState("enabled");
-  setEditorFields(defaultFileState);
+onClick(newFileUI.options.noFM, () => {
+  toggleVisibility(newFileUI.optionsMenu);
+  setFmEditorState("disabled");
+  fileState.filename = "untitled.md";
+  fileState.filepath = "untitled.md";
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = "";
+  bodyContent.value = "Body Content";
+  fileState.isSaved = false;
+  fileState.isModified = false;
 });
 
-newFileUI.options.noFM.addEventListener("click", () => {
-  newFileUI.optionsMenu.classList.toggle("hidden");
-  setFrontmatterEditorState("disabled");
-  setEditorFields({
-    filename: "untitled.md",
-    filepath: "File Not Saved",
-    frontmatter: "",
-    body: "Body Content",
-  });
-});
+onClick(document, (event) => closeDropDownMenu(event, newFileUI.optionsMenu, newFileUI.button));
 
 // OPEN
 const openBtn = getById("openBtn");
 
-openBtn.addEventListener("click", async () => {
+onClick(openBtn, async () => {
   const openFileDialog = await fileAPI.openFileDialog();
   if (openFileDialog !== undefined) {
-    setEditorFields(openFileDialog);
+    fileState.filename = openFileDialog.filename;
+    fileState.filepath = openFileDialog.filepath;
+    filenameHdr.innerText = fileState.filename;
+    currentFilepath.innerText = fileState.filepath;
+    fmContentBlock.value = openFileDialog.frontmatter;
+    bodyContent.value = openFileDialog.body;
+    if (fmContentBlock.value === "") setFmEditorState("disabled");
+    else setFmEditorState("enabled");
+    fileState.isSaved = true;
+    fileState.isModified = false;
     renderRecentFilesList();
   }
 });
-
-// SAVE AS
-const saveAsBtn = getById("saveAsBtn");
-
-saveAsBtn.addEventListener("click", async () => {
-  const filepath =
-    currentFilepath.innerText !== "undefined" ? currentFilepath.innerText : "untitled.md";
-  const content = combineEditorContent();
-  const saveFileDialog = await fileAPI.saveFileDialog(filepath, content);
-  if (saveFileDialog !== undefined) {
-    setEditorFields(saveFileDialog);
-    renderRecentFilesList();
-  }
-});
-
-// SAVE
-const saveBtn = getById("saveBtn");
-
-saveBtn.addEventListener("click", async () => {
-  const filepath = currentFilepath.innerText;
-  const content = combineEditorContent();
-  const savedFile = await fileAPI.saveFile(filepath, content);
-  setEditorFields(savedFile);
-});
-
-// CLEAR
-const clearAllUI = {
-  button: getById("clearBtn"),
-  optionsMenu: getById("clearBtnOptions"),
-  options: {
-    confirm: getById("confirmClear"),
-    cancel: getById("cancelClear"),
-  },
-};
-
-clearAllUI.button.addEventListener("click", () => {
-  clearAllUI.optionsMenu.classList.toggle("hidden");
-});
-
-document.addEventListener("click", (event) =>
-  closeDropDownMenu(event, clearAllUI.optionsMenu, clearAllUI.button),
-);
-
-clearAllUI.options.confirm.addEventListener("click", () => {
-  clearAllUI.optionsMenu.classList.toggle("hidden");
-  setEditorFields({
-    filename: filenameHdr.innerText,
-    filepath: currentFilepath.innerText,
-    frontmatter: "---\n\n---\n",
-    body: "",
-  });
-});
-
-clearAllUI.options.cancel.addEventListener("click", () =>
-  clearAllUI.optionsMenu.classList.toggle("hidden"),
-);
 
 // RECENT
-const recentBtn = getById("recentBtn");
-const recentFiles = getById("recentFiles");
+const recentUI = {
+  button: getById("recentBtn"),
+  optionsMenu: getById("recentFiles"),
+};
 
-recentBtn.addEventListener("click", () => {
-  recentFiles.classList.toggle("hidden");
-});
+onClick(recentUI.button, () => toggleVisibility(recentUI.optionsMenu));
 
-recentFiles.addEventListener("click", async (event) => {
+onClick(recentUI.optionsMenu, async (event) => {
   const button = event.target.closest("button[data-filepath]");
   if (!button) return;
   const openFile = await fileAPI.openRecentFile(button.dataset.filepath);
-  recentFiles.classList.toggle("hidden");
-  setEditorFields(openFile);
+  toggleVisibility(recentUI.optionsMenu);
+  fileState.filename = openFile.filename;
+  fileState.filepath = openFile.filepath;
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = openFile.frontmatter;
+  bodyContent.value = openFile.body;
+  if (fmContentBlock.value === "") setFmEditorState("disabled");
+  else setFmEditorState("enabled");
+  fileState.isSaved = true;
+  fileState.isModified = false;
   renderRecentFilesList();
 });
 
-document.addEventListener("click", (event) => closeDropDownMenu(event, recentFiles, recentBtn));
+onClick(document, (event) => closeDropDownMenu(event, recentUI.optionsMenu, recentUI.button));
 
 async function renderRecentFilesList() {
   const fileList = await fileAPI.getRecentFiles();
   if (fileList.length === 0) {
     const message = "Recent Files List Empty";
-    recentFiles.innerHTML = noRecentFilesP(message);
+    recentUI.optionsMenu.innerHTML = noRecentFilesP(message);
     return fileList;
   }
   let buttons = "";
   fileList.forEach((file) => {
     buttons += recentFilesBtn(file.filename, file.filepath);
   });
-  recentFiles.innerHTML = buttons;
+  recentUI.optionsMenu.innerHTML = buttons;
   return fileList;
 }
 
@@ -162,28 +142,87 @@ const recentFilesBtn = (filename, filepath) => {
   </button>`;
 };
 
+// SAVE AS
+const saveAsBtn = getById("saveAsBtn");
+
+onClick(saveAsBtn, async () => {
+  const saveFileDialog = await fileAPI.saveFileDialog(fileState.filepath, combineEditorContent());
+  if (saveFileDialog !== undefined) {
+    fileState.filename = saveFileDialog.filename;
+    fileState.filepath = saveFileDialog.filepath;
+    filenameHdr.innerText = fileState.filename;
+    currentFilepath.innerText = fileState.filepath;
+    fmContentBlock.value = saveFileDialog.frontmatter;
+    bodyContent.value = saveFileDialog.body;
+    fileState.isSaved = true;
+    fileState.isModified = false;
+    renderRecentFilesList();
+  }
+});
+
+// SAVE
+const saveBtn = getById("saveBtn");
+
+if (!fileState.isSaved || !fileState.isModified) saveBtn.disabled = true;
+
+onClick(saveBtn, async () => {
+  const savedFile = await fileAPI.saveFile(fileState.filepath, combineEditorContent());
+  fileState.filename = savedFile.filename;
+  fileState.filepath = savedFile.filepath;
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = savedFile.frontmatter;
+  bodyContent.value = savedFile.body;
+  fileState.isSaved = true;
+  fileState.isModified = false;
+});
+
+// CLEAR ALL
+const clearAllUI = {
+  button: getById("clearBtn"),
+  optionsMenu: getById("clearBtnOptions"),
+  options: {
+    confirm: getById("confirmClear"),
+    cancel: getById("cancelClear"),
+  },
+};
+
+onClick(clearAllUI.button, () => toggleVisibility(clearAllUI.optionsMenu));
+
+onClick(clearAllUI.options.confirm, () => {
+  toggleVisibility(clearAllUI.optionsMenu);
+  filenameHdr.innerText = fileState.filename;
+  currentFilepath.innerText = fileState.filepath;
+  fmContentBlock.value = "---\n\n---\n";
+  bodyContent.value = "";
+});
+
+onClick(clearAllUI.options.cancel, () => toggleVisibility(clearAllUI.optionsMenu));
+
+onClick(document, (event) => closeDropDownMenu(event, clearAllUI.optionsMenu, clearAllUI.button));
+
 // FRONTMATTER
 const fmContentBlock = getById("fmContentBlock");
 
 // FRONTMATTER BLOCK VIEW
 const fmBlockViewBtn = getById("fmBlockViewBtn");
-fmBlockViewBtn.addEventListener("click", () => {
-  console.log("fmBlockViewBtn clicked");
-});
+
+onClick(fmBlockViewBtn, () => console.log("fmBlockViewBtn clicked"));
 
 // FRONTMATTER LINE ITEM VIEW
 const fmLineItemViewBtn = getById("fmLineItemViewBtn");
-fmLineItemViewBtn.addEventListener("click", () => {
-  console.log("fmLineItemViewBtn clicked");
-});
+
+onClick(fmLineItemViewBtn, () => console.log("fmLineItemViewBtn clicked"));
 
 // FRONTMATTER HIDE
 const fmHideBtn = getById("fmHideBtn");
-fmHideBtn.addEventListener("click", () => setFrontmatterEditorState("hidden"));
+
+onClick(fmHideBtn, () => setFmEditorState("hidden"));
 
 // FRONTMATTER SHOW
 const fmShowBtn = getById("fmShowBtn");
-fmShowBtn.addEventListener("click", () => setFrontmatterEditorState("visible"));
+
+onClick(fmShowBtn, () => setFmEditorState("visible"));
 
 // FRONTMATTER CLEAR
 const clearFMUI = {
@@ -194,21 +233,16 @@ const clearFMUI = {
     cancel: getById("fmCancelClear"),
   },
 };
+onClick(clearFMUI.button, () => toggleVisibility(clearFMUI.optionsMenu));
 
-clearFMUI.button.addEventListener("click", () => clearFMUI.optionsMenu.classList.toggle("hidden"));
-
-document.addEventListener("click", (event) =>
-  closeDropDownMenu(event, clearFMUI.optionsMenu, clearFMUI.button),
-);
-
-clearFMUI.options.confirm.addEventListener("click", () => {
-  clearFMUI.optionsMenu.classList.toggle("hidden");
+onClick(clearFMUI.options.confirm, () => {
+  toggleVisibility(clearFMUI.optionsMenu);
   fmContentBlock.value = "---\n\n---\n";
 });
 
-clearFMUI.options.cancel.addEventListener("click", () =>
-  clearFMUI.optionsMenu.classList.toggle("hidden"),
-);
+onClick(clearFMUI.options.cancel, () => toggleVisibility(clearFMUI.optionsMenu));
+
+onClick(document, (event) => closeDropDownMenu(event, clearFMUI.optionsMenu, clearFMUI.button));
 
 // FRONTMATTER REMOVE
 const removeFMUI = {
@@ -220,31 +254,28 @@ const removeFMUI = {
   },
 };
 
-removeFMUI.button.addEventListener("click", () =>
-  removeFMUI.optionsMenu.classList.toggle("hidden"),
-);
+onClick(removeFMUI.button, () => toggleVisibility(removeFMUI.optionsMenu));
 
-document.addEventListener("click", (event) =>
-  closeDropDownMenu(event, removeFMUI.optionsMenu, removeFMUI.button),
-);
-
-removeFMUI.options.confirm.addEventListener("click", () => {
-  removeFMUI.optionsMenu.classList.toggle("hidden");
-  setFrontmatterEditorState("disabled");
+onClick(removeFMUI.options.confirm, () => {
+  toggleVisibility(removeFMUI.optionsMenu);
+  setFmEditorState("disabled");
 });
 
-removeFMUI.options.cancel.addEventListener("click", () =>
-  removeFMUI.optionsMenu.classList.toggle("hidden"),
-);
+onClick(removeFMUI.options.cancel, () => toggleVisibility(removeFMUI.optionsMenu));
+
+onClick(document, (event) => closeDropDownMenu(event, removeFMUI.optionsMenu, removeFMUI.button));
 
 // FRONTMATTER ADD
 const fmAddBtn = getById("fmAddBtn");
-fmAddBtn.addEventListener("click", () => setFrontmatterEditorState("enabled"));
+
+onClick(fmAddBtn, () => setFmEditorState("enabled"));
 
 // FRONTMATTER EDITOR STATE HANDLER
-function setFrontmatterEditorState(state) {
+function setFmEditorState(state) {
   switch (state) {
     case "enabled":
+      fileState.hasFrontmatter = true;
+      fmContentBlock.value = "---\n\n---\n";
       fmContentBlock.classList.remove("hidden");
       fmHideBtn.classList.remove("hidden");
       fmShowBtn.classList.add("hidden");
@@ -257,6 +288,8 @@ function setFrontmatterEditorState(state) {
       fmClearBtn.disabled = false;
       break;
     case "disabled":
+      fileState.hasFrontmatter = false;
+      fmContentBlock.value = "";
       fmContentBlock.classList.add("hidden");
       fmAddBtn.classList.remove("hidden");
       fmRemoveBtn.classList.add("hidden");
@@ -301,4 +334,12 @@ function closeDropDownMenu(event, menu, menuBtn) {
 
 function getById(element) {
   return document.getElementById(element);
+}
+
+function onClick(element, func) {
+  element.addEventListener("click", func);
+}
+
+function toggleVisibility(element) {
+  element.classList.toggle("hidden");
 }
