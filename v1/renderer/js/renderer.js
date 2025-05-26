@@ -1,48 +1,57 @@
-const filenameHdr = document.getElementById("filenameHdr");
-const currentFilepath = document.getElementById("filepath");
-const bodyContent = document.getElementById("bodyContent");
+const filenameHdr = getById("filenameHdr");
+const currentFilepath = getById("filepath");
+const bodyContent = getById("bodyContent");
 
-//! This interferes with setFrontmatterEditorState, fix it!
-const editorDefaults = {
+const defaultFileState = {
   filename: "untitled.md",
   filepath: "File Not Saved",
-  frontmatter: "---\n\n---\n",
-  body: "Body Content Here",
+  frontmatter: "---\nFrontmatter: Content\n---\n",
+  body: "Body Content",
 };
 
 // ON INITIAL LOAD
-
 document.addEventListener("DOMContentLoaded", () => {
-  setEditorFields(editorDefaults);
+  setEditorFields(defaultFileState);
   renderRecentFilesList();
 });
 
 // NEW
-const newBtn = document.getElementById("newBtn");
-const newBtnOptions = document.getElementById("newBtnOptions");
-const newWithFrontmatter = document.getElementById("newWithFrontmatter");
-const newNoFrontmatter = document.getElementById("newNoFrontmatter");
+const newFileUI = {
+  button: getById("newBtn"),
+  optionsMenu: getById("newBtnOptions"),
+  options: {
+    withFM: getById("newWithFrontmatter"),
+    noFM: getById("newNoFrontmatter"),
+  },
+};
 
-newBtn.addEventListener("click", () => {
-  newBtnOptions.classList.toggle("hidden");
+newFileUI.button.addEventListener("click", () => {
+  newFileUI.optionsMenu.classList.toggle("hidden");
 });
 
-document.addEventListener("click", (event) => closeDropDownMenu(event, newBtnOptions, newBtn));
+document.addEventListener("click", (event) =>
+  closeDropDownMenu(event, newFileUI.optionsMenu, newFileUI.button),
+);
 
-newWithFrontmatter.addEventListener("click", () => {
-  newBtnOptions.classList.toggle("hidden");
+newFileUI.options.withFM.addEventListener("click", () => {
+  newFileUI.optionsMenu.classList.toggle("hidden");
   setFrontmatterEditorState("enabled");
-  setEditorFields(editorDefaults);
+  setEditorFields(defaultFileState);
 });
 
-newNoFrontmatter.addEventListener("click", () => {
-  newBtnOptions.classList.toggle("hidden");
+newFileUI.options.noFM.addEventListener("click", () => {
+  newFileUI.optionsMenu.classList.toggle("hidden");
   setFrontmatterEditorState("disabled");
-  setEditorFields(editorDefaults);
+  setEditorFields({
+    filename: "untitled.md",
+    filepath: "File Not Saved",
+    frontmatter: "",
+    body: "Body Content",
+  });
 });
 
 // OPEN
-const openBtn = document.getElementById("openBtn");
+const openBtn = getById("openBtn");
 
 openBtn.addEventListener("click", async () => {
   const openFileDialog = await fileAPI.openFileDialog();
@@ -53,7 +62,7 @@ openBtn.addEventListener("click", async () => {
 });
 
 // SAVE AS
-const saveAsBtn = document.getElementById("saveAsBtn");
+const saveAsBtn = getById("saveAsBtn");
 
 saveAsBtn.addEventListener("click", async () => {
   const filepath =
@@ -67,7 +76,7 @@ saveAsBtn.addEventListener("click", async () => {
 });
 
 // SAVE
-const saveBtn = document.getElementById("saveBtn");
+const saveBtn = getById("saveBtn");
 
 saveBtn.addEventListener("click", async () => {
   const filepath = currentFilepath.innerText;
@@ -77,16 +86,40 @@ saveBtn.addEventListener("click", async () => {
 });
 
 // CLEAR
-const clearBtn = document.getElementById("clearBtn");
+const clearAllUI = {
+  button: getById("clearBtn"),
+  optionsMenu: getById("clearBtnOptions"),
+  options: {
+    confirm: getById("confirmClear"),
+    cancel: getById("cancelClear"),
+  },
+};
 
-clearBtn.addEventListener("click", () => {
-  const result = confirm("Are you sure?");
-  if (result) setEditorFields(editorDefaults);
+clearAllUI.button.addEventListener("click", () => {
+  clearAllUI.optionsMenu.classList.toggle("hidden");
 });
 
+document.addEventListener("click", (event) =>
+  closeDropDownMenu(event, clearAllUI.optionsMenu, clearAllUI.button),
+);
+
+clearAllUI.options.confirm.addEventListener("click", () => {
+  clearAllUI.optionsMenu.classList.toggle("hidden");
+  setEditorFields({
+    filename: filenameHdr.innerText,
+    filepath: currentFilepath.innerText,
+    frontmatter: "---\n\n---\n",
+    body: "",
+  });
+});
+
+clearAllUI.options.cancel.addEventListener("click", () =>
+  clearAllUI.optionsMenu.classList.toggle("hidden"),
+);
+
 // RECENT
-const recentBtn = document.getElementById("recentBtn");
-const recentFiles = document.getElementById("recentFiles");
+const recentBtn = getById("recentBtn");
+const recentFiles = getById("recentFiles");
 
 recentBtn.addEventListener("click", () => {
   recentFiles.classList.toggle("hidden");
@@ -130,33 +163,88 @@ const recentFilesBtn = (filename, filepath) => {
 };
 
 // FRONTMATTER
-const fmContentBlock = document.getElementById("fmContentBlock");
-const fmBlockViewBtn = document.getElementById("fmBlockViewBtn");
-const fmLineItemViewBtn = document.getElementById("fmLineItemViewBtn");
-const fmHideBtn = document.getElementById("fmHideBtn");
-const fmShowBtn = document.getElementById("fmShowBtn");
-const fmClearBtn = document.getElementById("fmClearBtn");
-const fmRemoveBtn = document.getElementById("fmRemoveBtn");
-const fmAddBtn = document.getElementById("fmAddBtn");
+const fmContentBlock = getById("fmContentBlock");
 
+// FRONTMATTER BLOCK VIEW
+const fmBlockViewBtn = getById("fmBlockViewBtn");
 fmBlockViewBtn.addEventListener("click", () => {
   console.log("fmBlockViewBtn clicked");
 });
 
+// FRONTMATTER LINE ITEM VIEW
+const fmLineItemViewBtn = getById("fmLineItemViewBtn");
 fmLineItemViewBtn.addEventListener("click", () => {
   console.log("fmLineItemViewBtn clicked");
 });
 
+// FRONTMATTER HIDE
+const fmHideBtn = getById("fmHideBtn");
 fmHideBtn.addEventListener("click", () => setFrontmatterEditorState("hidden"));
+
+// FRONTMATTER SHOW
+const fmShowBtn = getById("fmShowBtn");
 fmShowBtn.addEventListener("click", () => setFrontmatterEditorState("visible"));
-fmClearBtn.addEventListener("click", () => (fmContentBlock.value = "---\n\n---\n"));
-fmRemoveBtn.addEventListener("click", () => setFrontmatterEditorState("disabled"));
+
+// FRONTMATTER CLEAR
+const clearFMUI = {
+  button: getById("fmClearBtn"),
+  optionsMenu: getById("fmClearBtnOptions"),
+  options: {
+    confirm: getById("fmConfirmClear"),
+    cancel: getById("fmCancelClear"),
+  },
+};
+
+clearFMUI.button.addEventListener("click", () => clearFMUI.optionsMenu.classList.toggle("hidden"));
+
+document.addEventListener("click", (event) =>
+  closeDropDownMenu(event, clearFMUI.optionsMenu, clearFMUI.button),
+);
+
+clearFMUI.options.confirm.addEventListener("click", () => {
+  clearFMUI.optionsMenu.classList.toggle("hidden");
+  fmContentBlock.value = "---\n\n---\n";
+});
+
+clearFMUI.options.cancel.addEventListener("click", () =>
+  clearFMUI.optionsMenu.classList.toggle("hidden"),
+);
+
+// FRONTMATTER REMOVE
+const removeFMUI = {
+  button: getById("fmRemoveBtn"),
+  optionsMenu: getById("fmRemoveBtnOptions"),
+  options: {
+    confirm: getById("fmConfirmRemove"),
+    cancel: getById("fmCancelRemove"),
+  },
+};
+
+removeFMUI.button.addEventListener("click", () =>
+  removeFMUI.optionsMenu.classList.toggle("hidden"),
+);
+
+document.addEventListener("click", (event) =>
+  closeDropDownMenu(event, removeFMUI.optionsMenu, removeFMUI.button),
+);
+
+removeFMUI.options.confirm.addEventListener("click", () => {
+  removeFMUI.optionsMenu.classList.toggle("hidden");
+  setFrontmatterEditorState("disabled");
+});
+
+removeFMUI.options.cancel.addEventListener("click", () =>
+  removeFMUI.optionsMenu.classList.toggle("hidden"),
+);
+
+// FRONTMATTER ADD
+const fmAddBtn = getById("fmAddBtn");
 fmAddBtn.addEventListener("click", () => setFrontmatterEditorState("enabled"));
 
+// FRONTMATTER EDITOR STATE HANDLER
 function setFrontmatterEditorState(state) {
   switch (state) {
     case "enabled":
-      fmContentBlock.value = "---\nkey: value\n---\n";
       fmContentBlock.classList.remove("hidden");
       fmHideBtn.classList.remove("hidden");
       fmShowBtn.classList.add("hidden");
@@ -169,7 +257,6 @@ function setFrontmatterEditorState(state) {
       fmClearBtn.disabled = false;
       break;
     case "disabled":
-      fmContentBlock.value = "";
       fmContentBlock.classList.add("hidden");
       fmAddBtn.classList.remove("hidden");
       fmRemoveBtn.classList.add("hidden");
@@ -210,4 +297,8 @@ function closeDropDownMenu(event, menu, menuBtn) {
   if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
     menu.classList.add("hidden");
   }
+}
+
+function getById(element) {
+  return document.getElementById(element);
 }

@@ -45,6 +45,21 @@
       >
         Open
       </button>
+       <!-- RECENT -->
+       <div class="relative">
+        <button
+          id="recentBtn"
+          class="bg-linear-to-br block cursor-pointer border-l border-t border-violet-500/80 from-violet-900/20 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-violet-500/10 active:scale-90"
+        >
+          Recent +
+        </button>
+        <div
+          id="recentFiles"
+          class="w-lg absolute left-0 top-10 z-10 hidden border border-violet-500/80"
+        >
+          <!-- Recent Files buttons list here -->
+        </div>
+      </div>
       <!-- SAVE AS -->
       <button
         id="saveAsBtn"
@@ -55,30 +70,34 @@
       <!-- SAVE -->
       <button
         id="saveBtn"
-        class="bg-linear-to-br block cursor-pointer border-l border-t border-emerald-500 from-emerald-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-emerald-500/10 active:scale-90"
+        class="bg-linear-to-br block cursor-pointer border-x border-t border-emerald-500 from-emerald-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-emerald-500/10 active:scale-90"
       >
         Save
       </button>
       <!-- CLEAR -->
-      <button
-        id="clearBtn"
-        class="bg-linear-to-br block cursor-pointer border-l border-t border-red-500 from-red-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-red-500/10 active:scale-90"
-      >
-        Clear
-      </button>
-      <!-- RECENT -->
-      <div class="relative">
+      <div class="relative ml-auto">
         <button
-          id="recentBtn"
-          class="bg-linear-to-br block cursor-pointer border-x border-t border-violet-500/80 from-violet-900/20 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-violet-500/10 active:scale-90"
+          id="clearBtn"
+          class="bg-linear-to-br block cursor-pointer border-x border-t border-red-500 from-red-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-red-500/10 active:scale-90"
         >
-          Recent +
+          Clear All +
         </button>
         <div
-          id="recentFiles"
-          class="w-lg absolute right-0 top-10 z-10 hidden border border-violet-500/80"
+          id="clearBtnOptions"
+          class="absolute right-0 top-10 z-10 hidden min-w-max border border-red-500/80 bg-black"
         >
-          <!-- Recent Files buttons list here -->
+          <button
+            id="confirmClear"
+            class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+          >
+            Confirm
+          </button>
+          <button
+            id="cancelClear"
+            class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </header>
@@ -113,36 +132,76 @@
           >
             Line Item View
           </button>
-          <button
-            id="fmHideBtn"
-            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Hide
-          </button>
-          <button
-            id="fmShowBtn"
-            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 hidden cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Show
-          </button>
-          <button
-            id="fmClearBtn"
-            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Clear
-          </button>
-          <button
-            id="fmRemoveBtn"
-            class="ml-auto cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
-          >
-            Remove
-          </button>
-          <button
-            id="fmAddBtn"
-            class="ml-auto hidden cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
-          >
-            Add
-          </button>
+          <div class="ml-auto flex gap-0.5">
+            <button
+              id="fmHideBtn"
+              class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Hide
+            </button>
+            <button
+              id="fmShowBtn"
+              class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 hidden cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Show
+            </button>
+            <div class="relative">
+              <button
+                id="fmClearBtn"
+                class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Clear +
+              </button>
+              <div
+                id="fmClearBtnOptions"
+                class="absolute left-0 top-10 z-10 hidden min-w-max border border-neutral-500 bg-black"
+              >
+                <button
+                  id="fmConfirmClear"
+                  class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                >
+                  Confirm
+                </button>
+                <button
+                  id="fmCancelClear"
+                  class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+            <div class="relative">
+              <button
+                id="fmRemoveBtn"
+                class="cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
+              >
+                Remove +
+              </button>
+              <div
+                id="fmRemoveBtnOptions"
+                class="absolute left-0 top-10 z-10 hidden min-w-max border border-red-500 bg-black"
+              >
+                <button
+                  id="fmConfirmRemove"
+                  class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                >
+                  Confirm
+                </button>
+                <button
+                  id="fmCancelRemove"
+                  class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+            <button
+              id="fmAddBtn"
+              class="ml-auto hidden cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
+            >
+              Add
+            </button>
+          </div>
         </div>
         <textarea
           id="fmContentBlock"
