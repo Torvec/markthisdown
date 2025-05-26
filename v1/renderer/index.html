@@ -8,44 +8,61 @@
     <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
     <link rel="stylesheet" href="./css/styles.css" />
     <title>MarkThisDown</title>
+    <script src="./js/renderer.js" defer></script>
   </head>
-  <body class="flex h-screen flex-col items-center justify-center bg-neutral-800 text-neutral-100">
-    <header
-      id="menuBar"
-      class="container mx-auto grid max-w-4xl grid-cols-6 border-b border-neutral-700"
-    >
+  <body class="bg-neutral-800 pt-12 text-neutral-100">
+    <header id="menuBar" class="container mx-auto flex max-w-4xl border-b border-neutral-700 pl-2">
       <!-- NEW FILE -->
-      <button
-        id="newBtn"
-        class="bg-linear-to-br block w-full cursor-pointer border-l border-t border-yellow-500/80 from-yellow-900/20 to-transparent p-3 transition-all duration-150 ease-in-out hover:bg-yellow-500/10 active:scale-90"
-      >
-        New
-      </button>
+      <div class="relative">
+        <button
+          id="newBtn"
+          class="bg-linear-to-br block cursor-pointer border-l border-t border-yellow-500/80 from-yellow-900/20 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-yellow-500/10 active:scale-90"
+        >
+          New +
+        </button>
+        <div
+          id="newBtnOptions"
+          class="absolute left-0 top-10 z-10 hidden min-w-max border border-yellow-500/80 bg-black"
+        >
+          <button
+            id="newWithFrontmatter"
+            class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+          >
+            With Frontmatter
+          </button>
+          <button
+            id="newNoFrontmatter"
+            class="block w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+          >
+            No Frontmatter
+          </button>
+        </div>
+      </div>
       <!-- OPEN FILE -->
       <button
         id="openBtn"
-        class="bg-linear-to-br block w-full cursor-pointer border-l border-t border-blue-500/80 from-blue-900/40 to-transparent p-3 transition-all duration-150 ease-in-out hover:bg-blue-500/10 active:scale-90"
+        class="bg-linear-to-br block cursor-pointer border-l border-t border-blue-500/80 from-blue-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-blue-500/10 active:scale-90"
       >
         Open
       </button>
       <!-- SAVE AS -->
       <button
         id="saveAsBtn"
-        class="bg-linear-to-br to-transparen block w-full cursor-pointer border-l border-t border-lime-500 from-lime-900/40 p-3 transition-all duration-150 ease-in-out hover:bg-lime-500/10 active:scale-90"
+        class="bg-linear-to-br to-transparen block cursor-pointer border-l border-t border-lime-500 from-lime-900/40 px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-lime-500/10 active:scale-90"
       >
         Save As
       </button>
       <!-- SAVE -->
       <button
         id="saveBtn"
-        class="bg-linear-to-br block w-full cursor-pointer border-l border-t border-emerald-500 from-emerald-900/40 to-transparent p-3 transition-all duration-150 ease-in-out hover:bg-emerald-500/10 active:scale-90"
+        class="bg-linear-to-br block cursor-pointer border-l border-t border-emerald-500 from-emerald-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-emerald-500/10 active:scale-90"
       >
         Save
       </button>
       <!-- CLEAR -->
       <button
         id="clearBtn"
-        class="bg-linear-to-br block w-full cursor-pointer border-l border-t border-red-500 from-red-900/40 to-transparent p-3 transition-all duration-150 ease-in-out hover:bg-red-500/10 active:scale-90"
+        class="bg-linear-to-br block cursor-pointer border-l border-t border-red-500 from-red-900/40 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-red-500/10 active:scale-90"
       >
         Clear
       </button>
@@ -53,20 +70,20 @@
       <div class="relative">
         <button
           id="recentBtn"
-          class="bg-linear-to-br block w-full cursor-pointer border-x border-t border-violet-500/80 from-violet-900/20 to-transparent p-3 transition-all duration-150 ease-in-out hover:bg-violet-500/10 active:scale-90"
+          class="bg-linear-to-br block cursor-pointer border-x border-t border-violet-500/80 from-violet-900/20 to-transparent px-6 py-1.5 transition-all duration-150 ease-in-out hover:bg-violet-500/10 active:scale-90"
         >
-          Recent
+          Recent +
         </button>
         <div
           id="recentFiles"
-          class="w-lg absolute right-0 top-14 z-10 hidden border border-neutral-700"
+          class="w-lg absolute right-0 top-10 z-10 hidden border border-violet-500/80"
         >
           <!-- Recent Files buttons list here -->
         </div>
       </div>
     </header>
     <main
-      class="container mx-auto max-w-4xl border-x border-b border-neutral-700 bg-neutral-900 p-2"
+      class="container mx-auto max-w-4xl space-y-2 border-x border-b border-neutral-700 bg-neutral-900 p-2"
     >
       <section id="fileInfo" class="flex items-baseline gap-4">
         <h3 id="filenameHdr" class="border border-neutral-700 bg-neutral-950 px-4 py-2 font-medium">
@@ -76,35 +93,72 @@
           <!--filepath here-->
         </span>
       </section>
-      <section id="fmEditor" class="relative">
-        <label
-          for="fmContent"
-          class="absolute left-0 top-0 block w-max bg-neutral-500 px-2 py-1 font-mono uppercase text-neutral-900"
-        >
-          Frontmatter
-        </label>
+      <section id="fmEditor">
+        <div class="flex gap-0.5">
+          <label
+            for="fmContent"
+            class="bg-neutral-500 px-2 py-1 font-mono uppercase text-neutral-900"
+          >
+            Frontmatter
+          </label>
+          <button
+            id="fmBlockViewBtn"
+            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Block View
+          </button>
+          <button
+            id="fmLineItemViewBtn"
+            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Line Item View
+          </button>
+          <button
+            id="fmHideBtn"
+            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Hide
+          </button>
+          <button
+            id="fmShowBtn"
+            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 hidden cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Show
+          </button>
+          <button
+            id="fmClearBtn"
+            class="not-disabled:hover:bg-neutral-500 not-disabled:hover:text-neutral-50 cursor-pointer bg-neutral-600 px-4 py-1 text-neutral-300 transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Clear
+          </button>
+          <button
+            id="fmRemoveBtn"
+            class="ml-auto cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
+          >
+            Remove
+          </button>
+          <button
+            id="fmAddBtn"
+            class="ml-auto hidden cursor-pointer bg-pink-200 px-4 py-1 text-red-600 transition-colors duration-150 ease-in-out hover:bg-pink-100 hover:text-red-500"
+          >
+            Add
+          </button>
+        </div>
         <textarea
-          name="fmContent"
-          id="fmContent"
-          class="min-h-48 w-full resize-y border border-neutral-500 bg-neutral-800 px-4 pt-8 outline-0 focus-visible:bg-neutral-700/75"
+          id="fmContentBlock"
+          class="min-h-48 w-full resize-y border border-neutral-500 bg-neutral-800 p-4 outline-0 focus-visible:bg-neutral-700/75"
         >
         </textarea>
+        <div id="fmContentLineItems" class="hidden grid-cols-2 gap-3"></div>
       </section>
-      <section id="bodyEditor" class="relative">
-        <label
-          for="bodyContent"
-          class="absolute left-0 top-0 block w-max bg-neutral-500 px-2 py-1 font-mono uppercase text-neutral-900"
-        >
-          Body
-        </label>
+      <section id="bodyEditor">
         <textarea
           name="bodyContent"
           id="bodyContent"
-          class="block min-h-96 w-full resize-y border border-neutral-500 bg-neutral-800 px-4 pt-8 outline-0 focus-visible:bg-neutral-700/75"
+          class="block min-h-96 w-full resize-y border border-neutral-500 bg-neutral-800 p-4 outline-0 focus-visible:bg-neutral-700/75"
         >
         </textarea>
       </section>
     </main>
   </body>
-  <script src="./js/renderer.js"></script>
 </html>
