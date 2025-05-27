@@ -315,9 +315,6 @@
   .items-baseline {
     align-items: baseline;
   }
-  .items-center {
-    align-items: center;
-  }
   .gap-0 {
     gap: calc(var(--spacing) * 0);
   }
@@ -430,9 +427,6 @@
   }
   .bg-black {
     background-color: var(--color-black);
-  }
-  .bg-neutral-200 {
-    background-color: var(--color-neutral-200);
   }
   .bg-neutral-500 {
     background-color: var(--color-neutral-500);
@@ -660,16 +654,6 @@
         background-color: color-mix(in srgb, oklch(62.3% 0.214 259.815) 10%, transparent);
         @supports (color: color-mix(in lab, red, red)) {
           background-color: color-mix(in oklab, var(--color-blue-500) 10%, transparent);
-        }
-      }
-    }
-  }
-  .hover\:bg-emerald-500\/10 {
-    &:hover {
-      @media (hover: hover) {
-        background-color: color-mix(in srgb, oklch(69.6% 0.17 162.48) 10%, transparent);
-        @supports (color: color-mix(in lab, red, red)) {
-          background-color: color-mix(in oklab, var(--color-emerald-500) 10%, transparent);
         }
       }
     }
