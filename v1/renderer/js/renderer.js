@@ -1,6 +1,6 @@
 const initVal = {
   showNewFileMenu: false,
-  showRecentMenu: false,
+  showOpenRecentMenu: false,
   saveEnabled: false,
   showClearAllMenu: false,
   fileInfo: {
@@ -99,8 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
   renderRecentFilesList();
 });
 
-// MENU BAR
-
+// NEW FILE
 onClick(ui.newFile.button, () => updateState({ showNewFileMenu: true }));
 onClick(ui.newFile.options.withFm, () => resetEditorState());
 onClick(ui.newFile.options.noFm, () => {
@@ -108,6 +107,8 @@ onClick(ui.newFile.options.noFm, () => {
   updateState({ frontmatter: { isEnabled: false } });
 });
 onClick(document, (event) => closeDropDownMenu(event, ui.newFile.menu, ui.newFile.button));
+
+// OPEN FILE
 onClick(ui.openFile, async () => {
   const openFileDialog = await fileAPI.openFileDialog();
   if (openFileDialog !== undefined) {
@@ -129,13 +130,15 @@ onClick(ui.openFile, async () => {
     renderRecentFilesList();
   }
 });
-onClick(ui.openRecent.button, () => updateState({ showRecentMenu: true }));
+
+// OPEN RECENT
+onClick(ui.openRecent.button, () => updateState({ showOpenRecentMenu: true }));
 onClick(ui.openRecent.menu, async (event) => {
   const button = event.target.closest("button[data-filepath]");
   if (!button) return;
   const openFile = await fileAPI.openRecentFile(button.dataset.filepath);
   updateState({
-    showRecentMenu: false,
+    showOpenRecentMenu: false,
     fileInfo: {
       filename: openFile.filename,
       filepath: openFile.filepath,
@@ -153,6 +156,8 @@ onClick(ui.openRecent.menu, async (event) => {
   renderRecentFilesList();
 });
 onClick(document, (event) => closeDropDownMenu(event, ui.openRecent.menu, ui.openRecent.button));
+
+// SAVE AS
 onClick(ui.saveAs, async () => {
   const saveFileDialog = await fileAPI.saveFileDialog(
     editorState.fileInfo.filepath,
@@ -177,6 +182,8 @@ onClick(ui.saveAs, async () => {
     renderRecentFilesList();
   }
 });
+
+// SAVE
 onClick(ui.saveFile, async () => {
   let savedFile = editorState.isSaved
     ? await fileAPI.saveFile(editorState.fileInfo.filepath, combineEditorContent())
@@ -197,6 +204,8 @@ onClick(ui.saveFile, async () => {
     },
   });
 });
+
+// CLEAR ALL
 onClick(ui.clearAll.button, () => updateState({ showClearAllMenu: true }));
 onClick(ui.clearAll.options.confirm, () => {
   updateState({
@@ -215,9 +224,12 @@ onClick(document, (event) => closeDropDownMenu(event, ui.clearAll.menu, ui.clear
 
 // FRONTMATTER
 onClick(ui.fm.view.block, () => updateState({ frontmatter: { view: "block" } }));
+
 onClick(ui.fm.view.lineItems, () => updateState({ frontmatter: { view: "lineItems" } }));
+
 onClick(ui.fm.visible.hide, () => updateState({ frontmatter: { visible: false } }));
 onClick(ui.fm.visible.show, () => updateState({ frontmatter: { visible: true } }));
+
 onClick(ui.fm.clear.button, () => updateState({ frontmatter: { showClearFmMenu: true } }));
 onClick(ui.fm.clear.options.confirm, () => {
   updateState({
@@ -227,6 +239,7 @@ onClick(ui.fm.clear.options.confirm, () => {
 });
 onClick(ui.fm.clear.options.cancel, () => updateState({ frontmatter: { showClearFmMenu: false } }));
 onClick(document, (event) => closeDropDownMenu(event, ui.fm.clear.menu, ui.fm.clear.button));
+
 onClick(ui.fm.remove.button, () => updateState({ frontmatter: { showRemoveFmMenu: true } }));
 onClick(ui.fm.remove.options.confirm, () => {
   updateState({ frontmatter: { isEnabled: false, showRemoveFmMenu: false } });
@@ -238,8 +251,6 @@ onClick(document, (event) => closeDropDownMenu(event, ui.fm.remove.menu, ui.fm.r
 onClick(ui.fm.add, () => {
   updateState({ frontmatter: { isEnabled: true } });
 });
-
-//* FUNCTIONS
 
 // !This does not update the ui based off of state like everything else does
 async function renderRecentFilesList() {
@@ -275,14 +286,20 @@ function renderFmLineItems(state) {
 
 //* UTILITY FUNCTIONS
 function updateState(updates) {
-  for (const key in updates) {
-    if (typeof updates[key] === "object") {
-      Object.assign(editorState[key], updates[key]);
+  deepMerge(editorState, updates);
+  console.log(editorState)
+  syncUI();
+}
+
+function deepMerge(target, patch) {
+  for (const key in patch) {
+    if (typeof patch[key] === "object" && typeof target[key] === "object") {
+      target[key] = deepMerge({ ...target[key] }, patch[key]);
     } else {
-      editorState[key] = updates[key];
+      target[key] = patch[key];
     }
   }
-  syncUI();
+  return target;
 }
 
 function resetEditorState() {
@@ -293,7 +310,7 @@ function resetEditorState() {
 function syncUI() {
   // MENU BAR
   toggleVisibility(ui.newFile.menu, editorState.showNewFileMenu);
-  toggleVisibility(ui.openRecent.menu, editorState.showRecentMenu);
+  toggleVisibility(ui.openRecent.menu, editorState.showOpenRecentMenu);
   ui.saveFile.disabled = !editorState.saveEnabled;
   toggleVisibility(ui.clearAll.menu, editorState.showClearAllMenu);
 
@@ -327,13 +344,34 @@ function syncUI() {
 }
 
 function combineEditorContent() {
-  const content = fmContentBlock.value + bodyContent.value;
+  const fmContent = editorState.frontmatter.isEnabled
+    ? editorState.frontmatter.content.trim() + "\n\n"
+    : "";
+  const content = fmContent + editorState.bodyContent;
   return content;
 }
 
 function closeDropDownMenu(event, menu, menuBtn) {
   if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
-    menu.classList.add("hidden");
+    switch (menu) {
+      case ui.newFile.menu:
+        updateState({ showNewFileMenu: false });
+        break;
+      case ui.openRecent.menu:
+        updateState({ showOpenRecentMenu: false });
+        break;
+      case ui.clearAll.menu:
+        updateState({ showClearAllMenu: false });
+        break;
+      case ui.fm.clear.menu:
+        updateState({ showClearFmMenu: false });
+        break;
+      case ui.fm.remove.menu:
+        updateState({ showRemoveFmMenu: false });
+        break;
+      default:
+        return;
+    }
   }
 }
 
