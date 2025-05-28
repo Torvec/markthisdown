@@ -1,0 +1,34 @@
+{
+  "name": "markthisdown",
+  "version": "1.0.0",
+  "description": "A minimalist markdown editor and viewer",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "mon": "npx electronmon .",
+    "twcli": "npx @tailwindcss/cli -i ./renderer/css/source.css -o ./renderer/css/styles.css --watch",
+    "prettier": "prettier --write ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Torvec/markthisdown.git"
+  },
+  "keywords": [
+    "markdown"
+  ],
+  "author": "Edward Vonschondorf",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Torvec/markthisdown/issues"
+  },
+  "homepage": "https://github.com/Torvec/markthisdown#readme",
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.7",
+    "tailwindcss": "^4.1.7"
+  },
+  "devDependencies": {
+    "electron": "^36.2.1",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11"
+  }
+}
