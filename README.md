@@ -6,6 +6,10 @@ A local only, minimalist, markdown editor
 
 The proof of concept/experimentation version of the app, requires python to use. Not being developed further, just keeping it for historical purposes.
 
-## v1 - Electron
+## v1 - Electron, Vite, React, and TypeScript
 
-A local only, minimalist, markdown editor app built with electron! **COMING SOON!**
+A local only, minimalist, markdown editor app built with Electron, Vite, React, and Typescript! **COMING SOON!**
+
+## v1-a1 - Electron and Vanilla JS
+
+A local only, minimalist, markdown editor app built with electron! _**Discontinued**_
