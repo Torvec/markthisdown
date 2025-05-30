@@ -2,18 +2,24 @@ import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
 interface MainMenuProps {
+  fileInfo: { filename: string; filepath: string; showFileInFolderDisabled: boolean };
   setFileInfo: (info: {
     filename: string;
     filepath: string;
     showFileInFolderDisabled: boolean;
   }) => void;
+  fmContent: string;
   setFmContent: (content: string) => void;
+  bodyContent: string;
   setBodyContent: (content: string) => void;
 }
 
 function MainMenu({
+  fileInfo,
   setFileInfo,
+  fmContent,
   setFmContent,
+  bodyContent,
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -74,8 +80,24 @@ function MainMenu({
 
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleSaveAsTrigger = () => console.log("Handled Save As Trigger");
+
+  const handleSaveAsTrigger = async (): Promise<void> => {
+    const saveFileDialog = await window.electron.ipcRenderer.invoke(
+      "save-file-dialog",
+      fileInfo.filepath,
+      combineEditorContent(),
+    );
+    if (saveFileDialog !== undefined) {
+      setFileInfo({
+        filename: saveFileDialog.filename,
+        filepath: saveFileDialog.filepath,
+        showFileInFolderDisabled: false,
+      });
+      setFmContent(saveFileDialog.frontmatter);
+      setBodyContent(saveFileDialog.body);
+    }
+  };
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleSaveTrigger = () => console.log("Handled Save Trigger");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -118,6 +140,12 @@ function MainMenu({
         {children}
       </div>
     );
+  };
+
+  const combineEditorContent = (): string => {
+    const trimFmContent = fmContent.trim() + "\n\n";
+    const trimBodyContent = bodyContent.trim();
+    return trimFmContent + trimBodyContent;
   };
 
   return (

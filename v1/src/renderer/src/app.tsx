@@ -17,15 +17,18 @@ function App(): React.JSX.Element {
     <>
       <header className="mx-auto flex border-b border-neutral-700 text-sm font-medium">
         <MainMenu
+          fileInfo={fileInfo}
           setFileInfo={setFileInfo}
+          fmContent={fmContent}
           setFmContent={setFmContent}
+          bodyContent={bodyContent}
           setBodyContent={setBodyContent}
         />
       </header>
       <main className="mx-auto space-y-2 bg-neutral-900 p-2">
         <FileInfo fileInfo={fileInfo} />
-        <FrontmatterEditor fmContent={fmContent} />
-        <BodyEditor bodyContent={bodyContent} />
+        <FrontmatterEditor fmContent={fmContent} setFmContent={setFmContent} />
+        <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
       </main>
     </>
   );
