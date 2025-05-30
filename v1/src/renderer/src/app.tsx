@@ -5,6 +5,7 @@ import FrontmatterEditor from "./components/frontmatter-editor";
 import BodyEditor from "./components/body-editor";
 
 function App(): React.JSX.Element {
+  const [isNewFile, setIsNewFile] = useState(true);
   const [fileInfo, setFileInfo] = useState({
     filename: "untitled.md",
     filepath: "untitled.md",
@@ -17,6 +18,8 @@ function App(): React.JSX.Element {
     <>
       <header className="mx-auto flex border-b border-neutral-700 text-sm font-medium">
         <MainMenu
+          isNewFile={isNewFile}
+          setIsNewFile={setIsNewFile}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
           fmContent={fmContent}

@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
 interface MainMenuProps {
+  isNewFile: boolean;
+  setIsNewFile: (filestate: boolean) => void;
   fileInfo: { filename: string; filepath: string; showFileInFolderDisabled: boolean };
   setFileInfo: (info: {
     filename: string;
@@ -15,6 +17,8 @@ interface MainMenuProps {
 }
 
 function MainMenu({
+  isNewFile,
+  setIsNewFile,
   fileInfo,
   setFileInfo,
   fmContent,
@@ -23,6 +27,7 @@ function MainMenu({
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  // const [recentFilesList, setRecentFilesList] = useState([]);
 
   // Create refs for each dropdown
   const newDropdownRef = useRef<HTMLDivElement>(null!);
@@ -88,6 +93,7 @@ function MainMenu({
       combineEditorContent(),
     );
     if (saveFileDialog !== undefined) {
+      setIsNewFile(false);
       setFileInfo({
         filename: saveFileDialog.filename,
         filepath: saveFileDialog.filepath,
@@ -98,8 +104,28 @@ function MainMenu({
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleSaveTrigger = () => console.log("Handled Save Trigger");
+  const handleSaveTrigger = async (): Promise<void> => {
+    const savedFile = isNewFile
+      ? await window.electron.ipcRenderer.invoke(
+          "save-file-dialog",
+          fileInfo.filepath,
+          combineEditorContent(),
+        )
+      : await window.electron.ipcRenderer.invoke(
+          "save-file",
+          fileInfo.filepath,
+          combineEditorContent(),
+        );
+    setIsNewFile(false);
+    setFileInfo({
+      filename: savedFile.filename,
+      filepath: savedFile.filepath,
+      showFileInFolderDisabled: false,
+    });
+    setFmContent(savedFile.frontmatter);
+    setBodyContent(savedFile.body);
+  };
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleClearAllConfirm = () => console.log("Clear All Confirmed");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type

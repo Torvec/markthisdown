@@ -91,10 +91,12 @@ function getRecentFilesPath(): string {
   return recentFilesJSONPath;
 }
 
-function filterExistingRecentFiles(recentFilesJSONPath): string {
-  const fileContents = readAndParseFile(recentFilesJSONPath);
+type RecentFile = { filename: string; filepath: string };
+
+function filterExistingRecentFiles(recentFilesJSONPath: string): string {
+  const fileContents: RecentFile[] = readAndParseFile(recentFilesJSONPath);
   let modified = false;
-  const filteredFilesList = fileContents.filter((item) => {
+  const filteredFilesList: RecentFile[] = fileContents.filter((item: RecentFile) => {
     try {
       fs.accessSync(item.filepath, fs.constants.F_OK);
       return true;
@@ -124,8 +126,6 @@ function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): 
   if (fileContents.length > maxSize) fileContents.pop();
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
-
-type RecentFile = { filename: string; filepath: string };
 
 const readAndParseFile = (filepath: string): RecentFile[] => {
   return JSON.parse(fs.readFileSync(filepath, "utf8"));

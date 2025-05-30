@@ -3,7 +3,7 @@ import React from "react";
 type FrontmatterEditorProps = {
   fmContent: string;
   setFmContent: (value: string) => void;
-}
+};
 
 function FrontmatterEditor({
   fmContent,
