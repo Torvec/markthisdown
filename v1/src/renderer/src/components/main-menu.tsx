@@ -1,7 +1,21 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
-function MainMenu(): React.ReactElement {
+interface MainMenuProps {
+  setFileInfo: (info: {
+    filename: string;
+    filepath: string;
+    showFileInFolderDisabled: boolean;
+  }) => void;
+  setFmContent: (content: string) => void;
+  setBodyContent: (content: string) => void;
+}
+
+function MainMenu({
+  setFileInfo,
+  setFmContent,
+  setBodyContent,
+}: MainMenuProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Create refs for each dropdown
@@ -44,8 +58,20 @@ function MainMenu(): React.ReactElement {
   const handleNewFileWithFm = () => console.log("Handled New File Trigger");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleNewFileNoFm = () => console.log("Handled New File Trigger");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleOpenFileTrigger = () => console.log("Handled Open File Trigger");
+
+  const handleOpenFileTrigger = async (): Promise<void> => {
+    const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
+    if (openFileDialog !== undefined) {
+      setFileInfo({
+        filename: openFileDialog.filename,
+        filepath: openFileDialog.filepath,
+        showFileInFolderDisabled: false,
+      });
+      setFmContent(openFileDialog.frontmatter);
+      setBodyContent(openFileDialog.body);
+    }
+  };
+
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -99,7 +125,9 @@ function MainMenu(): React.ReactElement {
       <span className="px-4 font-normal">File</span>
       {/* New */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("new")}>New +</Button>
+        <Button onClick={() => toggleDropdown("new")} disabled={false}>
+          New +
+        </Button>
         {openDropdown === "new" && (
           <DropDownMenu ref={newDropdownRef}>
             <button
@@ -125,7 +153,9 @@ function MainMenu(): React.ReactElement {
       </div>
 
       {/* Open */}
-      <Button onClick={handleOpenFileTrigger}>Open</Button>
+      <Button onClick={handleOpenFileTrigger} disabled={false}>
+        Open
+      </Button>
 
       {/* Recent */}
       <div className="relative">
@@ -134,6 +164,7 @@ function MainMenu(): React.ReactElement {
             toggleDropdown("recent");
             handleOpenRecentTrigger();
           }}
+          disabled={false}
         >
           Recent +
         </Button>
@@ -156,14 +187,20 @@ function MainMenu(): React.ReactElement {
       </div>
 
       {/* Save As */}
-      <Button onClick={handleSaveAsTrigger}>Save As</Button>
+      <Button onClick={handleSaveAsTrigger} disabled={false}>
+        Save As
+      </Button>
 
       {/* Save */}
-      <Button onClick={handleSaveTrigger}>Save</Button>
+      <Button onClick={handleSaveTrigger} disabled={false}>
+        Save
+      </Button>
 
       {/* Clear All */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("clearAll")}>Clear All +</Button>
+        <Button onClick={() => toggleDropdown("clearAll")} disabled={false}>
+          Clear All +
+        </Button>
         {openDropdown === "clearAll" && (
           <DropDownMenu ref={clearAllDropdownRef}>
             <button
@@ -189,20 +226,30 @@ function MainMenu(): React.ReactElement {
       </div>
       <span className="px-4 font-normal">Frontmatter</span>
       {/* Block View */}
-      <Button onClick={handleFmBlockView}>Block View</Button>
+      <Button onClick={handleFmBlockView} disabled={false}>
+        Block View
+      </Button>
 
       {/* Line Items View */}
-      <Button onClick={handleFmLineItemsView}>Line Items View</Button>
+      <Button onClick={handleFmLineItemsView} disabled={false}>
+        Line Items View
+      </Button>
 
       {/* Hide */}
-      <Button onClick={handleFmHide}>Hide</Button>
+      <Button onClick={handleFmHide} disabled={false}>
+        Hide
+      </Button>
 
       {/* Show */}
-      <Button onClick={handleFmShow}>Show</Button>
+      <Button onClick={handleFmShow} disabled={false}>
+        Show
+      </Button>
 
       {/* Clear */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("clear")}>Clear +</Button>
+        <Button onClick={() => toggleDropdown("clear")} disabled={false}>
+          Clear +
+        </Button>
         {openDropdown === "clear" && (
           <DropDownMenu ref={clearFmDropdownRef}>
             <button
@@ -229,7 +276,9 @@ function MainMenu(): React.ReactElement {
 
       {/* Remove */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("remove")}>Remove +</Button>
+        <Button onClick={() => toggleDropdown("remove")} disabled={false}>
+          Remove +
+        </Button>
         {openDropdown === "remove" && (
           <DropDownMenu ref={clearFmDropdownRef}>
             <button
@@ -255,7 +304,9 @@ function MainMenu(): React.ReactElement {
       </div>
 
       {/* Add */}
-      <Button onClick={handleFmAdd}>Add</Button>
+      <Button onClick={handleFmAdd} disabled={false}>
+        Add
+      </Button>
     </nav>
   );
 }

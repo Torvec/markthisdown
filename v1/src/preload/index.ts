@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
 
 // Custom APIs for renderer
@@ -11,14 +11,14 @@ if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld("electron", electronAPI);
     contextBridge.exposeInMainWorld("api", api);
-    contextBridge.exposeInMainWorld("fileAPI", {
-      saveFileDialog: (filepath, content) =>
-        ipcRenderer.invoke("save-file-dialog", filepath, content),
-      saveFile: (filepath, content) => ipcRenderer.invoke("save-file", filepath, content),
-      openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
-      getRecentFiles: () => ipcRenderer.invoke("get-recent-files"),
-      openRecentFile: (filepath) => ipcRenderer.invoke("open-recent-file", filepath),
-    });
+    // contextBridge.exposeInMainWorld("fileAPI", {
+    //   saveFileDialog: (filepath, content) =>
+    //     ipcRenderer.invoke("save-file-dialog", filepath, content),
+    //   saveFile: (filepath, content) => ipcRenderer.invoke("save-file", filepath, content),
+    //   openFileDialog: () => ipcRenderer.invoke("open-file-dialog"),
+    //   getRecentFiles: () => ipcRenderer.invoke("get-recent-files"),
+    //   openRecentFile: (filepath) => ipcRenderer.invoke("open-recent-file", filepath),
+    // });
   } catch (error) {
     console.error(error);
   }

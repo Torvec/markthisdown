@@ -5,21 +5,22 @@ import FrontmatterEditor from "./components/frontmatter-editor";
 import BodyEditor from "./components/body-editor";
 
 function App(): React.JSX.Element {
-  const [fileInfo, setFileInfo] = useState({ filename: "untitled.md", filepath: "untitled.md" });
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [fileInfo, setFileInfo] = useState({
+    filename: "untitled.md",
+    filepath: "untitled.md",
+    showFileInFolderDisabled: true,
+  });
   const [fmContent, setFmContent] = useState("---\nkey: value\n---");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [bodyContent, setBodyContent] = useState("Body Content");
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleFileInfo = (file): void => {
-    setFileInfo({ filename: file.filename, filepath: file.filepath });
-  };
 
   return (
     <>
-      <header className="mx-auto flex border-b border-neutral-700 pl-2 text-sm font-medium">
-        <MainMenu />
+      <header className="mx-auto flex border-b border-neutral-700 text-sm font-medium">
+        <MainMenu
+          setFileInfo={setFileInfo}
+          setFmContent={setFmContent}
+          setBodyContent={setBodyContent}
+        />
       </header>
       <main className="mx-auto space-y-2 bg-neutral-900 p-2">
         <FileInfo fileInfo={fileInfo} />
