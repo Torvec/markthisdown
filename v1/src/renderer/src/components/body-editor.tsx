@@ -1,4 +1,10 @@
-function BodyEditor({ bodyContent }) {
+import React from "react";
+
+type BodyEditorProps = {
+  bodyContent: string;
+};
+
+const BodyEditor: React.FC<BodyEditorProps> = ({ bodyContent }) => {
   return (
     <section>
       <textarea
@@ -9,6 +15,6 @@ function BodyEditor({ bodyContent }) {
       ></textarea>
     </section>
   );
-}
+};
 
 export default BodyEditor;

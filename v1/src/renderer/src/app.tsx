@@ -6,10 +6,13 @@ import BodyEditor from "./components/body-editor";
 
 function App(): React.JSX.Element {
   const [fileInfo, setFileInfo] = useState({ filename: "untitled.md", filepath: "untitled.md" });
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [fmContent, setFmContent] = useState("---\nkey: value\n---");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [bodyContent, setBodyContent] = useState("Body Content");
 
-  const handleFileInfo = (file) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handleFileInfo = (file): void => {
     setFileInfo({ filename: file.filename, filepath: file.filepath });
   };
 

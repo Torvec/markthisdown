@@ -1,4 +1,6 @@
-function FrontmatterEditor({ fmContent }) {
+import React from "react";
+
+function FrontmatterEditor({ fmContent }: { fmContent: string }): React.ReactElement {
   return (
     <div id="fmEditor">
       <textarea

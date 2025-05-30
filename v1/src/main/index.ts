@@ -1,14 +1,15 @@
-import { app, shell, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, shell, BrowserWindow, ipcMain, dialog, screen } from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
 function createWindow(): void {
-  // Create the browser window.
+  const { height } = screen.getPrimaryDisplay().workAreaSize;
+  const size = height;
   const mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 1280,
+    width: size,
+    height: size,
     show: false,
     autoHideMenuBar: true,
     ...(process.platform === "linux" ? { icon } : {}),
@@ -20,6 +21,7 @@ function createWindow(): void {
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+    mainWindow.webContents.openDevTools();
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
@@ -77,7 +79,7 @@ app.on("window-all-closed", () => {
 const recentFilesDir = "userData";
 const recentFilesName = "recent-files.json";
 
-function getRecentFilesPath() {
+function getRecentFilesPath(): string {
   const recentFilesJSONPath = path.join(app.getPath(recentFilesDir), recentFilesName);
   try {
     fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
@@ -88,7 +90,7 @@ function getRecentFilesPath() {
   return recentFilesJSONPath;
 }
 
-function filterExistingRecentFiles(recentFilesJSONPath) {
+function filterExistingRecentFiles(recentFilesJSONPath): string {
   const fileContents = readAndParseFile(recentFilesJSONPath);
   let modified = false;
   const filteredFilesList = fileContents.filter((item) => {
@@ -106,7 +108,7 @@ function filterExistingRecentFiles(recentFilesJSONPath) {
   return recentFilesJSONPath;
 }
 
-function updateRecentFilesList(recentFilesPath, addedFilePath) {
+function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): void {
   const fileContents = readAndParseFile(recentFilesPath);
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
@@ -122,17 +124,24 @@ function updateRecentFilesList(recentFilesPath, addedFilePath) {
   writeAndStringifyFile(recentFilesPath, fileContents);
 }
 
-const readAndParseFile = (filepath) => {
+type RecentFile = { filename: string; filepath: string };
+
+const readAndParseFile = (filepath: string): RecentFile[] => {
   return JSON.parse(fs.readFileSync(filepath, "utf8"));
 };
 
-const writeAndStringifyFile = (filepath, data) => {
+const writeAndStringifyFile = (filepath: string, data: unknown): void => {
   fs.writeFileSync(filepath, JSON.stringify(data));
 };
 
-function parseFileForEditors(filepath) {
+function parseFileForEditors(filepath: string): {
+  filepath: string;
+  filename: string;
+  frontmatter: string | null;
+  body: string;
+} {
   const contents = fs.readFileSync(filepath, "utf8");
-  let frontmatter = null;
+  let frontmatter: string | null = null;
   let body = contents;
   const match = contents.match(/^---\r?\n[\s\S]*?\r?\n---/);
   if (match) {
@@ -153,7 +162,11 @@ ipcMain.handle("get-recent-files", () => {
   try {
     return readAndParseFile(getRecentFilesPath());
   } catch (err) {
-    console.error(err.message);
+    if (err instanceof Error) {
+      console.error(err.message);
+    } else {
+      console.error(err);
+    }
     return "[]";
   }
 });

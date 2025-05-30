@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
-function MainMenu() {
+function MainMenu(): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   // Create refs for each dropdown
@@ -22,7 +22,7 @@ function MainMenu() {
 
   // Closes drop down menus if you click outside of them
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent): void {
       if (
         openDropdown &&
         dropdownRefs[openDropdown] &&
@@ -34,28 +34,45 @@ function MainMenu() {
     }
     if (openDropdown) document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openDropdown]);
+  });
 
   // Dropdown handlers
-  const toggleDropdown = (id: string) => setOpenDropdown(openDropdown === id ? null : id);
+  const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
 
   // Button handlers
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleNewFileWithFm = () => console.log("Handled New File Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleNewFileNoFm = () => console.log("Handled New File Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenFileTrigger = () => console.log("Handled Open File Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleSaveAsTrigger = () => console.log("Handled Save As Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleSaveTrigger = () => console.log("Handled Save Trigger");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleClearAllConfirm = () => console.log("Clear All Confirmed");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleClearAllCancel = () => console.log("Clear All Canceled");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmBlockView = () => console.log("Block View clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmLineItemsView = () => console.log("Line Items View clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmHide = () => console.log("Hide clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmShow = () => console.log("Show clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmConfirmClear = () => console.log("Clear Confirm clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmCancelClear = () => console.log("Clear Cancel clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmConfirmRemove = () => console.log("Remove Confirm clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmCancelRemove = () => console.log("Remove Cancel clicked");
+  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmAdd = () => console.log("Add clicked");
 
   // Placeholder for recent files
@@ -64,13 +81,9 @@ function MainMenu() {
     { label: "File2.md", onClick: () => console.log("Open File2.md") },
   ];
 
-  const DropDownMenu = ({
-    ref,
-    children,
-  }: {
-    ref: React.RefObject<HTMLDivElement>;
-    children: React.ReactNode;
-  }) => {
+  type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
+
+  const DropDownMenu = ({ ref, children }: DropDownMenuProps): React.ReactElement => {
     return (
       <div
         ref={ref}
@@ -86,7 +99,7 @@ function MainMenu() {
       <span className="px-4 font-normal">File</span>
       {/* New */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("new")}>New</Button>
+        <Button onClick={() => toggleDropdown("new")}>New +</Button>
         {openDropdown === "new" && (
           <DropDownMenu ref={newDropdownRef}>
             <button
@@ -122,11 +135,11 @@ function MainMenu() {
             handleOpenRecentTrigger();
           }}
         >
-          Recent
+          Recent +
         </Button>
         {openDropdown === "recent" && (
           <DropDownMenu ref={recentDropdownRef}>
-            {recentFiles.map((file, idx) => (
+            {recentFiles.map((file) => (
               <button
                 key={file.label}
                 className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
@@ -150,7 +163,7 @@ function MainMenu() {
 
       {/* Clear All */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("clearAll")}>Clear All</Button>
+        <Button onClick={() => toggleDropdown("clearAll")}>Clear All +</Button>
         {openDropdown === "clearAll" && (
           <DropDownMenu ref={clearAllDropdownRef}>
             <button
@@ -189,7 +202,7 @@ function MainMenu() {
 
       {/* Clear */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("clear")}>Clear</Button>
+        <Button onClick={() => toggleDropdown("clear")}>Clear +</Button>
         {openDropdown === "clear" && (
           <DropDownMenu ref={clearFmDropdownRef}>
             <button
@@ -216,7 +229,7 @@ function MainMenu() {
 
       {/* Remove */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("remove")}>Remove</Button>
+        <Button onClick={() => toggleDropdown("remove")}>Remove +</Button>
         {openDropdown === "remove" && (
           <DropDownMenu ref={clearFmDropdownRef}>
             <button
