@@ -1,121 +1,249 @@
+import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
 function MainMenu() {
-  const handleNewFileTrigger = () => {
-    console.log("Handled New File Trigger");
-    // Opens a drop down menu
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Create refs for each dropdown
+  const newDropdownRef = useRef<HTMLDivElement>(null!);
+  const recentDropdownRef = useRef<HTMLDivElement>(null!);
+  const clearAllDropdownRef = useRef<HTMLDivElement>(null!);
+  const clearFmDropdownRef = useRef<HTMLDivElement>(null!);
+  const removeFmDropdownRef = useRef<HTMLDivElement>(null!);
+
+  // Map dropdown keys to refs
+  const dropdownRefs: Record<string, React.RefObject<HTMLDivElement>> = {
+    new: newDropdownRef,
+    recent: recentDropdownRef,
+    clearAll: clearAllDropdownRef,
+    clear: clearFmDropdownRef,
+    remove: removeFmDropdownRef,
   };
 
-  const handleOpenFileTrigger = () => {
-    console.log("Handled Open File Trigger");
-    // Opens the open file dialog
-  };
+  // Closes drop down menus if you click outside of them
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        openDropdown &&
+        dropdownRefs[openDropdown] &&
+        dropdownRefs[openDropdown].current &&
+        !dropdownRefs[openDropdown].current!.contains(event.target as Node)
+      ) {
+        setOpenDropdown(null);
+      }
+    }
+    if (openDropdown) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openDropdown]);
 
-  const handleOpenRecentTrigger = () => {
-    console.log("Handled Open Recent Trigger");
-    // Opens a drop down menu
-  };
+  // Dropdown handlers
+  const toggleDropdown = (id: string) => setOpenDropdown(openDropdown === id ? null : id);
 
-  const handleSaveAsTrigger = () => {
-    console.log("Handled Save As Trigger");
-    // Opens the save file dialog
-  };
+  // Button handlers
+  const handleNewFileWithFm = () => console.log("Handled New File Trigger");
+  const handleNewFileNoFm = () => console.log("Handled New File Trigger");
+  const handleOpenFileTrigger = () => console.log("Handled Open File Trigger");
+  const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
+  const handleSaveAsTrigger = () => console.log("Handled Save As Trigger");
+  const handleSaveTrigger = () => console.log("Handled Save Trigger");
+  const handleClearAllConfirm = () => console.log("Clear All Confirmed");
+  const handleClearAllCancel = () => console.log("Clear All Canceled");
+  const handleFmBlockView = () => console.log("Block View clicked");
+  const handleFmLineItemsView = () => console.log("Line Items View clicked");
+  const handleFmHide = () => console.log("Hide clicked");
+  const handleFmShow = () => console.log("Show clicked");
+  const handleFmConfirmClear = () => console.log("Clear Confirm clicked");
+  const handleFmCancelClear = () => console.log("Clear Cancel clicked");
+  const handleFmConfirmRemove = () => console.log("Remove Confirm clicked");
+  const handleFmCancelRemove = () => console.log("Remove Cancel clicked");
+  const handleFmAdd = () => console.log("Add clicked");
 
-  const handleSaveTrigger = () => {
-    console.log("Handled Save Trigger");
-    // Opens the save file dialog if file has not been saved once, other wise saves file
-  };
+  // Placeholder for recent files
+  const recentFiles = [
+    { label: "File1.md", onClick: () => console.log("Open File1.md") },
+    { label: "File2.md", onClick: () => console.log("Open File2.md") },
+  ];
 
-  const handleClearAllTrigger = () => {
-    console.log("Handled Clear All Trigger");
-    // Opens a drop down menu
+  const DropDownMenu = ({
+    ref,
+    children,
+  }: {
+    ref: React.RefObject<HTMLDivElement>;
+    children: React.ReactNode;
+  }) => {
+    return (
+      <div
+        ref={ref}
+        className="absolute left-0 top-full z-10 min-w-max border border-neutral-500 bg-black"
+      >
+        {children}
+      </div>
+    );
   };
 
   return (
-    <>
+    <nav className="flex items-center gap-0.5">
+      <span className="px-4 font-normal">File</span>
+      {/* New */}
+      <div className="relative">
+        <Button onClick={() => toggleDropdown("new")}>New</Button>
+        {openDropdown === "new" && (
+          <DropDownMenu ref={newDropdownRef}>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleNewFileWithFm();
+                setOpenDropdown(null);
+              }}
+            >
+              With Frontmatter
+            </button>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleNewFileNoFm();
+                setOpenDropdown(null);
+              }}
+            >
+              No Frontmatter
+            </button>
+          </DropDownMenu>
+        )}
+      </div>
+
+      {/* Open */}
+      <Button onClick={handleOpenFileTrigger}>Open</Button>
+
+      {/* Recent */}
       <div className="relative">
         <Button
-          twc="border-yellow-500/80 from-yellow-900/20 to-transparent hover:bg-yellow-500/10"
-          onClick={handleNewFileTrigger}
+          onClick={() => {
+            toggleDropdown("recent");
+            handleOpenRecentTrigger();
+          }}
         >
-          New +
+          Recent
         </Button>
-        <div
-          id="newFileOptions"
-          className="absolute left-0 top-10 z-10 hidden min-w-max border border-yellow-500/80 bg-black"
-        >
-          <button
-            id="newFileWithFm"
-            className="w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-          >
-            With Frontmatter
-          </button>
-          <button
-            id="newFileNoFm"
-            className="w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-          >
-            No Frontmatter
-          </button>
-        </div>
+        {openDropdown === "recent" && (
+          <DropDownMenu ref={recentDropdownRef}>
+            {recentFiles.map((file, idx) => (
+              <button
+                key={file.label}
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  file.onClick();
+                  setOpenDropdown(null);
+                }}
+              >
+                {file.label}
+              </button>
+            ))}
+          </DropDownMenu>
+        )}
       </div>
-      <Button
-        twc="border-blue-500/80 from-blue-900/40 to-transparent hover:bg-blue-500/10"
-        onClick={handleOpenFileTrigger}
-      >
-        Open
-      </Button>
+
+      {/* Save As */}
+      <Button onClick={handleSaveAsTrigger}>Save As</Button>
+
+      {/* Save */}
+      <Button onClick={handleSaveTrigger}>Save</Button>
+
+      {/* Clear All */}
       <div className="relative">
-        <Button
-          twc="border-violet-500/80 from-violet-900/20 to-transparent hover:bg-violet-500/10"
-          onClick={handleOpenRecentTrigger}
-        >
-          Recent +
-        </Button>
-        <div
-          id="recentFilesMenu"
-          className="w-lg absolute left-0 top-10 z-10 hidden border border-violet-500/80"
-        >
-          {/* Recent Files List Goes Here */}
-        </div>
+        <Button onClick={() => toggleDropdown("clearAll")}>Clear All</Button>
+        {openDropdown === "clearAll" && (
+          <DropDownMenu ref={clearAllDropdownRef}>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleClearAllConfirm();
+                setOpenDropdown(null);
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleClearAllCancel();
+                setOpenDropdown(null);
+              }}
+            >
+              Cancel
+            </button>
+          </DropDownMenu>
+        )}
       </div>
-      <Button
-        twc="border-lime-500 from-lime-900/40 to-transparent hover:bg-lime-500/10"
-        onClick={handleSaveAsTrigger}
-      >
-        Save As
-      </Button>
-      <Button
-        twc="not-disabled:hover:bg-emerald-500/10 border-emerald-500 border-r from-emerald-900/40 to-transparent"
-        onClick={handleSaveTrigger}
-      >
-        Save
-      </Button>
-      <div className="relative ml-auto pr-2">
-        <Button
-          twc="border-red-500 from-red-900/40 to-transparent hover:bg-red-500/10"
-          onClick={handleClearAllTrigger}
-        >
-          Clear All +
-        </Button>
-        <div
-          id="clearAllMenu"
-          className="absolute right-0 top-10 z-10 hidden min-w-max border border-red-500/80 bg-black"
-        >
-          <button
-            id="confirmClearAll"
-            className="w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-          >
-            Confirm
-          </button>
-          <button
-            id="cancelClearAll"
-            className="w-full cursor-pointer px-6 py-2 transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-          >
-            Cancel
-          </button>
-        </div>
+      <span className="px-4 font-normal">Frontmatter</span>
+      {/* Block View */}
+      <Button onClick={handleFmBlockView}>Block View</Button>
+
+      {/* Line Items View */}
+      <Button onClick={handleFmLineItemsView}>Line Items View</Button>
+
+      {/* Hide */}
+      <Button onClick={handleFmHide}>Hide</Button>
+
+      {/* Show */}
+      <Button onClick={handleFmShow}>Show</Button>
+
+      {/* Clear */}
+      <div className="relative">
+        <Button onClick={() => toggleDropdown("clear")}>Clear</Button>
+        {openDropdown === "clear" && (
+          <DropDownMenu ref={clearFmDropdownRef}>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleFmConfirmClear();
+                setOpenDropdown(null);
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleFmCancelClear();
+                setOpenDropdown(null);
+              }}
+            >
+              Cancel
+            </button>
+          </DropDownMenu>
+        )}
       </div>
-    </>
+
+      {/* Remove */}
+      <div className="relative">
+        <Button onClick={() => toggleDropdown("remove")}>Remove</Button>
+        {openDropdown === "remove" && (
+          <DropDownMenu ref={clearFmDropdownRef}>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleFmConfirmRemove();
+                setOpenDropdown(null);
+              }}
+            >
+              Confirm
+            </button>
+            <button
+              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              onClick={() => {
+                handleFmCancelRemove();
+                setOpenDropdown(null);
+              }}
+            >
+              Cancel
+            </button>
+          </DropDownMenu>
+        )}
+      </div>
+
+      {/* Add */}
+      <Button onClick={handleFmAdd}>Add</Button>
+    </nav>
   );
 }
 
