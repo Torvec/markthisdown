@@ -7,9 +7,7 @@ interface FrontmatterMenuBarProps {
   handleFmHide: () => void;
   handleFmShow: () => void;
   handleFmConfirmClear: () => void;
-  handleFmCancelClear: () => void;
   handleFmConfirmRemove: () => void;
-  handleFmCancelRemove: () => void;
   handleFmAdd: () => void;
 }
 
@@ -19,9 +17,7 @@ export default function FrontmatterMenuBar({
   handleFmHide,
   handleFmShow,
   handleFmConfirmClear,
-  handleFmCancelClear,
   handleFmConfirmRemove,
-  handleFmCancelRemove,
   handleFmAdd,
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -105,10 +101,7 @@ export default function FrontmatterMenuBar({
             </button>
             <button
               className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleFmCancelClear();
-                setOpenDropdown(null);
-              }}
+              onClick={() => setOpenDropdown(null)}
             >
               Cancel
             </button>
@@ -134,10 +127,7 @@ export default function FrontmatterMenuBar({
             </button>
             <button
               className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleFmCancelRemove();
-                setOpenDropdown(null);
-              }}
+              onClick={() => setOpenDropdown(null)}
             >
               Cancel
             </button>

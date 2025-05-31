@@ -9,7 +9,6 @@ interface FileMenuBarProps {
   handleSaveAsTrigger: () => void;
   handleSaveTrigger: () => void;
   handleClearAllConfirm: () => void;
-  handleClearAllCancel: () => void;
 }
 
 export default function FileMenuBar({
@@ -20,7 +19,6 @@ export default function FileMenuBar({
   handleSaveAsTrigger,
   handleSaveTrigger,
   handleClearAllConfirm,
-  handleClearAllCancel,
 }: FileMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -164,7 +162,6 @@ export default function FileMenuBar({
             <button
               className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
               onClick={() => {
-                handleClearAllCancel();
                 setOpenDropdown(null);
               }}
             >

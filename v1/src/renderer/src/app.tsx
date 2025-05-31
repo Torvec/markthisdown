@@ -6,6 +6,7 @@ import BodyEditor from "./components/body-editor";
 
 function App(): React.JSX.Element {
   const [isNewFile, setIsNewFile] = useState(true);
+  const [FmIsEnabled, setFmIsEnabled] = useState(true);
   const [fileInfo, setFileInfo] = useState({
     filename: "untitled.md",
     filepath: "untitled.md",
@@ -20,6 +21,8 @@ function App(): React.JSX.Element {
         <MainMenu
           isNewFile={isNewFile}
           setIsNewFile={setIsNewFile}
+          FmIsEnabled={FmIsEnabled}
+          setFmIsEnabled={setFmIsEnabled}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
           fmContent={fmContent}
@@ -30,7 +33,11 @@ function App(): React.JSX.Element {
       </header>
       <main className="mx-auto space-y-2 bg-neutral-900 p-2">
         <FileInfo fileInfo={fileInfo} />
-        <FrontmatterEditor fmContent={fmContent} setFmContent={setFmContent} />
+        <FrontmatterEditor
+          FmIsEnabled={FmIsEnabled}
+          fmContent={fmContent}
+          setFmContent={setFmContent}
+        />
         <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
       </main>
     </>

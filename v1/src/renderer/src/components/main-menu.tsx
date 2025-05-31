@@ -4,6 +4,8 @@ import FrontmatterMenuBar from "./frontmatter-menu-bar";
 interface MainMenuProps {
   isNewFile: boolean;
   setIsNewFile: (filestate: boolean) => void;
+  FmIsEnabled: boolean;
+  setFmIsEnabled: (fmState: boolean) => void;
   fileInfo: { filename: string; filepath: string; showFileInFolderDisabled: boolean };
   setFileInfo: (info: {
     filename: string;
@@ -11,7 +13,7 @@ interface MainMenuProps {
     showFileInFolderDisabled: boolean;
   }) => void;
   fmContent: string;
-  setFmContent: (content: string) => void;
+  setFmContent: (content: string | null) => void;
   bodyContent: string;
   setBodyContent: (content: string) => void;
 }
@@ -19,6 +21,8 @@ interface MainMenuProps {
 export default function MainMenu({
   isNewFile,
   setIsNewFile,
+  // FmIsEnabled,
+  setFmIsEnabled,
   fileInfo,
   setFileInfo,
   fmContent,
@@ -26,11 +30,31 @@ export default function MainMenu({
   bodyContent,
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleNewFileWithFm = () => console.log("Handled New File Trigger");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleNewFileNoFm = () => console.log("Handled New File Trigger");
+  // NEW FILE WITH FM
+  const handleNewFileWithFm = (): void => {
+    setFmIsEnabled(true);
+    setFileInfo({
+      filename: "untitled.md",
+      filepath: "untitled.md",
+      showFileInFolderDisabled: true,
+    });
+    setFmContent("---\nkey: value\n---");
+    setBodyContent("Body Content");
+  };
 
+  // NEW FILE NO FM
+  const handleNewFileNoFm = (): void => {
+    setFmIsEnabled(false);
+    setFileInfo({
+      filename: "untitled.md",
+      filepath: "untitled.md",
+      showFileInFolderDisabled: true,
+    });
+    setFmContent(null);
+    setBodyContent("Body Content");
+  };
+
+  // OPEN FILE
   const handleOpenFileTrigger = async (): Promise<void> => {
     const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
     if (openFileDialog !== undefined) {
@@ -44,9 +68,11 @@ export default function MainMenu({
     }
   };
 
+  // OPEN RECENT FILE
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
 
+  // SAVE AS
   const handleSaveAsTrigger = async (): Promise<void> => {
     const saveFileDialog = await window.electron.ipcRenderer.invoke(
       "save-file-dialog",
@@ -65,6 +91,7 @@ export default function MainMenu({
     }
   };
 
+  // SAVE
   const handleSaveTrigger = async (): Promise<void> => {
     const savedFile = isNewFile
       ? await window.electron.ipcRenderer.invoke(
@@ -87,10 +114,9 @@ export default function MainMenu({
     setBodyContent(savedFile.body);
   };
 
+  // CLEAR ALL CONFIRM
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleClearAllConfirm = () => console.log("Clear All Confirmed");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleClearAllCancel = () => console.log("Clear All Canceled");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmBlockView = () => console.log("Block View clicked");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
@@ -102,11 +128,7 @@ export default function MainMenu({
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmConfirmClear = () => console.log("Clear Confirm clicked");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmCancelClear = () => console.log("Clear Cancel clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmConfirmRemove = () => console.log("Remove Confirm clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmCancelRemove = () => console.log("Remove Cancel clicked");
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleFmAdd = () => console.log("Add clicked");
 
@@ -126,7 +148,6 @@ export default function MainMenu({
         handleSaveAsTrigger={handleSaveAsTrigger}
         handleSaveTrigger={handleSaveTrigger}
         handleClearAllConfirm={handleClearAllConfirm}
-        handleClearAllCancel={handleClearAllCancel}
       />
       <FrontmatterMenuBar
         handleFmBlockView={handleFmBlockView}
@@ -134,9 +155,7 @@ export default function MainMenu({
         handleFmHide={handleFmHide}
         handleFmShow={handleFmShow}
         handleFmConfirmClear={handleFmConfirmClear}
-        handleFmCancelClear={handleFmCancelClear}
         handleFmConfirmRemove={handleFmConfirmRemove}
-        handleFmCancelRemove={handleFmCancelRemove}
         handleFmAdd={handleFmAdd}
       />
     </nav>
