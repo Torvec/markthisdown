@@ -211,3 +211,7 @@ ipcMain.handle("open-file-dialog", () => {
   updateRecentFilesList(getRecentFilesPath(), openedFile[0]);
   return parseFileForEditors(openedFile[0]);
 });
+
+ipcMain.handle("show-file-in-folder", (_, filepath: string) => {
+  return shell.showItemInFolder(filepath);
+});

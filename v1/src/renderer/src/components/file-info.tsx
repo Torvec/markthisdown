@@ -10,10 +10,8 @@ interface FileInfoProps {
 }
 
 function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
-  const handleShowFileInFolder = (): void => {
-    console.log("Show file in folder handled");
-    // use shell.showItemInFolder(fullPath) in main and create a preload script using contextBridge
-    // Also, needs to be disabled if the file hasn't been saved yet (i.e. it's a new file)
+  const handleShowFileInFolder = async (): Promise<void> => {
+    await window.electron.ipcRenderer.invoke("show-file-in-folder", fileInfo.filepath);
   };
 
   return (
