@@ -2,6 +2,9 @@ import { useState, useRef, useEffect } from "react";
 import Button from "./button";
 
 interface FrontmatterMenuBarProps {
+  fmIsEnabled: boolean;
+  fmViewMode: "block" | "lineitems";
+  fmIsVisible: boolean;
   handleFmBlockView: () => void;
   handleFmLineItemsView: () => void;
   handleFmHide: () => void;
@@ -12,6 +15,9 @@ interface FrontmatterMenuBarProps {
 }
 
 export default function FrontmatterMenuBar({
+  fmIsEnabled,
+  fmViewMode,
+  fmIsVisible,
   handleFmBlockView,
   handleFmLineItemsView,
   handleFmHide,
@@ -63,29 +69,25 @@ export default function FrontmatterMenuBar({
   return (
     <>
       <span className="px-4 font-normal">Frontmatter</span>
-      {/* Block View */}
-      <Button onClick={handleFmBlockView} disabled={false}>
+
+      <Button onClick={handleFmBlockView} disabled={!fmIsEnabled || fmViewMode === "block"}>
         Block View
       </Button>
 
-      {/* Line Items View */}
-      <Button onClick={handleFmLineItemsView} disabled={false}>
+      <Button onClick={handleFmLineItemsView} disabled={!fmIsEnabled || fmViewMode === "lineitems"}>
         Line Items View
       </Button>
 
-      {/* Hide */}
-      <Button onClick={handleFmHide} disabled={false}>
+      <Button onClick={handleFmHide} disabled={!fmIsEnabled || !fmIsVisible}>
         Hide
       </Button>
 
-      {/* Show */}
-      <Button onClick={handleFmShow} disabled={false}>
+      <Button onClick={handleFmShow} disabled={!fmIsEnabled || fmIsVisible}>
         Show
       </Button>
 
-      {/* Clear */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("clear")} disabled={false}>
+        <Button onClick={() => toggleDropdown("clear")} disabled={!fmIsEnabled}>
           Clear +
         </Button>
         {openDropdown === "clear" && (
@@ -109,9 +111,8 @@ export default function FrontmatterMenuBar({
         )}
       </div>
 
-      {/* Remove */}
       <div className="relative">
-        <Button onClick={() => toggleDropdown("remove")} disabled={false}>
+        <Button onClick={() => toggleDropdown("remove")} disabled={!fmIsEnabled}>
           Remove +
         </Button>
         {openDropdown === "remove" && (
@@ -135,8 +136,7 @@ export default function FrontmatterMenuBar({
         )}
       </div>
 
-      {/* Add */}
-      <Button onClick={handleFmAdd} disabled={false}>
+      <Button onClick={handleFmAdd} disabled={fmIsEnabled}>
         Add
       </Button>
     </>

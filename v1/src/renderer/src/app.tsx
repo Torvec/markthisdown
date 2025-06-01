@@ -6,13 +6,15 @@ import BodyEditor from "./components/body-editor";
 
 function App(): React.JSX.Element {
   const [isNewFile, setIsNewFile] = useState(true);
-  const [FmIsEnabled, setFmIsEnabled] = useState(true);
+  const [fmIsEnabled, setFmIsEnabled] = useState(true);
   const [fileInfo, setFileInfo] = useState({
     filename: "untitled.md",
     filepath: "untitled.md",
     showFileInFolderDisabled: true,
   });
-  const [fmContent, setFmContent] = useState("---\nkey: value\n---");
+  const [fmIsVisible, setFmIsVisible] = useState(true);
+  const [fmViewMode, setFmViewMode] = useState<"block" | "lineitems">("block");
+  const [fmContent, setFmContent] = useState<string | null>("---\nkey: value\n---");
   const [bodyContent, setBodyContent] = useState("Body Content");
 
   return (
@@ -21,10 +23,14 @@ function App(): React.JSX.Element {
         <MainMenu
           isNewFile={isNewFile}
           setIsNewFile={setIsNewFile}
-          FmIsEnabled={FmIsEnabled}
+          fmIsEnabled={fmIsEnabled}
           setFmIsEnabled={setFmIsEnabled}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
+          fmViewMode={fmViewMode}
+          setFmViewMode={setFmViewMode}
+          fmIsVisible={fmIsVisible}
+          setFmIsVisible={setFmIsVisible}
           fmContent={fmContent}
           setFmContent={setFmContent}
           bodyContent={bodyContent}
@@ -34,7 +40,9 @@ function App(): React.JSX.Element {
       <main className="mx-auto space-y-2 bg-neutral-900 p-2">
         <FileInfo fileInfo={fileInfo} />
         <FrontmatterEditor
-          FmIsEnabled={FmIsEnabled}
+          fmIsEnabled={fmIsEnabled}
+          fmViewMode={fmViewMode}
+          fmIsVisible={fmIsVisible}
           fmContent={fmContent}
           setFmContent={setFmContent}
         />

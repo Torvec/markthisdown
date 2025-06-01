@@ -4,7 +4,7 @@ import FrontmatterMenuBar from "./frontmatter-menu-bar";
 interface MainMenuProps {
   isNewFile: boolean;
   setIsNewFile: (filestate: boolean) => void;
-  FmIsEnabled: boolean;
+  fmIsEnabled: boolean;
   setFmIsEnabled: (fmState: boolean) => void;
   fileInfo: { filename: string; filepath: string; showFileInFolderDisabled: boolean };
   setFileInfo: (info: {
@@ -12,7 +12,11 @@ interface MainMenuProps {
     filepath: string;
     showFileInFolderDisabled: boolean;
   }) => void;
-  fmContent: string;
+  fmViewMode: "block" | "lineitems";
+  setFmViewMode: (view: "block" | "lineitems") => void;
+  fmIsVisible: boolean;
+  setFmIsVisible: (visible: boolean) => void;
+  fmContent: string | null;
   setFmContent: (content: string | null) => void;
   bodyContent: string;
   setBodyContent: (content: string) => void;
@@ -21,16 +25,19 @@ interface MainMenuProps {
 export default function MainMenu({
   isNewFile,
   setIsNewFile,
-  // FmIsEnabled,
+  fmIsEnabled,
   setFmIsEnabled,
   fileInfo,
   setFileInfo,
+  fmViewMode,
+  setFmViewMode,
+  fmIsVisible,
+  setFmIsVisible,
   fmContent,
   setFmContent,
   bodyContent,
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
-  // NEW FILE WITH FM
   const handleNewFileWithFm = (): void => {
     setFmIsEnabled(true);
     setFileInfo({
@@ -42,7 +49,6 @@ export default function MainMenu({
     setBodyContent("Body Content");
   };
 
-  // NEW FILE NO FM
   const handleNewFileNoFm = (): void => {
     setFmIsEnabled(false);
     setFileInfo({
@@ -54,7 +60,6 @@ export default function MainMenu({
     setBodyContent("Body Content");
   };
 
-  // OPEN FILE
   const handleOpenFileTrigger = async (): Promise<void> => {
     const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
     if (openFileDialog !== undefined) {
@@ -68,30 +73,19 @@ export default function MainMenu({
     }
   };
 
-  // OPEN RECENT FILE
+  //! OPEN RECENT FILE
   // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
   const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
 
-  // SAVE AS
   const handleSaveAsTrigger = async (): Promise<void> => {
     const saveFileDialog = await window.electron.ipcRenderer.invoke(
       "save-file-dialog",
       fileInfo.filepath,
       combineEditorContent(),
     );
-    if (saveFileDialog !== undefined) {
-      setIsNewFile(false);
-      setFileInfo({
-        filename: saveFileDialog.filename,
-        filepath: saveFileDialog.filepath,
-        showFileInFolderDisabled: false,
-      });
-      setFmContent(saveFileDialog.frontmatter);
-      setBodyContent(saveFileDialog.body);
-    }
+    if (saveFileDialog !== undefined) handleFileState(saveFileDialog);
   };
 
-  // SAVE
   const handleSaveTrigger = async (): Promise<void> => {
     const savedFile = isNewFile
       ? await window.electron.ipcRenderer.invoke(
@@ -104,38 +98,66 @@ export default function MainMenu({
           fileInfo.filepath,
           combineEditorContent(),
         );
-    setIsNewFile(false);
-    setFileInfo({
-      filename: savedFile.filename,
-      filepath: savedFile.filepath,
-      showFileInFolderDisabled: false,
-    });
-    setFmContent(savedFile.frontmatter);
-    setBodyContent(savedFile.body);
+    if (savedFile !== undefined) handleFileState(savedFile);
   };
 
-  // CLEAR ALL CONFIRM
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleClearAllConfirm = () => console.log("Clear All Confirmed");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmBlockView = () => console.log("Block View clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmLineItemsView = () => console.log("Line Items View clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmHide = () => console.log("Hide clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmShow = () => console.log("Show clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmConfirmClear = () => console.log("Clear Confirm clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmConfirmRemove = () => console.log("Remove Confirm clicked");
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleFmAdd = () => console.log("Add clicked");
+  interface FileData {
+    filepath: string;
+    filename: string;
+    frontmatter: string | null;
+    body: string;
+  }
+
+  // This only applies to save as and save
+  const handleFileState = (file: FileData | undefined): void => {
+    if (file !== undefined) {
+      setIsNewFile(false);
+      setFileInfo({
+        filename: file.filename,
+        filepath: file.filepath,
+        showFileInFolderDisabled: false,
+      });
+      setFmContent(file.frontmatter);
+      setBodyContent(file.body);
+    }
+  };
 
   const combineEditorContent = (): string => {
-    const trimFmContent = fmContent.trim() + "\n\n";
+    const trimFmContent = fmIsEnabled && fmContent ? fmContent.trim() + "\n\n" : "";
     const trimBodyContent = bodyContent.trim();
     return trimFmContent + trimBodyContent;
+  };
+
+  const handleClearAllConfirm = (): void => {
+    if (fmIsEnabled) setFmContent("---\n\n---");
+    setBodyContent("");
+  };
+
+  // FRONTMATTER HANDLERS
+
+  const handleFmBlockView = (): void => {
+    setFmViewMode("block");
+    if (!fmIsVisible) setFmIsVisible(true);
+  };
+
+  const handleFmLineItemsView = (): void => {
+    setFmViewMode("lineitems");
+    if (!fmIsVisible) setFmIsVisible(true);
+  };
+
+  const handleFmHide = (): void => setFmIsVisible(false);
+
+  const handleFmShow = (): void => setFmIsVisible(true);
+
+  const handleFmConfirmClear = (): void => setFmContent("---\n\n---");
+
+  const handleFmConfirmRemove = (): void => {
+    setFmIsEnabled(false);
+    setFmContent(null);
+  };
+  const handleFmAdd = (): void => {
+    setFmIsEnabled(true);
+    setFmContent("---\n\n---");
   };
 
   return (
@@ -150,6 +172,9 @@ export default function MainMenu({
         handleClearAllConfirm={handleClearAllConfirm}
       />
       <FrontmatterMenuBar
+        fmIsEnabled={fmIsEnabled}
+        fmViewMode={fmViewMode}
+        fmIsVisible={fmIsVisible}
         handleFmBlockView={handleFmBlockView}
         handleFmLineItemsView={handleFmLineItemsView}
         handleFmHide={handleFmHide}
