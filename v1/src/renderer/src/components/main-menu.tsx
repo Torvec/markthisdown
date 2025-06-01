@@ -63,6 +63,7 @@ export default function MainMenu({
   const handleOpenFileTrigger = async (): Promise<void> => {
     const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
     if (openFileDialog !== undefined) {
+      setIsNewFile(false);
       setFileInfo({
         filename: openFileDialog.filename,
         filepath: openFileDialog.filepath,
