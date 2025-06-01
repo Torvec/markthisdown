@@ -74,9 +74,17 @@ export default function MainMenu({
     }
   };
 
-  //! OPEN RECENT FILE
-  // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-  const handleOpenRecentTrigger = () => console.log("Handled Open Recent Trigger");
+  const handleOpenRecentFile = async (filepath: string): Promise<void> => {
+    const openRecentFile = await window.electron.ipcRenderer.invoke("open-recent-file", filepath);
+    setIsNewFile(false);
+    setFileInfo({
+      filename: openRecentFile.filename,
+      filepath: openRecentFile.filepath,
+      showFileInFolderDisabled: false,
+    });
+    setFmContent(openRecentFile.frontmatter);
+    setBodyContent(openRecentFile.body);
+  };
 
   const handleSaveAsTrigger = async (): Promise<void> => {
     const saveFileDialog = await window.electron.ipcRenderer.invoke(
@@ -167,7 +175,7 @@ export default function MainMenu({
         handleNewFileWithFm={handleNewFileWithFm}
         handleNewFileNoFm={handleNewFileNoFm}
         handleOpenFileTrigger={handleOpenFileTrigger}
-        handleOpenRecentTrigger={handleOpenRecentTrigger}
+        handleOpenRecentFile={handleOpenRecentFile}
         handleSaveAsTrigger={handleSaveAsTrigger}
         handleSaveTrigger={handleSaveTrigger}
         handleClearAllConfirm={handleClearAllConfirm}
