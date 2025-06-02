@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import useDropdownClose from "@renderer/hooks/use-dropdown-close";
+import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
+import DropDownButton from "./drop-down-button";
 
 interface FileMenuBarProps {
   handleNewFileWithFm: () => void;
@@ -12,8 +15,6 @@ interface FileMenuBarProps {
 }
 
 type RecentFile = { filename: string; filepath: string };
-
-type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
 
 export default function FileMenuBar({
   handleNewFileWithFm,
@@ -31,26 +32,15 @@ export default function FileMenuBar({
   const recentDropdownRef = useRef<HTMLDivElement>(null!);
   const clearAllDropdownRef = useRef<HTMLDivElement>(null!);
 
-  const dropdownRefs: Record<string, React.RefObject<HTMLDivElement>> = {
+  const dropdownRefs = {
     new: newDropdownRef,
     recent: recentDropdownRef,
     clearAll: clearAllDropdownRef,
   };
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent): void {
-      if (
-        openDropdown &&
-        dropdownRefs[openDropdown] &&
-        dropdownRefs[openDropdown].current &&
-        !dropdownRefs[openDropdown].current!.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null);
-      }
-    }
-    if (openDropdown) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  });
+  useDropdownClose({ openDropdown, dropdownRefs, setOpenDropdown });
+
+  const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
 
   useEffect(() => {
     if (openDropdown === "recent") {
@@ -60,19 +50,6 @@ export default function FileMenuBar({
       })();
     }
   }, [openDropdown]);
-
-  const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
-
-  const DropDownMenu = ({ ref, children }: DropDownMenuProps): React.ReactElement => {
-    return (
-      <div
-        ref={ref}
-        className="absolute left-0 top-full z-10 min-w-max border border-neutral-500 bg-black"
-      >
-        {children}
-      </div>
-    );
-  };
 
   const RecentFilesListEmpty = (): React.ReactElement => {
     return <p className="text-center italic text-neutral-500">Recent Files List Empty</p>;
@@ -108,24 +85,22 @@ export default function FileMenuBar({
           </Button>
           {openDropdown === "new" && (
             <DropDownMenu ref={newDropdownRef}>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              <DropDownButton
                 onClick={() => {
                   handleNewFileWithFm();
                   setOpenDropdown(null);
                 }}
               >
-                With Frontmatter
-              </button>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                With Fronmatter
+              </DropDownButton>
+              <DropDownButton
                 onClick={() => {
                   handleNewFileNoFm();
                   setOpenDropdown(null);
                 }}
               >
                 No Frontmatter
-              </button>
+              </DropDownButton>
             </DropDownMenu>
           )}
         </div>
@@ -159,23 +134,15 @@ export default function FileMenuBar({
           </Button>
           {openDropdown === "clearAll" && (
             <DropDownMenu ref={clearAllDropdownRef}>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+              <DropDownButton
                 onClick={() => {
                   handleClearAllConfirm();
                   setOpenDropdown(null);
                 }}
               >
                 Confirm
-              </button>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-                onClick={() => {
-                  setOpenDropdown(null);
-                }}
-              >
-                Cancel
-              </button>
+              </DropDownButton>
+              <DropDownButton onClick={() => setOpenDropdown(null)}>Cancel</DropDownButton>
             </DropDownMenu>
           )}
         </div>

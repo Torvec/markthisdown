@@ -12,7 +12,6 @@ interface MainMenuProps {
     filepath: string;
     showFileInFolderDisabled: boolean;
   }) => void;
-  fmViewMode: "block" | "lineitems";
   setFmViewMode: (view: "block" | "lineitems") => void;
   fmIsVisible: boolean;
   setFmIsVisible: (visible: boolean) => void;
@@ -36,7 +35,6 @@ export default function MainMenu({
   setFmIsEnabled,
   fileInfo,
   setFileInfo,
-  fmViewMode,
   setFmViewMode,
   fmIsVisible,
   setFmIsVisible,
@@ -85,8 +83,13 @@ export default function MainMenu({
         filepath: file.filepath,
         showFileInFolderDisabled: false,
       });
-      if (file.frontmatter.length === 0) setFmIsEnabled(false);
-      else {
+      if (
+        file.frontmatter === null ||
+        file.frontmatter === undefined ||
+        file.frontmatter.length === 0
+      ) {
+        setFmIsEnabled(false);
+      } else {
         setFmIsEnabled(true);
         setFmContent(file.frontmatter);
       }
@@ -144,19 +147,14 @@ export default function MainMenu({
 
   // FRONTMATTER HANDLERS
 
-  const handleFmBlockView = (): void => {
-    setFmViewMode("block");
+  const handleFmViewMode = (view: "block" | "lineitems"): void => {
+    setFmViewMode(view);
     if (!fmIsVisible) setFmIsVisible(true);
   };
 
-  const handleFmLineItemsView = (): void => {
-    setFmViewMode("lineitems");
-    if (!fmIsVisible) setFmIsVisible(true);
+  const handleFmVisibility = (visible: boolean): void => {
+    setFmIsVisible(visible);
   };
-
-  const handleFmHide = (): void => setFmIsVisible(false);
-
-  const handleFmShow = (): void => setFmIsVisible(true);
 
   const handleFmClearConfirm = (): void => setFmContent("---\n\n---");
 
@@ -183,12 +181,9 @@ export default function MainMenu({
       />
       <FrontmatterMenuBar
         fmIsEnabled={fmIsEnabled}
-        fmViewMode={fmViewMode}
         fmIsVisible={fmIsVisible}
-        handleFmBlockView={handleFmBlockView}
-        handleFmLineItemsView={handleFmLineItemsView}
-        handleFmHide={handleFmHide}
-        handleFmShow={handleFmShow}
+        handleFmViewMode={handleFmViewMode}
+        handleFmVisibility={handleFmVisibility}
         handleFmClearConfirm={handleFmClearConfirm}
         handleFmDisableConfirm={handleFmDisableConfirm}
         handleFmEnable={handleFmEnable}

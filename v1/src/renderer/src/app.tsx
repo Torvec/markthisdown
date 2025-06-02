@@ -27,7 +27,6 @@ function App(): React.ReactElement {
           setFmIsEnabled={setFmIsEnabled}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
-          fmViewMode={fmViewMode}
           setFmViewMode={setFmViewMode}
           fmIsVisible={fmIsVisible}
           setFmIsVisible={setFmIsVisible}
