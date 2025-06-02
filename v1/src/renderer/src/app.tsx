@@ -4,7 +4,7 @@ import FileInfo from "./components/file-info";
 import FrontmatterEditor from "./components/frontmatter-editor";
 import BodyEditor from "./components/body-editor";
 
-function App(): React.JSX.Element {
+function App(): React.ReactElement {
   const [isNewFile, setIsNewFile] = useState(true);
   const [fmIsEnabled, setFmIsEnabled] = useState(true);
   const [fileInfo, setFileInfo] = useState({
@@ -14,10 +14,7 @@ function App(): React.JSX.Element {
   });
   const [fmIsVisible, setFmIsVisible] = useState(true);
   const [fmViewMode, setFmViewMode] = useState<"block" | "lineitems">("block");
-  const [fmDelimiters, setFmDelimiters] = useState<"yaml" | "toml" | "json">("yaml");
-  const [fmContent, setFmContent] = useState<string | null>(
-    fmDelimiters + "\nkey: value\n" + fmDelimiters,
-  );
+  const [fmContent, setFmContent] = useState<string | null>("---\nkey: value\n---");
   const [bodyContent, setBodyContent] = useState("Body Content");
 
   return (
@@ -30,8 +27,6 @@ function App(): React.JSX.Element {
           setFmIsEnabled={setFmIsEnabled}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
-          fmDelimiters={fmDelimiters}
-          setFmDelimiters={setFmDelimiters}
           fmViewMode={fmViewMode}
           setFmViewMode={setFmViewMode}
           fmIsVisible={fmIsVisible}

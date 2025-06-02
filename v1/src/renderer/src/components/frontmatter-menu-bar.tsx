@@ -5,7 +5,6 @@ interface FrontmatterMenuBarProps {
   fmIsEnabled: boolean;
   fmViewMode: "block" | "lineitems";
   fmIsVisible: boolean;
-  handleDelimiterSelect: (delimiter: "yaml" | "toml" | "json") => void;
   handleFmBlockView: () => void;
   handleFmLineItemsView: () => void;
   handleFmHide: () => void;
@@ -17,7 +16,6 @@ interface FrontmatterMenuBarProps {
 
 export default function FrontmatterMenuBar({
   fmIsEnabled,
-  handleDelimiterSelect,
   fmViewMode,
   fmIsVisible,
   handleFmBlockView,
@@ -30,7 +28,6 @@ export default function FrontmatterMenuBar({
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const fmDelimitersDropdownRef = useRef<HTMLDivElement>(null!);
   const clearFmDropdownRef = useRef<HTMLDivElement>(null!);
   const removeFmDropdownRef = useRef<HTMLDivElement>(null!);
 
@@ -73,42 +70,6 @@ export default function FrontmatterMenuBar({
     <div>
       <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Frontmatter</div>
       <div className="flex gap-0.5">
-        <div className="relative">
-          <Button onClick={() => toggleDropdown("delimiters")} disabled={!fmIsEnabled}>
-            Delimiter
-          </Button>
-          {openDropdown === "delimiters" && (
-            <DropDownMenu ref={fmDelimitersDropdownRef}>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-                onClick={() => {
-                  handleDelimiterSelect("yaml");
-                  setOpenDropdown(null);
-                }}
-              >
-                YAML ---
-              </button>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-                onClick={() => {
-                  handleDelimiterSelect("toml");
-                  setOpenDropdown(null);
-                }}
-              >
-                TOML +++
-              </button>
-              <button
-                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-                onClick={() => {
-                  handleDelimiterSelect("json");
-                  setOpenDropdown(null);
-                }}
-              >
-                JSON {"{"} {"}"}
-              </button>
-            </DropDownMenu>
-          )}
-        </div>
         <Button onClick={handleFmBlockView} disabled={!fmIsEnabled || fmViewMode === "block"}>
           Block View
         </Button>
