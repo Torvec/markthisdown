@@ -9,9 +9,9 @@ interface FrontmatterMenuBarProps {
   handleFmLineItemsView: () => void;
   handleFmHide: () => void;
   handleFmShow: () => void;
-  handleFmConfirmClear: () => void;
-  handleFmConfirmRemove: () => void;
-  handleFmAdd: () => void;
+  handleFmClearConfirm: () => void;
+  handleFmDisableConfirm: () => void;
+  handleFmEnable: () => void;
 }
 
 export default function FrontmatterMenuBar({
@@ -22,9 +22,9 @@ export default function FrontmatterMenuBar({
   handleFmLineItemsView,
   handleFmHide,
   handleFmShow,
-  handleFmConfirmClear,
-  handleFmConfirmRemove,
-  handleFmAdd,
+  handleFmClearConfirm,
+  handleFmDisableConfirm,
+  handleFmEnable,
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -98,7 +98,7 @@ export default function FrontmatterMenuBar({
               <button
                 className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
                 onClick={() => {
-                  handleFmConfirmClear();
+                  handleFmClearConfirm();
                   setOpenDropdown(null);
                 }}
               >
@@ -116,14 +116,14 @@ export default function FrontmatterMenuBar({
 
         <div className="relative">
           <Button onClick={() => toggleDropdown("remove")} disabled={!fmIsEnabled}>
-            Remove +
+            Disable +
           </Button>
           {openDropdown === "remove" && (
             <DropDownMenu ref={clearFmDropdownRef}>
               <button
                 className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
                 onClick={() => {
-                  handleFmConfirmRemove();
+                  handleFmDisableConfirm();
                   setOpenDropdown(null);
                 }}
               >
@@ -139,8 +139,8 @@ export default function FrontmatterMenuBar({
           )}
         </div>
 
-        <Button onClick={handleFmAdd} disabled={fmIsEnabled}>
-          Add
+        <Button onClick={handleFmEnable} disabled={fmIsEnabled}>
+          Enable
         </Button>
       </div>
     </div>

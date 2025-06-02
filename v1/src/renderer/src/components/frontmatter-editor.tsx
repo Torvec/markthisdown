@@ -4,7 +4,7 @@ type FrontmatterEditorProps = {
   fmIsEnabled: boolean;
   fmIsVisible: boolean;
   fmViewMode: "block" | "lineitems";
-  fmContent: string | null;
+  fmContent: string;
   setFmContent: (value: string) => void;
 };
 
@@ -17,13 +17,18 @@ function FrontmatterEditor({
 }: FrontmatterEditorProps): React.ReactElement {
   return (
     <>
-      {fmIsEnabled && fmIsVisible && (
+      {fmIsVisible && (
         <div>
           {fmViewMode === "block" ? (
             <textarea
-              className="min-h-48 w-full resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
-              value={fmContent ?? ""}
+              className="min-h-48 w-full resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50 disabled:cursor-not-allowed disabled:opacity-50"
+              value={
+                fmIsEnabled
+                  ? fmContent
+                  : "Frontmatter Editor is Disabled, Press Enable to add frontmatter to document."
+              }
               onChange={(e) => setFmContent(e.target.value)}
+              disabled={!fmIsEnabled}
             />
           ) : (
             <div className="grid-cols-2 gap-3">

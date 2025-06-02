@@ -16,10 +16,17 @@ interface MainMenuProps {
   setFmViewMode: (view: "block" | "lineitems") => void;
   fmIsVisible: boolean;
   setFmIsVisible: (visible: boolean) => void;
-  fmContent: string | null;
-  setFmContent: (content: string | null) => void;
+  fmContent: string;
+  setFmContent: (content: string) => void;
   bodyContent: string;
   setBodyContent: (content: string) => void;
+}
+
+interface FileData {
+  filepath: string;
+  filename: string;
+  frontmatter: string;
+  body: string;
 }
 
 export default function MainMenu({
@@ -39,51 +46,52 @@ export default function MainMenu({
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
   const handleNewFileWithFm = (): void => {
-    setFmIsEnabled(true);
     setFileInfo({
       filename: "untitled.md",
       filepath: "untitled.md",
       showFileInFolderDisabled: true,
     });
+    setFmIsEnabled(true);
     setFmContent("---\nkey: value\n---");
     setBodyContent("Body Content");
   };
 
   const handleNewFileNoFm = (): void => {
-    setFmIsEnabled(false);
     setFileInfo({
       filename: "untitled.md",
       filepath: "untitled.md",
       showFileInFolderDisabled: true,
     });
-    setFmContent(null);
+    setFmIsEnabled(false);
+    setFmContent("");
     setBodyContent("Body Content");
   };
 
   const handleOpenFileTrigger = async (): Promise<void> => {
     const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
-    if (openFileDialog !== undefined) {
-      setIsNewFile(false);
-      setFileInfo({
-        filename: openFileDialog.filename,
-        filepath: openFileDialog.filepath,
-        showFileInFolderDisabled: false,
-      });
-      setFmContent(openFileDialog.frontmatter);
-      setBodyContent(openFileDialog.body);
-    }
+    handleOpenFile(openFileDialog);
   };
 
   const handleOpenRecentFile = async (filepath: string): Promise<void> => {
     const openRecentFile = await window.electron.ipcRenderer.invoke("open-recent-file", filepath);
-    setIsNewFile(false);
-    setFileInfo({
-      filename: openRecentFile.filename,
-      filepath: openRecentFile.filepath,
-      showFileInFolderDisabled: false,
-    });
-    setFmContent(openRecentFile.frontmatter);
-    setBodyContent(openRecentFile.body);
+    handleOpenFile(openRecentFile);
+  };
+
+  const handleOpenFile = (file: FileData | undefined): void => {
+    if (file !== undefined) {
+      setIsNewFile(false);
+      setFileInfo({
+        filename: file.filename,
+        filepath: file.filepath,
+        showFileInFolderDisabled: false,
+      });
+      if (file.frontmatter.length === 0) setFmIsEnabled(false);
+      else {
+        setFmIsEnabled(true);
+        setFmContent(file.frontmatter);
+      }
+      setBodyContent(file.body);
+    }
   };
 
   const handleSaveAsTrigger = async (): Promise<void> => {
@@ -92,7 +100,7 @@ export default function MainMenu({
       fileInfo.filepath,
       combineEditorContent(),
     );
-    if (saveFileDialog !== undefined) handleFileState(saveFileDialog);
+    handleSaveFile(saveFileDialog);
   };
 
   const handleSaveTrigger = async (): Promise<void> => {
@@ -107,18 +115,10 @@ export default function MainMenu({
           fileInfo.filepath,
           combineEditorContent(),
         );
-    if (savedFile !== undefined) handleFileState(savedFile);
+    handleSaveFile(savedFile);
   };
 
-  interface FileData {
-    filepath: string;
-    filename: string;
-    frontmatter: string | null;
-    body: string;
-  }
-
-  // This only applies to save as and save
-  const handleFileState = (file: FileData | undefined): void => {
+  const handleSaveFile = (file: FileData | undefined): void => {
     if (file !== undefined) {
       setIsNewFile(false);
       setFileInfo({
@@ -132,7 +132,7 @@ export default function MainMenu({
   };
 
   const combineEditorContent = (): string => {
-    const trimFmContent = fmIsEnabled && fmContent ? fmContent.trim() + "\n\n" : "";
+    const trimFmContent = fmIsEnabled ? fmContent.trim() + "\n\n" : "";
     const trimBodyContent = bodyContent.trim();
     return trimFmContent + trimBodyContent;
   };
@@ -158,14 +158,14 @@ export default function MainMenu({
 
   const handleFmShow = (): void => setFmIsVisible(true);
 
-  const handleFmConfirmClear = (): void => setFmContent("---\n\n---");
+  const handleFmClearConfirm = (): void => setFmContent("---\n\n---");
 
-  const handleFmConfirmRemove = (): void => {
+  const handleFmDisableConfirm = (): void => {
     setFmIsEnabled(false);
-    setFmContent(null);
+    setFmContent("");
   };
 
-  const handleFmAdd = (): void => {
+  const handleFmEnable = (): void => {
     setFmIsEnabled(true);
     setFmContent("---\nkey: value\n---");
   };
@@ -189,9 +189,9 @@ export default function MainMenu({
         handleFmLineItemsView={handleFmLineItemsView}
         handleFmHide={handleFmHide}
         handleFmShow={handleFmShow}
-        handleFmConfirmClear={handleFmConfirmClear}
-        handleFmConfirmRemove={handleFmConfirmRemove}
-        handleFmAdd={handleFmAdd}
+        handleFmClearConfirm={handleFmClearConfirm}
+        handleFmDisableConfirm={handleFmDisableConfirm}
+        handleFmEnable={handleFmEnable}
       />
     </nav>
   );
