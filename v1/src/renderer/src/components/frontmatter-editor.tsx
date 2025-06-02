@@ -8,7 +8,7 @@ type FrontmatterEditorProps = {
   setFmContent: (value: string) => void;
 };
 
-function FrontmatterEditor({
+export default function FrontmatterEditor({
   fmIsEnabled,
   fmViewMode,
   fmIsVisible,
@@ -43,5 +43,3 @@ function FrontmatterEditor({
     </>
   );
 }
-
-export default FrontmatterEditor;

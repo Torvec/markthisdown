@@ -9,7 +9,7 @@ interface FileInfoProps {
   };
 }
 
-function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
+export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
   const handleShowFileInFolder = async (): Promise<void> => {
     await window.electron.ipcRenderer.invoke("show-file-in-folder", fileInfo.filepath);
   };
@@ -28,5 +28,3 @@ function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
     </section>
   );
 }
-
-export default FileInfo;

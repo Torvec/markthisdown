@@ -5,7 +5,10 @@ type BodyEditorProps = {
   setBodyContent: (value: string) => void;
 };
 
-const BodyEditor: React.FC<BodyEditorProps> = ({ bodyContent, setBodyContent }) => {
+export default function BodyEditor({
+  bodyContent,
+  setBodyContent,
+}: BodyEditorProps): React.ReactElement {
   return (
     <section>
       <textarea
@@ -17,6 +20,4 @@ const BodyEditor: React.FC<BodyEditorProps> = ({ bodyContent, setBodyContent }) 
       />
     </section>
   );
-};
-
-export default BodyEditor;
+}

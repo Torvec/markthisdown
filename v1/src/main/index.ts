@@ -4,6 +4,8 @@ import path from "node:path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
+type RecentFile = { filename: string; filepath: string };
+
 function createWindow(): void {
   const { height } = screen.getPrimaryDisplay().workAreaSize;
   const size = height;
@@ -90,8 +92,6 @@ function getRecentFilesPath(): string {
   }
   return recentFilesJSONPath;
 }
-
-type RecentFile = { filename: string; filepath: string };
 
 function filterExistingRecentFiles(recentFilesJSONPath: string): string {
   const fileContents: RecentFile[] = readAndParseFile(recentFilesJSONPath);

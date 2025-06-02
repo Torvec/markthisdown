@@ -13,6 +13,8 @@ interface FileMenuBarProps {
 
 type RecentFile = { filename: string; filepath: string };
 
+type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
+
 export default function FileMenuBar({
   handleNewFileWithFm,
   handleNewFileNoFm,
@@ -60,8 +62,6 @@ export default function FileMenuBar({
   }, [openDropdown]);
 
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
-
-  type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
 
   const DropDownMenu = ({ ref, children }: DropDownMenuProps): React.ReactElement => {
     return (

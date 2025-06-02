@@ -14,6 +14,8 @@ interface FrontmatterMenuBarProps {
   handleFmEnable: () => void;
 }
 
+type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
+
 export default function FrontmatterMenuBar({
   fmIsEnabled,
   fmViewMode,
@@ -52,8 +54,6 @@ export default function FrontmatterMenuBar({
   });
 
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
-
-  type DropDownMenuProps = { ref: React.RefObject<HTMLDivElement>; children: React.ReactNode };
 
   const DropDownMenu = ({ ref, children }: DropDownMenuProps): React.ReactElement => {
     return (
