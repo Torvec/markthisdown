@@ -5,6 +5,7 @@ interface FrontmatterMenuBarProps {
   fmIsEnabled: boolean;
   fmViewMode: "block" | "lineitems";
   fmIsVisible: boolean;
+  handleDelimiterSelect: (delimiter: "yaml" | "toml" | "json") => void;
   handleFmBlockView: () => void;
   handleFmLineItemsView: () => void;
   handleFmHide: () => void;
@@ -16,6 +17,7 @@ interface FrontmatterMenuBarProps {
 
 export default function FrontmatterMenuBar({
   fmIsEnabled,
+  handleDelimiterSelect,
   fmViewMode,
   fmIsVisible,
   handleFmBlockView,
@@ -28,6 +30,7 @@ export default function FrontmatterMenuBar({
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  const fmDelimitersDropdownRef = useRef<HTMLDivElement>(null!);
   const clearFmDropdownRef = useRef<HTMLDivElement>(null!);
   const removeFmDropdownRef = useRef<HTMLDivElement>(null!);
 
@@ -67,78 +70,118 @@ export default function FrontmatterMenuBar({
   };
 
   return (
-    <>
-      <span className="px-4 font-normal">Frontmatter</span>
-
-      <Button onClick={handleFmBlockView} disabled={!fmIsEnabled || fmViewMode === "block"}>
-        Block View
-      </Button>
-
-      <Button onClick={handleFmLineItemsView} disabled={!fmIsEnabled || fmViewMode === "lineitems"}>
-        Line Items View
-      </Button>
-
-      <Button onClick={handleFmHide} disabled={!fmIsEnabled || !fmIsVisible}>
-        Hide
-      </Button>
-
-      <Button onClick={handleFmShow} disabled={!fmIsEnabled || fmIsVisible}>
-        Show
-      </Button>
-
-      <div className="relative">
-        <Button onClick={() => toggleDropdown("clear")} disabled={!fmIsEnabled}>
-          Clear +
+    <div>
+      <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Frontmatter</div>
+      <div className="flex gap-0.5">
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("delimiters")} disabled={!fmIsEnabled}>
+            Delimiter
+          </Button>
+          {openDropdown === "delimiters" && (
+            <DropDownMenu ref={fmDelimitersDropdownRef}>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleDelimiterSelect("yaml");
+                  setOpenDropdown(null);
+                }}
+              >
+                YAML ---
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleDelimiterSelect("toml");
+                  setOpenDropdown(null);
+                }}
+              >
+                TOML +++
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleDelimiterSelect("json");
+                  setOpenDropdown(null);
+                }}
+              >
+                JSON {"{"} {"}"}
+              </button>
+            </DropDownMenu>
+          )}
+        </div>
+        <Button onClick={handleFmBlockView} disabled={!fmIsEnabled || fmViewMode === "block"}>
+          Block View
         </Button>
-        {openDropdown === "clear" && (
-          <DropDownMenu ref={clearFmDropdownRef}>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleFmConfirmClear();
-                setOpenDropdown(null);
-              }}
-            >
-              Confirm
-            </button>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => setOpenDropdown(null)}
-            >
-              Cancel
-            </button>
-          </DropDownMenu>
-        )}
-      </div>
 
-      <div className="relative">
-        <Button onClick={() => toggleDropdown("remove")} disabled={!fmIsEnabled}>
-          Remove +
+        <Button
+          onClick={handleFmLineItemsView}
+          disabled={!fmIsEnabled || fmViewMode === "lineitems"}
+        >
+          Line Items View
         </Button>
-        {openDropdown === "remove" && (
-          <DropDownMenu ref={clearFmDropdownRef}>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleFmConfirmRemove();
-                setOpenDropdown(null);
-              }}
-            >
-              Confirm
-            </button>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => setOpenDropdown(null)}
-            >
-              Cancel
-            </button>
-          </DropDownMenu>
-        )}
-      </div>
 
-      <Button onClick={handleFmAdd} disabled={fmIsEnabled}>
-        Add
-      </Button>
-    </>
+        <Button onClick={handleFmHide} disabled={!fmIsEnabled || !fmIsVisible}>
+          Hide
+        </Button>
+
+        <Button onClick={handleFmShow} disabled={!fmIsEnabled || fmIsVisible}>
+          Show
+        </Button>
+
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("clear")} disabled={!fmIsEnabled}>
+            Clear +
+          </Button>
+          {openDropdown === "clear" && (
+            <DropDownMenu ref={clearFmDropdownRef}>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleFmConfirmClear();
+                  setOpenDropdown(null);
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => setOpenDropdown(null)}
+              >
+                Cancel
+              </button>
+            </DropDownMenu>
+          )}
+        </div>
+
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("remove")} disabled={!fmIsEnabled}>
+            Remove +
+          </Button>
+          {openDropdown === "remove" && (
+            <DropDownMenu ref={clearFmDropdownRef}>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleFmConfirmRemove();
+                  setOpenDropdown(null);
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => setOpenDropdown(null)}
+              >
+                Cancel
+              </button>
+            </DropDownMenu>
+          )}
+        </div>
+
+        <Button onClick={handleFmAdd} disabled={fmIsEnabled}>
+          Add
+        </Button>
+      </div>
+    </div>
   );
 }

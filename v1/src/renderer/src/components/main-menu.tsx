@@ -12,6 +12,8 @@ interface MainMenuProps {
     filepath: string;
     showFileInFolderDisabled: boolean;
   }) => void;
+  fmDelimiters: "yaml" | "toml" | "json";
+  setFmDelimiters: (delimiters: "yaml" | "toml" | "json") => void;
   fmViewMode: "block" | "lineitems";
   setFmViewMode: (view: "block" | "lineitems") => void;
   fmIsVisible: boolean;
@@ -29,6 +31,8 @@ export default function MainMenu({
   setFmIsEnabled,
   fileInfo,
   setFileInfo,
+  fmDelimiters,
+  setFmDelimiters,
   fmViewMode,
   setFmViewMode,
   fmIsVisible,
@@ -45,7 +49,7 @@ export default function MainMenu({
       filepath: "untitled.md",
       showFileInFolderDisabled: true,
     });
-    setFmContent("---\nkey: value\n---");
+    setFmContent(fmDelimiters + "\nkey: value\n" + fmDelimiters);
     setBodyContent("Body Content");
   };
 
@@ -132,7 +136,8 @@ export default function MainMenu({
   };
 
   const combineEditorContent = (): string => {
-    const trimFmContent = fmIsEnabled && fmContent ? fmContent.trim() + "\n\n" : "";
+    const trimFmContent =
+      fmIsEnabled && fmContent ? fmDelimiters + fmContent.trim() + fmDelimiters + "\n\n" : "";
     const trimBodyContent = bodyContent.trim();
     return trimFmContent + trimBodyContent;
   };
@@ -143,6 +148,10 @@ export default function MainMenu({
   };
 
   // FRONTMATTER HANDLERS
+
+  const handleDelimiterSelect = (delimiter: "yaml" | "toml" | "json"): void => {
+    setFmDelimiters(delimiter);
+  };
 
   const handleFmBlockView = (): void => {
     setFmViewMode("block");
@@ -158,15 +167,16 @@ export default function MainMenu({
 
   const handleFmShow = (): void => setFmIsVisible(true);
 
-  const handleFmConfirmClear = (): void => setFmContent("---\n\n---");
+  const handleFmConfirmClear = (): void => setFmContent(fmDelimiters + "\n\n" + fmDelimiters);
 
   const handleFmConfirmRemove = (): void => {
     setFmIsEnabled(false);
     setFmContent(null);
   };
+
   const handleFmAdd = (): void => {
     setFmIsEnabled(true);
-    setFmContent("---\n\n---");
+    setFmContent(fmDelimiters + "\nkey: value\n" + fmDelimiters);
   };
 
   return (
@@ -184,6 +194,7 @@ export default function MainMenu({
         fmIsEnabled={fmIsEnabled}
         fmViewMode={fmViewMode}
         fmIsVisible={fmIsVisible}
+        handleDelimiterSelect={handleDelimiterSelect}
         handleFmBlockView={handleFmBlockView}
         handleFmLineItemsView={handleFmLineItemsView}
         handleFmHide={handleFmHide}

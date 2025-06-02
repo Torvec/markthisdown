@@ -99,86 +99,87 @@ export default function FileMenuBar({
   };
 
   return (
-    <>
-      <span className="px-4 font-normal">File</span>
+    <div>
+      <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">File</div>
+      <div className="flex gap-0.5">
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("new")} disabled={false}>
+            New +
+          </Button>
+          {openDropdown === "new" && (
+            <DropDownMenu ref={newDropdownRef}>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleNewFileWithFm();
+                  setOpenDropdown(null);
+                }}
+              >
+                With Frontmatter
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleNewFileNoFm();
+                  setOpenDropdown(null);
+                }}
+              >
+                No Frontmatter
+              </button>
+            </DropDownMenu>
+          )}
+        </div>
 
-      <div className="relative">
-        <Button onClick={() => toggleDropdown("new")} disabled={false}>
-          New +
+        <Button onClick={handleOpenFileTrigger} disabled={false}>
+          Open
         </Button>
-        {openDropdown === "new" && (
-          <DropDownMenu ref={newDropdownRef}>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleNewFileWithFm();
-                setOpenDropdown(null);
-              }}
-            >
-              With Frontmatter
-            </button>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleNewFileNoFm();
-                setOpenDropdown(null);
-              }}
-            >
-              No Frontmatter
-            </button>
-          </DropDownMenu>
-        )}
-      </div>
 
-      <Button onClick={handleOpenFileTrigger} disabled={false}>
-        Open
-      </Button>
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("recent")} disabled={false}>
+            Recent +
+          </Button>
+          {openDropdown === "recent" && (
+            <DropDownMenu ref={recentDropdownRef}>
+              {recentFiles.length === 0 ? <RecentFilesListEmpty /> : <RecentFilesList />}
+            </DropDownMenu>
+          )}
+        </div>
 
-      <div className="relative">
-        <Button onClick={() => toggleDropdown("recent")} disabled={false}>
-          Recent +
+        <Button onClick={handleSaveAsTrigger} disabled={false}>
+          Save As
         </Button>
-        {openDropdown === "recent" && (
-          <DropDownMenu ref={recentDropdownRef}>
-            {recentFiles.length === 0 ? <RecentFilesListEmpty /> : <RecentFilesList />}
-          </DropDownMenu>
-        )}
-      </div>
 
-      <Button onClick={handleSaveAsTrigger} disabled={false}>
-        Save As
-      </Button>
-
-      <Button onClick={handleSaveTrigger} disabled={false}>
-        Save
-      </Button>
-
-      <div className="relative">
-        <Button onClick={() => toggleDropdown("clearAll")} disabled={false}>
-          Clear All +
+        <Button onClick={handleSaveTrigger} disabled={false}>
+          Save
         </Button>
-        {openDropdown === "clearAll" && (
-          <DropDownMenu ref={clearAllDropdownRef}>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                handleClearAllConfirm();
-                setOpenDropdown(null);
-              }}
-            >
-              Confirm
-            </button>
-            <button
-              className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
-              onClick={() => {
-                setOpenDropdown(null);
-              }}
-            >
-              Cancel
-            </button>
-          </DropDownMenu>
-        )}
+
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("clearAll")} disabled={false}>
+            Clear All +
+          </Button>
+          {openDropdown === "clearAll" && (
+            <DropDownMenu ref={clearAllDropdownRef}>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  handleClearAllConfirm();
+                  setOpenDropdown(null);
+                }}
+              >
+                Confirm
+              </button>
+              <button
+                className="w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out hover:bg-neutral-900"
+                onClick={() => {
+                  setOpenDropdown(null);
+                }}
+              >
+                Cancel
+              </button>
+            </DropDownMenu>
+          )}
+        </div>
       </div>
-    </>
+    </div>
   );
 }

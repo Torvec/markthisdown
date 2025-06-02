@@ -14,7 +14,10 @@ function App(): React.JSX.Element {
   });
   const [fmIsVisible, setFmIsVisible] = useState(true);
   const [fmViewMode, setFmViewMode] = useState<"block" | "lineitems">("block");
-  const [fmContent, setFmContent] = useState<string | null>("---\nkey: value\n---");
+  const [fmDelimiters, setFmDelimiters] = useState<"yaml" | "toml" | "json">("yaml");
+  const [fmContent, setFmContent] = useState<string | null>(
+    fmDelimiters + "\nkey: value\n" + fmDelimiters,
+  );
   const [bodyContent, setBodyContent] = useState("Body Content");
 
   return (
@@ -27,6 +30,8 @@ function App(): React.JSX.Element {
           setFmIsEnabled={setFmIsEnabled}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
+          fmDelimiters={fmDelimiters}
+          setFmDelimiters={setFmDelimiters}
           fmViewMode={fmViewMode}
           setFmViewMode={setFmViewMode}
           fmIsVisible={fmIsVisible}
