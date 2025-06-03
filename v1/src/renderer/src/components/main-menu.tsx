@@ -152,14 +152,13 @@ export default function MainMenu({
     if (!fmIsVisible) setFmIsVisible(true);
   };
 
-  const handleFmVisibility = (visible: boolean): void => {
-    setFmIsVisible(visible);
-  };
+  const handleFmVisibility = (): void => setFmIsVisible(!fmIsVisible);
 
   const handleFmClearConfirm = (): void => setFmContent("---\n\n---");
 
   const handleFmDisableConfirm = (): void => {
     setFmIsEnabled(false);
+    if (!fmIsVisible) setFmIsVisible(true);
     setFmContent("");
   };
 

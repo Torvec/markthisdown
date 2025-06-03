@@ -8,7 +8,7 @@ interface FrontmatterMenuBarProps {
   fmIsEnabled: boolean;
   fmIsVisible: boolean;
   handleFmViewMode: (view: "block" | "lineitems") => void;
-  handleFmVisibility: (visible: boolean) => void;
+  handleFmVisibility: () => void;
   handleFmClearConfirm: () => void;
   handleFmDisableConfirm: () => void;
   handleFmEnable: () => void;
@@ -25,11 +25,13 @@ export default function FrontmatterMenuBar({
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
+  const formatsFmDropdownRef = useRef<HTMLDivElement>(null!);
   const viewsFmDropdownRef = useRef<HTMLDivElement>(null!);
   const clearFmDropdownRef = useRef<HTMLDivElement>(null!);
   const disableFmDropdownRef = useRef<HTMLDivElement>(null!);
 
   const dropdownRefs = {
+    formats: formatsFmDropdownRef,
     views: viewsFmDropdownRef,
     clear: clearFmDropdownRef,
     disable: disableFmDropdownRef,
@@ -43,9 +45,39 @@ export default function FrontmatterMenuBar({
     <div>
       <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Frontmatter</div>
       <div className="flex gap-0.5">
-        <Button onClick={() => console.log("Formats Clicked")} disabled={true}>
-          Formats +
-        </Button>
+        <div className="relative">
+          <Button onClick={() => toggleDropdown("formats")} disabled={!fmIsEnabled}>
+            Formats +
+          </Button>
+          {openDropdown === "formats" && (
+            <DropDownMenu ref={formatsFmDropdownRef}>
+              <DropDownButton
+                onClick={() => {
+                  console.log("YAML Selected");
+                  setOpenDropdown(null);
+                }}
+              >
+                YAML ---
+              </DropDownButton>
+              <DropDownButton
+                onClick={() => {
+                  console.log("TOML Selected");
+                  setOpenDropdown(null);
+                }}
+              >
+                TOML +++
+              </DropDownButton>
+              <DropDownButton
+                onClick={() => {
+                  console.log("JSON Selected");
+                  setOpenDropdown(null);
+                }}
+              >
+                JSON {"{ }"}
+              </DropDownButton>
+            </DropDownMenu>
+          )}
+        </div>
         <div className="relative">
           <Button onClick={() => toggleDropdown("views")} disabled={!fmIsEnabled}>
             Views +
@@ -72,12 +104,8 @@ export default function FrontmatterMenuBar({
           )}
         </div>
 
-        <Button onClick={() => handleFmVisibility(false)} disabled={!fmIsEnabled || !fmIsVisible}>
-          Hide
-        </Button>
-
-        <Button onClick={() => handleFmVisibility(true)} disabled={!fmIsEnabled || fmIsVisible}>
-          Show
+        <Button onClick={() => handleFmVisibility()} disabled={!fmIsEnabled}>
+          {fmIsVisible ? "Hide" : "Show"}
         </Button>
 
         <div className="relative">
@@ -100,27 +128,31 @@ export default function FrontmatterMenuBar({
         </div>
 
         <div className="relative">
-          <Button onClick={() => toggleDropdown("disable")} disabled={!fmIsEnabled}>
-            Disable +
-          </Button>
-          {openDropdown === "disable" && (
-            <DropDownMenu ref={clearFmDropdownRef}>
-              <DropDownButton
-                onClick={() => {
-                  handleFmDisableConfirm();
-                  setOpenDropdown(null);
-                }}
-              >
-                Confirm
-              </DropDownButton>
-              <DropDownButton onClick={() => setOpenDropdown(null)}>Cancel</DropDownButton>
-            </DropDownMenu>
+          {fmIsEnabled ? (
+            <>
+              <Button onClick={() => toggleDropdown("disable")} disabled={!fmIsEnabled}>
+                Disable +
+              </Button>
+              {openDropdown === "disable" && (
+                <DropDownMenu ref={disableFmDropdownRef}>
+                  <DropDownButton
+                    onClick={() => {
+                      handleFmDisableConfirm();
+                      setOpenDropdown(null);
+                    }}
+                  >
+                    Confirm
+                  </DropDownButton>
+                  <DropDownButton onClick={() => setOpenDropdown(null)}>Cancel</DropDownButton>
+                </DropDownMenu>
+              )}
+            </>
+          ) : (
+            <Button onClick={handleFmEnable} disabled={fmIsEnabled}>
+              Enable
+            </Button>
           )}
         </div>
-
-        <Button onClick={handleFmEnable} disabled={fmIsEnabled}>
-          Enable
-        </Button>
       </div>
     </div>
   );
