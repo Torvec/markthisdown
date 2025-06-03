@@ -14,7 +14,7 @@ function App(): React.ReactElement {
   });
   const [fmIsVisible, setFmIsVisible] = useState(true);
   const [fmViewMode, setFmViewMode] = useState<"block" | "lineitems">("block");
-  const [fmContent, setFmContent] = useState<string>("---\nkey: value\n---");
+  const [fmContent, setFmContent] = useState<string>("key: value");
   const [bodyContent, setBodyContent] = useState("Body Content");
 
   return (

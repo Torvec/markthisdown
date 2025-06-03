@@ -50,7 +50,7 @@ export default function MainMenu({
       showFileInFolderDisabled: true,
     });
     setFmIsEnabled(true);
-    setFmContent("---\nkey: value\n---");
+    setFmContent("key: value");
     setBodyContent("Body Content");
   };
 
@@ -135,13 +135,13 @@ export default function MainMenu({
   };
 
   const combineEditorContent = (): string => {
-    const trimFmContent = fmIsEnabled ? fmContent.trim() + "\n\n" : "";
+    const trimFmContent = fmIsEnabled ? "---\n" + fmContent.trim() + "---\n\n" : "";
     const trimBodyContent = bodyContent.trim();
     return trimFmContent + trimBodyContent;
   };
 
   const handleClearAllConfirm = (): void => {
-    if (fmIsEnabled) setFmContent("---\n\n---");
+    if (fmIsEnabled) setFmContent("");
     setBodyContent("");
   };
 
@@ -154,7 +154,7 @@ export default function MainMenu({
 
   const handleFmVisibility = (): void => setFmIsVisible(!fmIsVisible);
 
-  const handleFmClearConfirm = (): void => setFmContent("---\n\n---");
+  const handleFmClearConfirm = (): void => setFmContent("");
 
   const handleFmDisableConfirm = (): void => {
     setFmIsEnabled(false);
@@ -164,7 +164,7 @@ export default function MainMenu({
 
   const handleFmEnable = (): void => {
     setFmIsEnabled(true);
-    setFmContent("---\nkey: value\n---");
+    setFmContent("key: value");
   };
 
   return (

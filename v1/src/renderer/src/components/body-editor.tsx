@@ -1,5 +1,3 @@
-import React from "react";
-
 type BodyEditorProps = {
   bodyContent: string;
   setBodyContent: (value: string) => void;
