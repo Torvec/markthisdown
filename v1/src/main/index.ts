@@ -6,6 +6,14 @@ import icon from "../../resources/icon.png?asset";
 
 type RecentFile = { filename: string; filepath: string };
 
+type ParsedFileType = {
+  filepath: string;
+  filename: string;
+  frontmatter: string | null;
+  body: string;
+};
+
+//* Electron-Vite Boilerplate
 function createWindow(): void {
   const { height } = screen.getPrimaryDisplay().workAreaSize;
   const size = height;
@@ -41,60 +49,51 @@ function createWindow(): void {
   }
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
+// This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId("com.electron");
 
-  // Default open or close DevTools by F12 in development
-  // and ignore CommandOrControl + R in production.
+  // Default open or close DevTools by F12 in development and ignore CommandOrControl + R in production.
   // see https://github.com/alex8088/electron-toolkit/tree/master/packages/utils
   app.on("browser-window-created", (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
 
-  // IPC test
-  ipcMain.on("ping", () => console.log("pong"));
-
   createWindow();
 
   app.on("activate", function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
+    // On macOS it's common to re-create a window in the app when the dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
   });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// Quit when all windows are closed, except on macOS.
+// There, it's common for applications and their menu bar to stay active until the user quits explicitly with Cmd + Q.
 app.on("window-all-closed", () => {
   if (process.platform !== "darwin") {
     app.quit();
   }
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// In this file you can include the rest of your app's specific main process code.
+// You can also put them in separate files and require them here.
 
-const recentFilesDir = "userData";
-const recentFilesName = "recent-files.json";
-
+//* Recent Files File Handling Functions
 function getRecentFilesPath(): string {
-  const recentFilesJSONPath = path.join(app.getPath(recentFilesDir), recentFilesName);
+  const recentFilesJSONPath = path.join(app.getPath("userData"), "recent-files.json");
   try {
     fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
-    filterExistingRecentFiles(recentFilesJSONPath);
+    filterRecentFiles(recentFilesJSONPath);
   } catch {
     fs.writeFileSync(recentFilesJSONPath, "[]");
   }
   return recentFilesJSONPath;
 }
 
-function filterExistingRecentFiles(recentFilesJSONPath: string): string {
-  const fileContents: RecentFile[] = readAndParseFile(recentFilesJSONPath);
+function filterRecentFiles(recentFilesJSONPath: string): string {
+  const fileContents = JSON.parse(fs.readFileSync(recentFilesJSONPath, "utf8"));
   let modified = false;
   const filteredFilesList: RecentFile[] = fileContents.filter((item: RecentFile) => {
     try {
@@ -106,13 +105,13 @@ function filterExistingRecentFiles(recentFilesJSONPath: string): string {
     }
   });
   if (modified) {
-    writeAndStringifyFile(recentFilesJSONPath, filteredFilesList);
+    fs.writeFileSync(recentFilesJSONPath, JSON.stringify(filteredFilesList));
   }
   return recentFilesJSONPath;
 }
 
 function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): void {
-  const fileContents = readAndParseFile(recentFilesPath);
+  const fileContents = JSON.parse(fs.readFileSync(recentFilesPath, "utf8"));
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
   const maxSize = 10;
@@ -124,23 +123,11 @@ function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): 
   }
   fileContents.unshift(fileListItem);
   if (fileContents.length > maxSize) fileContents.pop();
-  writeAndStringifyFile(recentFilesPath, fileContents);
+  fs.writeFileSync(recentFilesPath, JSON.stringify(fileContents));
 }
 
-const readAndParseFile = (filepath: string): RecentFile[] => {
-  return JSON.parse(fs.readFileSync(filepath, "utf8"));
-};
-
-const writeAndStringifyFile = (filepath: string, data: unknown): void => {
-  fs.writeFileSync(filepath, JSON.stringify(data));
-};
-
-function parseFileForEditors(filepath: string): {
-  filepath: string;
-  filename: string;
-  frontmatter: string | null;
-  body: string;
-} {
+//* Parsing functions
+function parseFileForEditors(filepath: string): ParsedFileType {
   const contents = fs.readFileSync(filepath, "utf8");
   let frontmatter: string | null = null;
   let body = contents;
@@ -157,11 +144,24 @@ function parseFileForEditors(filepath: string): {
   };
 }
 
-// IPC Handlers
+//* IPC File Handlers
+ipcMain.handle("open-file-dialog", () => {
+  const openedFile = dialog.showOpenDialogSync({
+    title: "Open Markdown File",
+    filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
+    properties: ["openFile"],
+  });
+  if (!openedFile) {
+    console.log("No file selected");
+    return;
+  }
+  updateRecentFilesList(getRecentFilesPath(), openedFile[0]);
+  return parseFileForEditors(openedFile[0]);
+});
 
 ipcMain.handle("get-recent-files", () => {
   try {
-    return readAndParseFile(getRecentFilesPath());
+    return JSON.parse(fs.readFileSync(getRecentFilesPath(), "utf8"));
   } catch (err) {
     if (err instanceof Error) {
       console.error(err.message);
@@ -196,20 +196,6 @@ ipcMain.handle("save-file", (_, filepath, content) => {
   fs.writeFileSync(filepath, content);
   updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
-});
-
-ipcMain.handle("open-file-dialog", () => {
-  const openedFile = dialog.showOpenDialogSync({
-    title: "Open Markdown File",
-    filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
-    properties: ["openFile"],
-  });
-  if (!openedFile) {
-    console.log("No file selected");
-    return;
-  }
-  updateRecentFilesList(getRecentFilesPath(), openedFile[0]);
-  return parseFileForEditors(openedFile[0]);
 });
 
 ipcMain.handle("show-file-in-folder", (_, filepath: string) => {

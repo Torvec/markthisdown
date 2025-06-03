@@ -6,12 +6,8 @@ interface MainMenuProps {
   setIsNewFile: (filestate: boolean) => void;
   fmIsEnabled: boolean;
   setFmIsEnabled: (fmState: boolean) => void;
-  fileInfo: { filename: string; filepath: string; showFileInFolderDisabled: boolean };
-  setFileInfo: (info: {
-    filename: string;
-    filepath: string;
-    showFileInFolderDisabled: boolean;
-  }) => void;
+  fileInfo: { filename: string; filepath: string; buttonIsEnabled: boolean };
+  setFileInfo: (info: { filename: string; filepath: string; buttonIsEnabled: boolean }) => void;
   setFmViewMode: (view: "block" | "lineitems") => void;
   fmIsVisible: boolean;
   setFmIsVisible: (visible: boolean) => void;
@@ -43,11 +39,12 @@ export default function MainMenu({
   bodyContent,
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
+  //* FILE HANDLERS
   const handleNewFileWithFm = (): void => {
     setFileInfo({
       filename: "untitled.md",
       filepath: "untitled.md",
-      showFileInFolderDisabled: true,
+      buttonIsEnabled: false,
     });
     setFmIsEnabled(true);
     setFmContent("key: value");
@@ -58,7 +55,7 @@ export default function MainMenu({
     setFileInfo({
       filename: "untitled.md",
       filepath: "untitled.md",
-      showFileInFolderDisabled: true,
+      buttonIsEnabled: false,
     });
     setFmIsEnabled(false);
     setFmContent("");
@@ -81,7 +78,7 @@ export default function MainMenu({
       setFileInfo({
         filename: file.filename,
         filepath: file.filepath,
-        showFileInFolderDisabled: false,
+        buttonIsEnabled: true,
       });
       if (
         file.frontmatter === null ||
@@ -127,7 +124,7 @@ export default function MainMenu({
       setFileInfo({
         filename: file.filename,
         filepath: file.filepath,
-        showFileInFolderDisabled: false,
+        buttonIsEnabled: true,
       });
       setFmContent(file.frontmatter);
       setBodyContent(file.body);
@@ -145,8 +142,7 @@ export default function MainMenu({
     setBodyContent("");
   };
 
-  // FRONTMATTER HANDLERS
-
+  //* FRONTMATTER HANDLERS
   const handleFmViewMode = (view: "block" | "lineitems"): void => {
     setFmViewMode(view);
     if (!fmIsVisible) setFmIsVisible(true);

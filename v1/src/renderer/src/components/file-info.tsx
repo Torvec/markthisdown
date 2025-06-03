@@ -4,7 +4,7 @@ interface FileInfoProps {
   fileInfo: {
     filename: string;
     filepath: string;
-    showFileInFolderDisabled: boolean;
+    buttonIsEnabled: boolean;
   };
 }
 
@@ -21,7 +21,7 @@ export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElemen
       <span id="filepath" className="block px-2 py-1 italic text-neutral-500">
         {fileInfo.filepath}
       </span>
-      <Button onClick={handleShowFileInFolder} disabled={fileInfo.showFileInFolderDisabled}>
+      <Button onClick={handleShowFileInFolder} disabled={!fileInfo.buttonIsEnabled}>
         Show File in Folder
       </Button>
     </section>

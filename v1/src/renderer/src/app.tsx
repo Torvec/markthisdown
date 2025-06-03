@@ -10,7 +10,7 @@ function App(): React.ReactElement {
   const [fileInfo, setFileInfo] = useState({
     filename: "untitled.md",
     filepath: "untitled.md",
-    showFileInFolderDisabled: true,
+    buttonIsEnabled: false,
   });
   const [fmIsVisible, setFmIsVisible] = useState(true);
   const [fmViewMode, setFmViewMode] = useState<"block" | "lineitems">("block");
