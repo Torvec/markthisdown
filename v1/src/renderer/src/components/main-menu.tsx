@@ -1,5 +1,6 @@
 import FileMenuBar from "./file-menu-bar";
 import FrontmatterMenuBar from "./frontmatter-menu-bar";
+import BodyMenuBar from "./body-menu-bar";
 
 interface MainMenuProps {
   isNewFile: boolean;
@@ -137,11 +138,6 @@ export default function MainMenu({
     return trimFmContent + trimBodyContent;
   };
 
-  const handleClearAllConfirm = (): void => {
-    if (fmIsEnabled) setFmContent("");
-    setBodyContent("");
-  };
-
   //* FRONTMATTER HANDLERS
   const handleFmViewMode = (view: "block" | "lineitems"): void => {
     setFmViewMode(view);
@@ -163,6 +159,11 @@ export default function MainMenu({
     setFmContent("key: value");
   };
 
+  //* BODY HANDLERS
+  const handleClearBodyConfirm = (): void => {
+    setBodyContent("");
+  };
+
   return (
     <nav className="flex flex-wrap items-center gap-0.5">
       <FileMenuBar
@@ -172,7 +173,6 @@ export default function MainMenu({
         handleOpenRecentFile={handleOpenRecentFile}
         handleSaveAsTrigger={handleSaveAsTrigger}
         handleSaveTrigger={handleSaveTrigger}
-        handleClearAllConfirm={handleClearAllConfirm}
       />
       <FrontmatterMenuBar
         fmIsEnabled={fmIsEnabled}
@@ -183,6 +183,7 @@ export default function MainMenu({
         handleFmDisableConfirm={handleFmDisableConfirm}
         handleFmEnable={handleFmEnable}
       />
+      <BodyMenuBar handleClearBodyConfirm={handleClearBodyConfirm} />
     </nav>
   );
 }

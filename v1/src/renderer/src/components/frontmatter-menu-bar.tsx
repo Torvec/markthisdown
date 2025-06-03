@@ -64,6 +64,7 @@ export default function FrontmatterMenuBar({
                   console.log("TOML Selected");
                   setOpenDropdown(null);
                 }}
+                disabled={true}
               >
                 TOML +++
               </DropDownButton>
@@ -72,6 +73,7 @@ export default function FrontmatterMenuBar({
                   console.log("JSON Selected");
                   setOpenDropdown(null);
                 }}
+                disabled={true}
               >
                 JSON {"{ }"}
               </DropDownButton>
@@ -83,7 +85,7 @@ export default function FrontmatterMenuBar({
             Views +
           </Button>
           {openDropdown === "views" && (
-            <DropDownMenu ref={clearFmDropdownRef}>
+            <DropDownMenu ref={viewsFmDropdownRef}>
               <DropDownButton
                 onClick={() => {
                   handleFmViewMode("block");

@@ -11,7 +11,6 @@ interface FileMenuBarProps {
   handleOpenRecentFile: (filepath: string) => void;
   handleSaveAsTrigger: () => void;
   handleSaveTrigger: () => void;
-  handleClearAllConfirm: () => void;
 }
 
 type RecentFile = { filename: string; filepath: string };
@@ -23,19 +22,16 @@ export default function FileMenuBar({
   handleOpenRecentFile,
   handleSaveAsTrigger,
   handleSaveTrigger,
-  handleClearAllConfirm,
 }: FileMenuBarProps): React.ReactElement {
   const [recentFiles, setRecentFiles] = useState<RecentFile[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const newDropdownRef = useRef<HTMLDivElement>(null!);
   const recentDropdownRef = useRef<HTMLDivElement>(null!);
-  const clearAllDropdownRef = useRef<HTMLDivElement>(null!);
 
   const dropdownRefs = {
     new: newDropdownRef,
     recent: recentDropdownRef,
-    clearAll: clearAllDropdownRef,
   };
 
   useDropdownClose({ openDropdown, dropdownRefs, setOpenDropdown });
@@ -127,25 +123,6 @@ export default function FileMenuBar({
         <Button onClick={handleSaveTrigger} disabled={false}>
           Save
         </Button>
-
-        <div className="relative">
-          <Button onClick={() => toggleDropdown("clearAll")} disabled={false}>
-            Clear All +
-          </Button>
-          {openDropdown === "clearAll" && (
-            <DropDownMenu ref={clearAllDropdownRef}>
-              <DropDownButton
-                onClick={() => {
-                  handleClearAllConfirm();
-                  setOpenDropdown(null);
-                }}
-              >
-                Confirm
-              </DropDownButton>
-              <DropDownButton onClick={() => setOpenDropdown(null)}>Cancel</DropDownButton>
-            </DropDownMenu>
-          )}
-        </div>
       </div>
     </div>
   );

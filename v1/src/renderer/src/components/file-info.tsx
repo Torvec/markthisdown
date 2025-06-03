@@ -22,7 +22,7 @@ export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElemen
         {fileInfo.filepath}
       </span>
       <Button onClick={handleShowFileInFolder} disabled={!fileInfo.buttonIsEnabled}>
-        Show File in Folder
+        Show In Folder
       </Button>
     </section>
   );
