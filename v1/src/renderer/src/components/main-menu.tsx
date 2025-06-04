@@ -54,7 +54,7 @@ export default function MainMenu({
     });
     setFmIsEnabled(true);
     setFmFormat(format);
-    setFmContent("key: value");
+    setFmContent(format === "yaml" ? "key: value" : "key = value");
     setBodyContent("Body Content");
   };
 
@@ -146,9 +146,9 @@ export default function MainMenu({
   };
 
   //* FRONTMATTER HANDLERS
-  const handleFmFormats = (): void => {
-    console.log("doesn't do anything...yet");
-  };
+  // const handleFmFormats = (): void => {
+  //   console.log("doesn't do anything...yet");
+  // };
 
   const handleFmViewMode = (view: "block" | "lineitems"): void => {
     setFmViewMode(view);
@@ -167,7 +167,8 @@ export default function MainMenu({
 
   const handleFmEnable = (): void => {
     setFmIsEnabled(true);
-    setFmContent("key: value");
+    if (!fmFormat) setFmFormat("yaml");
+    setFmContent(fmFormat === "yaml" ? "key: value" : "key = value");
   };
 
   //* BODY HANDLERS
@@ -188,7 +189,7 @@ export default function MainMenu({
       <FrontmatterMenuBar
         fmIsEnabled={fmIsEnabled}
         fmIsVisible={fmIsVisible}
-        handleFmFormats={handleFmFormats}
+        // handleFmFormats={handleFmFormats}
         handleFmViewMode={handleFmViewMode}
         handleFmVisibility={handleFmVisibility}
         handleFmClearConfirm={handleFmClearConfirm}

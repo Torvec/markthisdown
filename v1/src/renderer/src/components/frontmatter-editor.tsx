@@ -1,6 +1,7 @@
 type FrontmatterEditorProps = {
   fmIsEnabled: boolean;
   fmIsVisible: boolean;
+  fmFormat: "yaml" | "toml" | null;
   fmViewMode: "block" | "lineitems";
   fmContent: string;
   setFmContent: (value: string) => void;
@@ -10,6 +11,7 @@ export default function FrontmatterEditor({
   fmIsEnabled,
   fmViewMode,
   fmIsVisible,
+  fmFormat,
   fmContent,
   setFmContent,
 }: FrontmatterEditorProps): React.ReactElement {
@@ -23,7 +25,8 @@ export default function FrontmatterEditor({
     );
   }
 
-  const lineItemContent = fmContent.split("\n").map((line) => line.split(":"));
+  const delimiter = fmFormat === "yaml" ? ":" : "=";
+  const lineItemContent = fmContent.split("\n").map((line) => line.split(delimiter));
 
   return (
     <div>
@@ -39,13 +42,13 @@ export default function FrontmatterEditor({
             <div key={index} className="flex gap-3 p-2">
               <input
                 type="text"
-                className="w-1/2 border border-neutral-700 bg-neutral-800 px-2 py-1"
+                className="w-1/3 border border-neutral-700 bg-neutral-800 px-2 py-1"
                 value={item[0]}
                 onChange={() => setFmContent}
               />
               <input
                 type="text"
-                className="w-1/2 border border-neutral-700 bg-neutral-800 px-2 py-1"
+                className="w-2/3 border border-neutral-700 bg-neutral-800 px-2 py-1"
                 value={item[1]}
                 onChange={() => setFmContent}
               />

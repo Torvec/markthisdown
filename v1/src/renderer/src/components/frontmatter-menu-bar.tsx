@@ -7,7 +7,7 @@ import DropDownButton from "./drop-down-button";
 type FrontmatterMenuBarProps = {
   fmIsEnabled: boolean;
   fmIsVisible: boolean;
-  handleFmFormats: () => void;
+  // handleFmFormats: () => void;
   handleFmViewMode: (view: "block" | "lineitems") => void;
   handleFmVisibility: () => void;
   handleFmClearConfirm: () => void;
@@ -18,7 +18,7 @@ type FrontmatterMenuBarProps = {
 export default function FrontmatterMenuBar({
   fmIsEnabled,
   fmIsVisible,
-  handleFmFormats,
+  // handleFmFormats,
   handleFmViewMode,
   handleFmVisibility,
   handleFmClearConfirm,
@@ -27,13 +27,13 @@ export default function FrontmatterMenuBar({
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  const formatsFmDropdownRef = useRef<HTMLDivElement>(null!);
+  // const formatsFmDropdownRef = useRef<HTMLDivElement>(null!);
   const viewsFmDropdownRef = useRef<HTMLDivElement>(null!);
   const clearFmDropdownRef = useRef<HTMLDivElement>(null!);
   const disableFmDropdownRef = useRef<HTMLDivElement>(null!);
 
   const dropdownRefs = {
-    formats: formatsFmDropdownRef,
+    // formats: formatsFmDropdownRef,
     views: viewsFmDropdownRef,
     clear: clearFmDropdownRef,
     disable: disableFmDropdownRef,
@@ -47,7 +47,7 @@ export default function FrontmatterMenuBar({
     <div>
       <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Frontmatter</div>
       <div className="flex gap-0.5">
-        <div className="relative">
+        {/* <div className="relative">
           <Button onClick={() => toggleDropdown("formats")} disabled={!fmIsEnabled}>
             Formats +
           </Button>
@@ -71,7 +71,7 @@ export default function FrontmatterMenuBar({
               </DropDownButton>
             </DropDownMenu>
           )}
-        </div>
+        </div> */}
         <div className="relative">
           <Button onClick={() => toggleDropdown("views")} disabled={!fmIsEnabled}>
             Views +

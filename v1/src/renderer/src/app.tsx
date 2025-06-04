@@ -43,6 +43,7 @@ export default function App(): React.ReactElement {
         <FileInfo fileInfo={fileInfo} />
         <FrontmatterEditor
           fmIsEnabled={fmIsEnabled}
+          fmFormat={fmFormat}
           fmViewMode={fmViewMode}
           fmIsVisible={fmIsVisible}
           fmContent={fmContent}
