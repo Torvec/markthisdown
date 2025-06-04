@@ -10,16 +10,18 @@ type ParsedFileType = {
   filepath: string;
   filename: string;
   format: FmFormatType;
-  frontmatter: string | null;
+  delimiter: FmDelimiterType;
+  frontmatter: string;
   body: string;
 };
 
-type FmFormatType = "yaml" | "toml" | "json" | null;
+type FmFormatType = "yaml" | "toml" | null;
+
+type FmDelimiterType = "---" | "+++" | null;
 
 type FmFormatResult = {
   format: FmFormatType;
-  delimiterStart: string;
-  delimiterEnd: string;
+  delimiter: FmDelimiterType;
 } | null;
 
 //* Electron-Vite Boilerplate
@@ -138,31 +140,34 @@ function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): 
 //* Parsing functions
 function parseFileForEditors(filepath: string): ParsedFileType {
   const contents = fs.readFileSync(filepath, "utf8");
-
   const fmFormatResult = getFmFormat(contents);
-  const { format, delimiterStart, delimiterEnd } = fmFormatResult ?? {
-    format: null,
-    delimiterStart: "",
-    delimiterEnd: "",
-  };
-
-  let frontmatter: string | null = null;
+  const filename = path.basename(filepath);
+  let frontmatter = "";
   let body = contents;
-
-  if (delimiterStart && delimiterEnd) {
-    const match = contents.match(
-      new RegExp(`^${delimiterStart}\\r?\\n([\\s\\S]*?)\\r?\\n${delimiterEnd}`),
-    );
+  if (fmFormatResult !== null) {
+    const { format, delimiter } = fmFormatResult;
+    // Used to escape +++ for toml frontmatter, causes errors otherwise
+    const escapedDelimiter = delimiter!.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const regex = new RegExp(`^${escapedDelimiter}\\r?\\n([\\s\\S]*?)\\r?\\n${escapedDelimiter}`);
+    const match = contents.match(regex);
     if (match) {
-      frontmatter = match[1]; // only the content inside delimiters
+      frontmatter = match[1].trim();
       body = contents.slice(match[0].length).trimStart();
+      return {
+        filepath,
+        filename,
+        format,
+        delimiter,
+        frontmatter,
+        body,
+      };
     }
   }
-
   return {
     filepath,
-    filename: path.basename(filepath),
-    format,
+    filename,
+    format: null,
+    delimiter: null,
     frontmatter,
     body,
   };
@@ -171,19 +176,12 @@ function parseFileForEditors(filepath: string): ParsedFileType {
 function getFmFormat(contents: string): FmFormatResult {
   const firstLine = contents.split(/\r?\n/, 1)[0].trim();
 
-  switch (firstLine) {
-    case "---":
-      return { format: "yaml", delimiterStart: "---", delimiterEnd: "---" };
-    case "+++":
-      return { format: "toml", delimiterStart: "+++", delimiterEnd: "+++" };
-    default:
-      // Not going to bother with json frontmatter for now
-      // if (firstLine.startsWith("{") && contents.trim().endsWith("}")) {
-      //   return { format: "json", delimiterStart: "{", delimiterEnd: "}" };
-      // } else {
-      //   return null;
-      // }
-      return null;
+  if (firstLine === "---") {
+    return { format: "yaml", delimiter: "---" };
+  } else if (firstLine === "+++") {
+    return { format: "toml", delimiter: "+++" };
+  } else {
+    return null;
   }
 }
 

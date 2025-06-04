@@ -5,7 +5,7 @@ import Button from "./button";
 import DropDownButton from "./drop-down-button";
 
 type FileMenuBarProps = {
-  handleNewFileWithFm: () => void;
+  handleNewFileWithFm: (format: "yaml" | "toml") => void;
   handleNewFileNoFm: () => void;
   handleOpenFileTrigger: () => void;
   handleOpenRecentFile: (filepath: string) => void;
@@ -78,18 +78,24 @@ export default function FileMenuBar({
       <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">File</div>
       <div className="flex gap-0.5">
         <div className="relative">
-          <Button onClick={() => toggleDropdown("new")} disabled={false}>
-            New +
-          </Button>
+          <Button onClick={() => toggleDropdown("new")}>New +</Button>
           {openDropdown === "new" && (
             <DropDownMenu ref={newDropdownRef}>
               <DropDownButton
                 onClick={() => {
-                  handleNewFileWithFm();
+                  handleNewFileWithFm("yaml");
                   setOpenDropdown(null);
                 }}
               >
-                With Fronmatter
+                YAML Fronmatter
+              </DropDownButton>
+              <DropDownButton
+                onClick={() => {
+                  handleNewFileWithFm("toml");
+                  setOpenDropdown(null);
+                }}
+              >
+                TOML Fronmatter
               </DropDownButton>
               <DropDownButton
                 onClick={() => {
@@ -102,29 +108,17 @@ export default function FileMenuBar({
             </DropDownMenu>
           )}
         </div>
-
-        <Button onClick={handleOpenFileTrigger} disabled={false}>
-          Open
-        </Button>
-
+        <Button onClick={handleOpenFileTrigger}>Open</Button>
         <div className="relative">
-          <Button onClick={() => toggleDropdown("recent")} disabled={false}>
-            Recent +
-          </Button>
+          <Button onClick={() => toggleDropdown("recent")}>Recent +</Button>
           {openDropdown === "recent" && (
             <DropDownMenu ref={recentDropdownRef}>
               <RecentFilesList recentFiles={recentFiles} />
             </DropDownMenu>
           )}
         </div>
-
-        <Button onClick={handleSaveAsTrigger} disabled={false}>
-          Save As
-        </Button>
-
-        <Button onClick={handleSaveTrigger} disabled={false}>
-          Save
-        </Button>
+        <Button onClick={handleSaveAsTrigger}>Save As</Button>
+        <Button onClick={handleSaveTrigger}>Save</Button>
       </div>
     </div>
   );

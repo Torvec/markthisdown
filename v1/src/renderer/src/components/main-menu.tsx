@@ -7,6 +7,8 @@ type MainMenuProps = {
   setIsNewFile: (filestate: boolean) => void;
   fmIsEnabled: boolean;
   setFmIsEnabled: (fmState: boolean) => void;
+  fmFormat: "yaml" | "toml" | null;
+  setFmFormat: (format: "yaml" | "toml" | null) => void;
   fileInfo: { filename: string; filepath: string; buttonIsEnabled: boolean };
   setFileInfo: (info: { filename: string; filepath: string; buttonIsEnabled: boolean }) => void;
   setFmViewMode: (view: "block" | "lineitems") => void;
@@ -21,6 +23,7 @@ type MainMenuProps = {
 type FileData = {
   filepath: string;
   filename: string;
+  format: "yaml" | "toml" | null;
   frontmatter: string;
   body: string;
 };
@@ -30,6 +33,8 @@ export default function MainMenu({
   setIsNewFile,
   fmIsEnabled,
   setFmIsEnabled,
+  fmFormat,
+  setFmFormat,
   fileInfo,
   setFileInfo,
   setFmViewMode,
@@ -41,13 +46,14 @@ export default function MainMenu({
   setBodyContent,
 }: MainMenuProps): React.ReactElement {
   //* FILE HANDLERS
-  const handleNewFileWithFm = (): void => {
+  const handleNewFileWithFm = (format: "yaml" | "toml"): void => {
     setFileInfo({
       filename: "untitled.md",
       filepath: "untitled.md",
       buttonIsEnabled: false,
     });
     setFmIsEnabled(true);
+    setFmFormat(format);
     setFmContent("key: value");
     setBodyContent("Body Content");
   };
@@ -59,6 +65,7 @@ export default function MainMenu({
       buttonIsEnabled: false,
     });
     setFmIsEnabled(false);
+    setFmFormat(null);
     setFmContent("");
     setBodyContent("Body Content");
   };
@@ -89,6 +96,7 @@ export default function MainMenu({
         setFmIsEnabled(false);
       } else {
         setFmIsEnabled(true);
+        setFmFormat(file.format);
         setFmContent(file.frontmatter);
       }
       setBodyContent(file.body);
@@ -127,15 +135,14 @@ export default function MainMenu({
         filepath: file.filepath,
         buttonIsEnabled: true,
       });
-      setFmContent(file.frontmatter);
-      setBodyContent(file.body);
     }
   };
 
   const combineEditorContent = (): string => {
-    const trimFmContent = fmIsEnabled ? "---\n" + fmContent.trim() + "---\n\n" : "";
+    const delimiter = fmFormat === "yaml" ? "---" : "+++";
+    const trimFmContent = fmIsEnabled ? `${delimiter}\n${fmContent.trim()}\n${delimiter}\n\n` : "";
     const trimBodyContent = bodyContent.trim();
-    return trimFmContent + trimBodyContent;
+    return `${trimFmContent}${trimBodyContent}\n`;
   };
 
   //* FRONTMATTER HANDLERS

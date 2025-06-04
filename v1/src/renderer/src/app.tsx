@@ -7,6 +7,7 @@ import BodyEditor from "./components/body-editor";
 export default function App(): React.ReactElement {
   const [isNewFile, setIsNewFile] = useState(true);
   const [fmIsEnabled, setFmIsEnabled] = useState(true);
+  const [fmFormat, setFmFormat] = useState<"yaml" | "toml" | null>("yaml");
   const [fileInfo, setFileInfo] = useState({
     filename: "untitled.md",
     filepath: "untitled.md",
@@ -25,6 +26,8 @@ export default function App(): React.ReactElement {
           setIsNewFile={setIsNewFile}
           fmIsEnabled={fmIsEnabled}
           setFmIsEnabled={setFmIsEnabled}
+          fmFormat={fmFormat}
+          setFmFormat={setFmFormat}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
           setFmViewMode={setFmViewMode}

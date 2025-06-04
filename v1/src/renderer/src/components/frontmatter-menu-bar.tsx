@@ -13,7 +13,7 @@ type FrontmatterMenuBarProps = {
   handleFmClearConfirm: () => void;
   handleFmDisableConfirm: () => void;
   handleFmEnable: () => void;
-}
+};
 
 export default function FrontmatterMenuBar({
   fmIsEnabled,
