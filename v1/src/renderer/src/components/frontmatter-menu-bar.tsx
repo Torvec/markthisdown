@@ -4,9 +4,10 @@ import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
 
-interface FrontmatterMenuBarProps {
+type FrontmatterMenuBarProps = {
   fmIsEnabled: boolean;
   fmIsVisible: boolean;
+  handleFmFormats: () => void;
   handleFmViewMode: (view: "block" | "lineitems") => void;
   handleFmVisibility: () => void;
   handleFmClearConfirm: () => void;
@@ -17,6 +18,7 @@ interface FrontmatterMenuBarProps {
 export default function FrontmatterMenuBar({
   fmIsEnabled,
   fmIsVisible,
+  handleFmFormats,
   handleFmViewMode,
   handleFmVisibility,
   handleFmClearConfirm,
@@ -53,7 +55,7 @@ export default function FrontmatterMenuBar({
             <DropDownMenu ref={formatsFmDropdownRef}>
               <DropDownButton
                 onClick={() => {
-                  console.log("YAML Selected");
+                  handleFmFormats();
                   setOpenDropdown(null);
                 }}
               >
@@ -61,14 +63,13 @@ export default function FrontmatterMenuBar({
               </DropDownButton>
               <DropDownButton
                 onClick={() => {
-                  console.log("TOML Selected");
+                  handleFmFormats();
                   setOpenDropdown(null);
                 }}
-                disabled={true}
               >
                 TOML +++
               </DropDownButton>
-              <DropDownButton
+              {/* <DropDownButton
                 onClick={() => {
                   console.log("JSON Selected");
                   setOpenDropdown(null);
@@ -76,7 +77,7 @@ export default function FrontmatterMenuBar({
                 disabled={true}
               >
                 JSON {"{ }"}
-              </DropDownButton>
+              </DropDownButton> */}
             </DropDownMenu>
           )}
         </div>

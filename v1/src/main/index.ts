@@ -9,9 +9,18 @@ type RecentFile = { filename: string; filepath: string };
 type ParsedFileType = {
   filepath: string;
   filename: string;
+  format: FmFormatType;
   frontmatter: string | null;
   body: string;
 };
+
+type FmFormatType = "yaml" | "toml" | "json" | null;
+
+type FmFormatResult = {
+  format: FmFormatType;
+  delimiterStart: string;
+  delimiterEnd: string;
+} | null;
 
 //* Electron-Vite Boilerplate
 function createWindow(): void {
@@ -129,19 +138,53 @@ function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): 
 //* Parsing functions
 function parseFileForEditors(filepath: string): ParsedFileType {
   const contents = fs.readFileSync(filepath, "utf8");
+
+  const fmFormatResult = getFmFormat(contents);
+  const { format, delimiterStart, delimiterEnd } = fmFormatResult ?? {
+    format: null,
+    delimiterStart: "",
+    delimiterEnd: "",
+  };
+
   let frontmatter: string | null = null;
   let body = contents;
-  const match = contents.match(/^---\r?\n[\s\S]*?\r?\n---/);
-  if (match) {
-    frontmatter = match[0];
-    body = contents.slice(frontmatter.length).trimStart();
+
+  if (delimiterStart && delimiterEnd) {
+    const match = contents.match(
+      new RegExp(`^${delimiterStart}\\r?\\n([\\s\\S]*?)\\r?\\n${delimiterEnd}`),
+    );
+    if (match) {
+      frontmatter = match[1]; // only the content inside delimiters
+      body = contents.slice(match[0].length).trimStart();
+    }
   }
+
   return {
     filepath,
     filename: path.basename(filepath),
+    format,
     frontmatter,
     body,
   };
+}
+
+function getFmFormat(contents: string): FmFormatResult {
+  const firstLine = contents.split(/\r?\n/, 1)[0].trim();
+
+  switch (firstLine) {
+    case "---":
+      return { format: "yaml", delimiterStart: "---", delimiterEnd: "---" };
+    case "+++":
+      return { format: "toml", delimiterStart: "+++", delimiterEnd: "+++" };
+    default:
+      // Not going to bother with json frontmatter for now
+      // if (firstLine.startsWith("{") && contents.trim().endsWith("}")) {
+      //   return { format: "json", delimiterStart: "{", delimiterEnd: "}" };
+      // } else {
+      //   return null;
+      // }
+      return null;
+  }
 }
 
 //* IPC File Handlers

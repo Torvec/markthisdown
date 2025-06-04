@@ -2,7 +2,7 @@ import FileMenuBar from "./file-menu-bar";
 import FrontmatterMenuBar from "./frontmatter-menu-bar";
 import BodyMenuBar from "./body-menu-bar";
 
-interface MainMenuProps {
+type MainMenuProps = {
   isNewFile: boolean;
   setIsNewFile: (filestate: boolean) => void;
   fmIsEnabled: boolean;
@@ -16,14 +16,14 @@ interface MainMenuProps {
   setFmContent: (content: string) => void;
   bodyContent: string;
   setBodyContent: (content: string) => void;
-}
+};
 
-interface FileData {
+type FileData = {
   filepath: string;
   filename: string;
   frontmatter: string;
   body: string;
-}
+};
 
 export default function MainMenu({
   isNewFile,
@@ -139,6 +139,10 @@ export default function MainMenu({
   };
 
   //* FRONTMATTER HANDLERS
+  const handleFmFormats = (): void => {
+    console.log("doesn't do anything...yet");
+  };
+
   const handleFmViewMode = (view: "block" | "lineitems"): void => {
     setFmViewMode(view);
     if (!fmIsVisible) setFmIsVisible(true);
@@ -165,7 +169,7 @@ export default function MainMenu({
   };
 
   return (
-    <nav className="flex flex-wrap items-center gap-0.5">
+    <nav className="flex flex-wrap items-center gap-1">
       <FileMenuBar
         handleNewFileWithFm={handleNewFileWithFm}
         handleNewFileNoFm={handleNewFileNoFm}
@@ -177,6 +181,7 @@ export default function MainMenu({
       <FrontmatterMenuBar
         fmIsEnabled={fmIsEnabled}
         fmIsVisible={fmIsVisible}
+        handleFmFormats={handleFmFormats}
         handleFmViewMode={handleFmViewMode}
         handleFmVisibility={handleFmVisibility}
         handleFmClearConfirm={handleFmClearConfirm}
