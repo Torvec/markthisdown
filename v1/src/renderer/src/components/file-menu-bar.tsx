@@ -4,14 +4,14 @@ import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
 
-interface FileMenuBarProps {
+type FileMenuBarProps = {
   handleNewFileWithFm: () => void;
   handleNewFileNoFm: () => void;
   handleOpenFileTrigger: () => void;
   handleOpenRecentFile: (filepath: string) => void;
   handleSaveAsTrigger: () => void;
   handleSaveTrigger: () => void;
-}
+};
 
 type RecentFile = { filename: string; filepath: string };
 
@@ -47,26 +47,28 @@ export default function FileMenuBar({
     }
   }, [openDropdown]);
 
-  const RecentFilesListEmpty = (): React.ReactElement => {
-    return <p className="text-center italic text-neutral-500">Recent Files List Empty</p>;
-  };
-
-  const RecentFilesList = (): React.ReactElement => {
+  const RecentFilesList = ({ recentFiles }: { recentFiles: RecentFile[] }): React.ReactElement => {
     return (
       <>
-        {recentFiles.map(({ filename, filepath }, index) => (
-          <button
-            key={index}
-            className="flex w-full cursor-pointer space-x-3 overflow-hidden bg-neutral-900 p-3 transition-colors duration-150 ease-in-out hover:bg-neutral-600"
-            onClick={() => {
-              handleOpenRecentFile(filepath);
-              setOpenDropdown(null);
-            }}
-          >
-            <span className="shrink-0 font-medium">{filename}</span>
-            <span className="min-w-max text-neutral-400">{filepath}</span>
-          </button>
-        ))}
+        {recentFiles.length > 0 ? (
+          <>
+            {recentFiles.map(({ filename, filepath }, index) => (
+              <button
+                key={index}
+                className="flex w-full cursor-pointer space-x-3 overflow-hidden bg-neutral-900 p-3 transition-colors duration-150 ease-in-out hover:bg-neutral-600"
+                onClick={() => {
+                  handleOpenRecentFile(filepath);
+                  setOpenDropdown(null);
+                }}
+              >
+                <span className="shrink-0 font-medium">{filename}</span>
+                <span className="min-w-max text-neutral-400">{filepath}</span>
+              </button>
+            ))}
+          </>
+        ) : (
+          <p className="text-center italic text-neutral-500">Recent Files List Empty</p>
+        )}
       </>
     );
   };
@@ -111,7 +113,7 @@ export default function FileMenuBar({
           </Button>
           {openDropdown === "recent" && (
             <DropDownMenu ref={recentDropdownRef}>
-              {recentFiles.length === 0 ? <RecentFilesListEmpty /> : <RecentFilesList />}
+              <RecentFilesList recentFiles={recentFiles} />
             </DropDownMenu>
           )}
         </div>

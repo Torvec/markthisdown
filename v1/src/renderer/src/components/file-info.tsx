@@ -1,6 +1,6 @@
 import Button from "./button";
 
-interface FileInfoProps {
+type FileInfoProps = {
   fileInfo: {
     filename: string;
     filepath: string;

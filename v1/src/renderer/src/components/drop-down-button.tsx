@@ -1,4 +1,4 @@
-interface DropDownButtonProps {
+type DropDownButtonProps = {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   children: React.ReactNode;
   disabled?: boolean;

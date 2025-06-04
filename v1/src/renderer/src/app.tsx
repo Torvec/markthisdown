@@ -4,7 +4,7 @@ import FileInfo from "./components/file-info";
 import FrontmatterEditor from "./components/frontmatter-editor";
 import BodyEditor from "./components/body-editor";
 
-function App(): React.ReactElement {
+export default function App(): React.ReactElement {
   const [isNewFile, setIsNewFile] = useState(true);
   const [fmIsEnabled, setFmIsEnabled] = useState(true);
   const [fileInfo, setFileInfo] = useState({
@@ -50,5 +50,3 @@ function App(): React.ReactElement {
     </>
   );
 }
-
-export default App;

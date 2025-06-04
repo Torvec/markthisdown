@@ -4,9 +4,9 @@ import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
 
-interface BodyMenuBarProps {
+type BodyMenuBarProps = {
   handleClearBodyConfirm: () => void;
-}
+};
 
 export default function BodyMenuBar({
   handleClearBodyConfirm,
@@ -22,6 +22,7 @@ export default function BodyMenuBar({
   useDropdownClose({ openDropdown, dropdownRefs, setOpenDropdown });
 
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
+
   return (
     <div>
       <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Body</div>

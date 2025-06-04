@@ -1,4 +1,4 @@
-interface DropDownMenuProps {
+type DropDownMenuProps = {
   children: React.ReactNode;
   ref: React.RefObject<HTMLDivElement>;
 }

@@ -69,15 +69,6 @@ export default function FrontmatterMenuBar({
               >
                 TOML +++
               </DropDownButton>
-              {/* <DropDownButton
-                onClick={() => {
-                  console.log("JSON Selected");
-                  setOpenDropdown(null);
-                }}
-                disabled={true}
-              >
-                JSON {"{ }"}
-              </DropDownButton> */}
             </DropDownMenu>
           )}
         </div>
