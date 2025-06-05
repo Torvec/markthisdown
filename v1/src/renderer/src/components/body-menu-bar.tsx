@@ -24,8 +24,8 @@ export default function BodyMenuBar({
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
 
   return (
-    <div>
-      <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">Body</div>
+    <div className="flex justify-between">
+      <h2 className="bg-neutral-900 p-2 text-neutral-400">Body</h2>
       <div className="relative">
         <Button onClick={() => toggleDropdown("clearBody")} disabled={false}>
           Clear +

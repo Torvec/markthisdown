@@ -74,52 +74,49 @@ export default function FileMenuBar({
   };
 
   return (
-    <div>
-      <div className="w-max bg-neutral-900 px-4 py-1 font-normal text-neutral-400">File</div>
-      <div className="flex gap-0.5">
-        <div className="relative">
-          <Button onClick={() => toggleDropdown("new")}>New +</Button>
-          {openDropdown === "new" && (
-            <DropDownMenu ref={newDropdownRef}>
-              <DropDownButton
-                onClick={() => {
-                  handleNewFileWithFm("yaml");
-                  setOpenDropdown(null);
-                }}
-              >
-                YAML Fronmatter
-              </DropDownButton>
-              <DropDownButton
-                onClick={() => {
-                  handleNewFileWithFm("toml");
-                  setOpenDropdown(null);
-                }}
-              >
-                TOML Fronmatter
-              </DropDownButton>
-              <DropDownButton
-                onClick={() => {
-                  handleNewFileNoFm();
-                  setOpenDropdown(null);
-                }}
-              >
-                No Frontmatter
-              </DropDownButton>
-            </DropDownMenu>
-          )}
-        </div>
-        <Button onClick={handleOpenFileTrigger}>Open</Button>
-        <div className="relative">
-          <Button onClick={() => toggleDropdown("recent")}>Recent +</Button>
-          {openDropdown === "recent" && (
-            <DropDownMenu ref={recentDropdownRef}>
-              <RecentFilesList recentFiles={recentFiles} />
-            </DropDownMenu>
-          )}
-        </div>
-        <Button onClick={handleSaveAsTrigger}>Save As</Button>
-        <Button onClick={handleSaveTrigger}>Save</Button>
+    <div className="flex w-max flex-col gap-0.5 bg-neutral-900 p-2">
+      <div className="relative">
+        <Button onClick={() => toggleDropdown("new")}>New +</Button>
+        {openDropdown === "new" && (
+          <DropDownMenu ref={newDropdownRef}>
+            <DropDownButton
+              onClick={() => {
+                handleNewFileWithFm("yaml");
+                setOpenDropdown(null);
+              }}
+            >
+              YAML Fronmatter
+            </DropDownButton>
+            <DropDownButton
+              onClick={() => {
+                handleNewFileWithFm("toml");
+                setOpenDropdown(null);
+              }}
+            >
+              TOML Fronmatter
+            </DropDownButton>
+            <DropDownButton
+              onClick={() => {
+                handleNewFileNoFm();
+                setOpenDropdown(null);
+              }}
+            >
+              No Frontmatter
+            </DropDownButton>
+          </DropDownMenu>
+        )}
       </div>
+      <Button onClick={handleOpenFileTrigger}>Open</Button>
+      <div className="relative">
+        <Button onClick={() => toggleDropdown("recent")}>Recent +</Button>
+        {openDropdown === "recent" && (
+          <DropDownMenu ref={recentDropdownRef}>
+            <RecentFilesList recentFiles={recentFiles} />
+          </DropDownMenu>
+        )}
+      </div>
+      <Button onClick={handleSaveAsTrigger}>Save As</Button>
+      <Button onClick={handleSaveTrigger}>Save</Button>
     </div>
   );
 }

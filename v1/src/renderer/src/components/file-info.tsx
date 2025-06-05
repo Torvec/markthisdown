@@ -6,7 +6,7 @@ type FileInfoProps = {
     filepath: string;
     buttonIsEnabled: boolean;
   };
-}
+};
 
 export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
   const handleShowFileInFolder = async (): Promise<void> => {
@@ -14,7 +14,7 @@ export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElemen
   };
 
   return (
-    <section className="flex items-baseline gap-4">
+    <section className="border-b-border-neutral-700 flex items-baseline gap-4 bg-neutral-900 p-2">
       <h2 id="filename" className="border border-neutral-700 bg-neutral-950 px-4 py-2 font-medium">
         {fileInfo.filename}
       </h2>
