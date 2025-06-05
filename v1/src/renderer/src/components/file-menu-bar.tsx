@@ -76,7 +76,7 @@ export default function FileMenuBar({
   return (
     <div className="flex w-max flex-col gap-0.5 bg-neutral-900 p-2">
       <div className="relative">
-        <Button onClick={() => toggleDropdown("new")}>New +</Button>
+        <Button onClick={() => toggleDropdown("new")}>Ne</Button>
         {openDropdown === "new" && (
           <DropDownMenu ref={newDropdownRef}>
             <DropDownButton
@@ -106,17 +106,17 @@ export default function FileMenuBar({
           </DropDownMenu>
         )}
       </div>
-      <Button onClick={handleOpenFileTrigger}>Open</Button>
+      <Button onClick={handleOpenFileTrigger}>Op</Button>
       <div className="relative">
-        <Button onClick={() => toggleDropdown("recent")}>Recent +</Button>
+        <Button onClick={() => toggleDropdown("recent")}>Re</Button>
         {openDropdown === "recent" && (
           <DropDownMenu ref={recentDropdownRef}>
             <RecentFilesList recentFiles={recentFiles} />
           </DropDownMenu>
         )}
       </div>
-      <Button onClick={handleSaveAsTrigger}>Save As</Button>
-      <Button onClick={handleSaveTrigger}>Save</Button>
+      <Button onClick={handleSaveAsTrigger}>Sa</Button>
+      <Button onClick={handleSaveTrigger}>Sv</Button>
     </div>
   );
 }
