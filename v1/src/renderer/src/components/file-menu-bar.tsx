@@ -3,23 +3,7 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-
-type FileMenuBarProps = {
-  handleNewFileWithFm: ({
-    type,
-    delimiter,
-  }: {
-    type: "yaml" | "toml";
-    delimiter: "---" | "+++";
-  }) => void;
-  handleNewFileNoFm: () => void;
-  handleOpenFileTrigger: () => void;
-  handleOpenRecentFile: (filepath: string) => void;
-  handleSaveAsTrigger: () => void;
-  handleSaveTrigger: () => void;
-};
-
-type RecentFile = { filename: string; filepath: string };
+import { type FileMenuBarProps, type RecentFile } from "@renderer/types";
 
 export default function FileMenuBar({
   handleNewFileWithFm,

@@ -5,40 +5,15 @@ import BodyEditor from "./components/body-editor";
 import FileMenuBar from "./components/file-menu-bar";
 import FrontmatterMenuBar from "./components/frontmatter-menu-bar";
 import BodyMenuBar from "./components/body-menu-bar";
-
-type FileData = {
-  filepath: string;
-  filename: string;
-  format: FrontmatterFormatType | null;
-  delimiter: "---" | "+++" | null;
-  frontmatter: string;
-  body: string;
-};
-
-type FrontmatterFormatType = "yaml" | "toml";
-
-type FrontmatterFormat = {
-  type: FrontmatterFormatType;
-  delimiter: "---" | "+++";
-};
-
-type FrontmatterState = {
-  isEnabled: boolean;
-  isVisible: boolean;
-  format: FrontmatterFormat | null;
-  viewMode: "edit" | "preview" | null;
-  content: string;
-};
-
-type FileInfo = {
-  isNew: boolean;
-  filename: string;
-  filepath: string;
-  buttonIsEnabled: boolean;
-};
+import {
+  type FileData,
+  type FrontmatterFormat,
+  type FrontmatterState,
+  type FileInfoType,
+} from "./types";
 
 export default function App(): React.ReactElement {
-  const [fileInfo, setFileInfo] = useState<FileInfo>({
+  const [fileInfo, setFileInfo] = useState<FileInfoType>({
     isNew: true,
     filename: "untitled.md",
     filepath: "untitled.md",
@@ -99,7 +74,7 @@ export default function App(): React.ReactElement {
     handleOpenFile(openFileDialog);
   };
 
-  const handleOpenRecentFile = async (filepath: string): Promise<void> => {
+  const handleOpenRecentFile = async (filepath): Promise<void> => {
     const openRecentFile = await window.electron.ipcRenderer.invoke("open-recent-file", filepath);
     handleOpenFile(openRecentFile);
   };
@@ -190,7 +165,7 @@ export default function App(): React.ReactElement {
     console.log("doesn't do anything...yet");
   };
 
-  const handleFmViewMode = (view: "edit" | "preview"): void => {
+  const handleFmViewMode = (view: FrontmatterState["viewMode"]): void => {
     setFrontmatter((prev) => ({
       ...prev,
       viewMode: view,

@@ -3,31 +3,7 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-
-type FrontmatterFormatType = "yaml" | "toml";
-
-type FrontmatterFormat = {
-  type: FrontmatterFormatType;
-  delimiter: "---" | "+++";
-};
-
-type FrontmatterState = {
-  isEnabled: boolean;
-  isVisible: boolean;
-  format: FrontmatterFormat | null;
-  viewMode: "edit" | "preview" | null;
-  content: string;
-};
-
-type FrontmatterMenuBarProps = {
-  frontmatter: FrontmatterState;
-  handleFmFormats: () => void;
-  handleFmViewMode: (view: "edit" | "preview") => void;
-  handleFmVisibility: () => void;
-  handleFmClearConfirm: () => void;
-  handleFmDisableConfirm: () => void;
-  handleFmEnable: () => void;
-};
+import { type FrontmatterMenuBarProps } from "@renderer/types";
 
 export default function FrontmatterMenuBar({
   frontmatter,

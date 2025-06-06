@@ -3,26 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
-
-type RecentFile = { filename: string; filepath: string };
-
-type ParsedFileType = {
-  filepath: string;
-  filename: string;
-  format: FmFormatType;
-  delimiter: FmDelimiterType;
-  frontmatter: string;
-  body: string;
-};
-
-type FmFormatType = "yaml" | "toml" | null;
-
-type FmDelimiterType = "---" | "+++" | null;
-
-type FmFormatResult = {
-  format: FmFormatType;
-  delimiter: FmDelimiterType;
-} | null;
+import { type RecentFile, type ParsedFileType, type FmFormatResult } from "./types";
 
 //* Electron-Vite Boilerplate
 function createWindow(): void {
@@ -93,18 +74,18 @@ app.on("window-all-closed", () => {
 
 //* Recent Files File Handling Functions
 function getRecentFilesPath(): string {
-  const recentFilesJSONPath = path.join(app.getPath("userData"), "recent-files.json");
+  const filepath = path.join(app.getPath("userData"), "recent-files.json");
   try {
-    fs.accessSync(recentFilesJSONPath, fs.constants.F_OK);
-    filterRecentFiles(recentFilesJSONPath);
+    fs.accessSync(filepath, fs.constants.F_OK);
+    filterRecentFiles(filepath);
   } catch {
-    fs.writeFileSync(recentFilesJSONPath, "[]");
+    fs.writeFileSync(filepath, "[]");
   }
-  return recentFilesJSONPath;
+  return filepath;
 }
 
-function filterRecentFiles(recentFilesJSONPath: string): string {
-  const fileContents = JSON.parse(fs.readFileSync(recentFilesJSONPath, "utf8"));
+function filterRecentFiles(filepath): string {
+  const fileContents = JSON.parse(fs.readFileSync(filepath, "utf8"));
   let modified = false;
   const filteredFilesList: RecentFile[] = fileContents.filter((item: RecentFile) => {
     try {
@@ -116,12 +97,12 @@ function filterRecentFiles(recentFilesJSONPath: string): string {
     }
   });
   if (modified) {
-    fs.writeFileSync(recentFilesJSONPath, JSON.stringify(filteredFilesList));
+    fs.writeFileSync(filepath, JSON.stringify(filteredFilesList));
   }
-  return recentFilesJSONPath;
+  return filepath;
 }
 
-function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): void {
+function updateRecentFilesList(recentFilesPath, addedFilePath): void {
   const fileContents = JSON.parse(fs.readFileSync(recentFilesPath, "utf8"));
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
@@ -138,7 +119,7 @@ function updateRecentFilesList(recentFilesPath: string, addedFilePath: string): 
 }
 
 //* Parsing functions
-function parseFileForEditors(filepath: string): ParsedFileType {
+function parseFileForEditors(filepath): ParsedFileType {
   const contents = fs.readFileSync(filepath, "utf8");
   const fmFormatResult = getFmFormat(contents);
   const filename = path.basename(filepath);
@@ -173,9 +154,8 @@ function parseFileForEditors(filepath: string): ParsedFileType {
   };
 }
 
-function getFmFormat(contents: string): FmFormatResult {
+function getFmFormat(contents): FmFormatResult {
   const firstLine = contents.split(/\r?\n/, 1)[0].trim();
-
   if (firstLine === "---") {
     return { format: "yaml", delimiter: "---" };
   } else if (firstLine === "+++") {
@@ -239,6 +219,6 @@ ipcMain.handle("save-file", (_, filepath, content) => {
   return parseFileForEditors(filepath);
 });
 
-ipcMain.handle("show-file-in-folder", (_, filepath: string) => {
+ipcMain.handle("show-file-in-folder", (_, filepath) => {
   return shell.showItemInFolder(filepath);
 });

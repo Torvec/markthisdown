@@ -3,10 +3,7 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-
-type BodyMenuBarProps = {
-  handleClearBodyConfirm: () => void;
-};
+import { type BodyMenuBarProps } from "@renderer/types";
 
 export default function BodyMenuBar({
   handleClearBodyConfirm,
@@ -15,9 +12,7 @@ export default function BodyMenuBar({
 
   const clearBodyDropdownRef = useRef<HTMLDivElement>(null!);
 
-  const dropdownRefs = {
-    clearBody: clearBodyDropdownRef,
-  };
+  const dropdownRefs = { clearBody: clearBodyDropdownRef };
 
   useDropdownClose({ openDropdown, dropdownRefs, setOpenDropdown });
 

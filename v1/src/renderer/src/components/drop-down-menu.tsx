@@ -1,7 +1,4 @@
-type DropDownMenuProps = {
-  children: React.ReactNode;
-  ref: React.RefObject<HTMLDivElement>;
-}
+import { type DropDownMenuProps } from "@renderer/types";
 
 export default function DropDownMenu({ children, ref }: DropDownMenuProps): React.ReactElement {
   return (

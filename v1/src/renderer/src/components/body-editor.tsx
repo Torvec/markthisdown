@@ -1,7 +1,4 @@
-type BodyEditorProps = {
-  bodyContent: string;
-  setBodyContent: (value: string) => void;
-};
+import { type BodyEditorProps } from "@renderer/types";
 
 export default function BodyEditor({
   bodyContent,

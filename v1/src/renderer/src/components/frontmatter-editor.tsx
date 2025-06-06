@@ -1,21 +1,4 @@
-type FrontmatterFormatType = "yaml" | "toml";
-
-type FrontmatterFormat = {
-  type: FrontmatterFormatType;
-  delimiter: "---" | "+++";
-};
-
-type FrontmatterState = {
-  isEnabled: boolean;
-  isVisible: boolean;
-  format: FrontmatterFormat | null;
-  viewMode: "edit" | "preview" | null;
-  content: string;
-};
-
-type FrontmatterEditorProps = {
-  frontmatter: FrontmatterState;
-};
+import { type FrontmatterEditorProps } from "@renderer/types";
 
 export default function FrontmatterEditor({
   frontmatter,

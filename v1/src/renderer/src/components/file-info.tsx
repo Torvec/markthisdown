@@ -1,12 +1,5 @@
 import Button from "./button";
-
-type FileInfoProps = {
-  fileInfo: {
-    filename: string;
-    filepath: string;
-    buttonIsEnabled: boolean;
-  };
-};
+import { type FileInfoProps } from "@renderer/types";
 
 export default function FileInfo({ fileInfo }: FileInfoProps): React.ReactElement {
   const handleShowFileInFolder = async (): Promise<void> => {

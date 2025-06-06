@@ -1,8 +1,4 @@
-type DropDownButtonProps = {
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  children: React.ReactNode;
-  disabled?: boolean;
-}
+import { type DropDownButtonProps } from "@renderer/types";
 
 export default function DropDownButton({
   children,

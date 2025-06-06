@@ -1,8 +1,4 @@
-type ButtonProps = {
-  children: React.ReactNode;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  disabled?: boolean;
-};
+import { type ButtonProps } from "@renderer/types";
 
 export default function Button({
   children,

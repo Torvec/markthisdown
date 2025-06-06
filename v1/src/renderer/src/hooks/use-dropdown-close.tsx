@@ -1,11 +1,5 @@
-// useDropdownClose.ts
 import { useEffect } from "react";
-
-type UseDropdownCloseProps = {
-  openDropdown: string | null;
-  dropdownRefs: Record<string, React.RefObject<HTMLDivElement>>;
-  setOpenDropdown: (id: string | null) => void;
-};
+import { type UseDropdownCloseProps } from "@renderer/types";
 
 export default function useDropdownClose({
   openDropdown,
