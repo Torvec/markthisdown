@@ -1,23 +1,28 @@
+type FrontmatterFormatType = "yaml" | "toml";
+
+type FrontmatterFormat = {
+  type: FrontmatterFormatType;
+  delimiter: "---" | "+++";
+};
+
+type FrontmatterState = {
+  isEnabled: boolean;
+  isVisible: boolean;
+  format: FrontmatterFormat | null;
+  viewMode: "edit" | "preview" | null;
+  content: string;
+};
+
 type FrontmatterEditorProps = {
-  fmIsEnabled: boolean;
-  fmIsVisible: boolean;
-  fmFormat: "yaml" | "toml" | null;
-  fmViewMode: "edit" | "preview";
-  fmContent: string;
-  setFmContent: (value: string) => void;
+  frontmatter: FrontmatterState;
 };
 
 export default function FrontmatterEditor({
-  fmIsEnabled,
-  fmViewMode,
-  fmIsVisible,
-  fmFormat,
-  fmContent,
-  setFmContent,
+  frontmatter,
 }: FrontmatterEditorProps): React.ReactElement {
-  if (!fmIsVisible) return <div></div>;
+  if (!frontmatter.isVisible) return <div></div>;
 
-  if (!fmIsEnabled) {
+  if (!frontmatter.isEnabled) {
     return (
       <div className="border-neutral-600 bg-neutral-950 p-4 text-neutral-500">
         Frontmatter Editor is Disabled, Press Enable to add frontmatter to document.
@@ -25,12 +30,12 @@ export default function FrontmatterEditor({
     );
   }
 
-  const delimiter = fmFormat === "yaml" ? ":" : "=";
-  const editContent = fmContent.split("\n").map((line) => line.split(delimiter));
+  const delimiter = frontmatter.format?.type === "yaml" ? ":" : "=";
+  const editContent = frontmatter.content.split("\n").map((line) => line.split(delimiter));
 
   return (
     <div>
-      {fmViewMode === "edit" ? (
+      {frontmatter.viewMode === "edit" ? (
         <div className="grid-cols-2 gap-3 border border-neutral-700">
           {editContent.map((item, index) => (
             <div key={index} className="flex gap-2 p-2">
@@ -38,13 +43,11 @@ export default function FrontmatterEditor({
                 type="text"
                 className="w-1/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
                 value={item[0]}
-                onChange={(e) => setFmContent(e.target.value)}
               />
               <input
                 type="text"
                 className="w-2/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
                 value={item[1]}
-                onChange={(e) => setFmContent(e.target.value)}
               />
             </div>
           ))}
@@ -52,7 +55,7 @@ export default function FrontmatterEditor({
       ) : (
         <textarea
           className="min-h-48 w-full cursor-not-allowed resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
-          value={fmContent}
+          value={frontmatter.content}
           disabled
         />
       )}

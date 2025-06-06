@@ -9,47 +9,88 @@ import BodyMenuBar from "./components/body-menu-bar";
 type FileData = {
   filepath: string;
   filename: string;
-  format: "yaml" | "toml" | null;
+  format: FrontmatterFormatType | null;
+  delimiter: "---" | "+++" | null;
   frontmatter: string;
   body: string;
 };
 
+type FrontmatterFormatType = "yaml" | "toml";
+
+type FrontmatterFormat = {
+  type: FrontmatterFormatType;
+  delimiter: "---" | "+++";
+};
+
+type FrontmatterState = {
+  isEnabled: boolean;
+  isVisible: boolean;
+  format: FrontmatterFormat | null;
+  viewMode: "edit" | "preview" | null;
+  content: string;
+};
+
+type FileInfo = {
+  isNew: boolean;
+  filename: string;
+  filepath: string;
+  buttonIsEnabled: boolean;
+};
+
 export default function App(): React.ReactElement {
-  const [isNewFile, setIsNewFile] = useState(true);
-  const [fmIsEnabled, setFmIsEnabled] = useState(true);
-  const [fmFormat, setFmFormat] = useState<"yaml" | "toml" | null>("yaml");
-  const [fileInfo, setFileInfo] = useState({
+  const [fileInfo, setFileInfo] = useState<FileInfo>({
+    isNew: true,
     filename: "untitled.md",
     filepath: "untitled.md",
     buttonIsEnabled: false,
   });
-  const [fmIsVisible, setFmIsVisible] = useState(true);
-  const [fmViewMode, setFmViewMode] = useState<"edit" | "preview">("edit");
-  const [fmContent, setFmContent] = useState<string>("key: value");
-  const [bodyContent, setBodyContent] = useState("Body Content");
+  const [frontmatter, setFrontmatter] = useState<FrontmatterState>({
+    isEnabled: true,
+    isVisible: true,
+    format: {
+      type: "yaml",
+      delimiter: "---",
+    },
+    viewMode: "edit",
+    content: "key: value",
+  });
+  const [bodyContent, setBodyContent] = useState<string>("Body Content");
 
   //* FILE HANDLERS
-  const handleNewFileWithFm = (format: "yaml" | "toml"): void => {
+  const handleNewFileWithFm = ({ type, delimiter }: FrontmatterFormat): void => {
     setFileInfo({
+      isNew: true,
       filename: "untitled.md",
       filepath: "untitled.md",
       buttonIsEnabled: false,
     });
-    setFmIsEnabled(true);
-    setFmFormat(format);
-    setFmContent(format === "yaml" ? "key: value" : "key = value");
+    setFrontmatter({
+      isEnabled: true,
+      isVisible: true,
+      format: {
+        type: type,
+        delimiter: delimiter,
+      },
+      viewMode: "edit",
+      content: type === "yaml" ? "key: value" : "kay = value",
+    });
     setBodyContent("Body Content");
   };
 
   const handleNewFileNoFm = (): void => {
     setFileInfo({
+      isNew: true,
       filename: "untitled.md",
       filepath: "untitled.md",
       buttonIsEnabled: false,
     });
-    setFmIsEnabled(false);
-    setFmFormat(null);
-    setFmContent("");
+    setFrontmatter({
+      isEnabled: false,
+      isVisible: false,
+      format: null,
+      viewMode: null,
+      content: "",
+    });
     setBodyContent("Body Content");
   };
 
@@ -65,22 +106,36 @@ export default function App(): React.ReactElement {
 
   const handleOpenFile = (file: FileData | undefined): void => {
     if (file !== undefined) {
-      setIsNewFile(false);
       setFileInfo({
+        isNew: false,
         filename: file.filename,
         filepath: file.filepath,
         buttonIsEnabled: true,
       });
       if (
-        file.frontmatter === null ||
-        file.frontmatter === undefined ||
-        file.frontmatter.length === 0
+        !file.frontmatter ||
+        file.frontmatter.length === 0 ||
+        file.format === null ||
+        file.delimiter === null
       ) {
-        setFmIsEnabled(false);
+        setFrontmatter({
+          isEnabled: false,
+          isVisible: true,
+          format: null,
+          viewMode: null,
+          content: "",
+        });
       } else {
-        setFmIsEnabled(true);
-        setFmFormat(file.format);
-        setFmContent(file.frontmatter);
+        setFrontmatter({
+          isEnabled: true,
+          isVisible: true,
+          format: {
+            type: file.format,
+            delimiter: file.delimiter,
+          },
+          viewMode: "edit",
+          content: file.frontmatter,
+        });
       }
       setBodyContent(file.body);
     }
@@ -96,7 +151,7 @@ export default function App(): React.ReactElement {
   };
 
   const handleSaveTrigger = async (): Promise<void> => {
-    const savedFile = isNewFile
+    const savedFile = fileInfo.isNew
       ? await window.electron.ipcRenderer.invoke(
           "save-file-dialog",
           fileInfo.filepath,
@@ -112,8 +167,8 @@ export default function App(): React.ReactElement {
 
   const handleSaveFile = (file: FileData | undefined): void => {
     if (file !== undefined) {
-      setIsNewFile(false);
       setFileInfo({
+        isNew: false,
         filename: file.filename,
         filepath: file.filepath,
         buttonIsEnabled: true,
@@ -122,8 +177,10 @@ export default function App(): React.ReactElement {
   };
 
   const combineEditorContent = (): string => {
-    const delimiter = fmFormat === "yaml" ? "---" : "+++";
-    const trimFmContent = fmIsEnabled ? `${delimiter}\n${fmContent.trim()}\n${delimiter}\n\n` : "";
+    const delimiter = frontmatter.format?.type === "yaml" ? "---" : "+++";
+    const trimFmContent = frontmatter.isEnabled
+      ? `${delimiter}\n${frontmatter.content.trim()}\n${delimiter}\n\n`
+      : "";
     const trimBodyContent = bodyContent.trim();
     return `${trimFmContent}${trimBodyContent}\n`;
   };
@@ -134,24 +191,47 @@ export default function App(): React.ReactElement {
   };
 
   const handleFmViewMode = (view: "edit" | "preview"): void => {
-    setFmViewMode(view);
-    if (!fmIsVisible) setFmIsVisible(true);
+    setFrontmatter((prev) => ({
+      ...prev,
+      viewMode: view,
+    }));
+    if (!frontmatter.isVisible)
+      setFrontmatter((prev) => ({
+        ...prev,
+        isVisible: true,
+      }));
   };
 
-  const handleFmVisibility = (): void => setFmIsVisible(!fmIsVisible);
+  const handleFmVisibility = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      isVisible: !prev.isVisible,
+    }));
+  };
 
-  const handleFmClearConfirm = (): void => setFmContent("");
+  const handleFmClearConfirm = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: "",
+    }));
+  };
 
   const handleFmDisableConfirm = (): void => {
-    setFmIsEnabled(false);
-    if (!fmIsVisible) setFmIsVisible(true);
-    setFmContent("");
+    setFrontmatter((prev) => ({
+      ...prev,
+      isEnabled: false,
+      isVisible: true,
+      content: "",
+    }));
   };
 
   const handleFmEnable = (): void => {
-    setFmIsEnabled(true);
-    if (!fmFormat) setFmFormat("yaml");
-    setFmContent(fmFormat === "yaml" ? "key: value" : "key = value");
+    setFrontmatter((prev) => ({
+      ...prev,
+      isEnabled: true,
+      format: prev.format ? prev.format : { type: "yaml", delimiter: "---" },
+      content: prev.format && prev.format.type === "yaml" ? "key: value" : "key = value",
+    }));
   };
 
   //* BODY HANDLERS
@@ -174,8 +254,7 @@ export default function App(): React.ReactElement {
           <FileInfo fileInfo={fileInfo} />
           <div className="p-2">
             <FrontmatterMenuBar
-              fmIsEnabled={fmIsEnabled}
-              fmIsVisible={fmIsVisible}
+              frontmatter={frontmatter}
               handleFmFormats={handleFmFormats}
               handleFmViewMode={handleFmViewMode}
               handleFmVisibility={handleFmVisibility}
@@ -183,14 +262,7 @@ export default function App(): React.ReactElement {
               handleFmDisableConfirm={handleFmDisableConfirm}
               handleFmEnable={handleFmEnable}
             />
-            <FrontmatterEditor
-              fmIsEnabled={fmIsEnabled}
-              fmFormat={fmFormat}
-              fmViewMode={fmViewMode}
-              fmIsVisible={fmIsVisible}
-              fmContent={fmContent}
-              setFmContent={setFmContent}
-            />
+            <FrontmatterEditor frontmatter={frontmatter} />
           </div>
           <div className="p-2">
             <BodyMenuBar handleClearBodyConfirm={handleClearBodyConfirm} />

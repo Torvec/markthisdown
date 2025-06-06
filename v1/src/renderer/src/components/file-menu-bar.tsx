@@ -5,7 +5,13 @@ import Button from "./button";
 import DropDownButton from "./drop-down-button";
 
 type FileMenuBarProps = {
-  handleNewFileWithFm: (format: "yaml" | "toml") => void;
+  handleNewFileWithFm: ({
+    type,
+    delimiter,
+  }: {
+    type: "yaml" | "toml";
+    delimiter: "---" | "+++";
+  }) => void;
   handleNewFileNoFm: () => void;
   handleOpenFileTrigger: () => void;
   handleOpenRecentFile: (filepath: string) => void;
@@ -81,7 +87,7 @@ export default function FileMenuBar({
           <DropDownMenu ref={newDropdownRef}>
             <DropDownButton
               onClick={() => {
-                handleNewFileWithFm("yaml");
+                handleNewFileWithFm({ type: "yaml", delimiter: "---" });
                 setOpenDropdown(null);
               }}
             >
@@ -89,7 +95,7 @@ export default function FileMenuBar({
             </DropDownButton>
             <DropDownButton
               onClick={() => {
-                handleNewFileWithFm("toml");
+                handleNewFileWithFm({ type: "toml", delimiter: "+++" });
                 setOpenDropdown(null);
               }}
             >
