@@ -18,8 +18,8 @@ export type FrontmatterState = {
   isEnabled: boolean;
   isVisible: boolean;
   format: FrontmatterFormat | null;
-  viewMode: "edit" | "preview" | null;
-  content: string;
+  view: "edit" | "preview" | null;
+  content: [string, unknown][] | "";
 };
 
 export type FileInfoType = {
@@ -37,8 +37,9 @@ export type UseDropdownCloseProps = {
 
 export type FrontmatterMenuBarProps = {
   frontmatter: FrontmatterState;
-  handleFmFormats: () => void;
-  handleFmViewMode: (view: FrontmatterState["viewMode"]) => void;
+  handleFmFormats: (format: FrontmatterFormatType) => void;
+  // handlePreviewContent: () => string;
+  handleFmViewMode: (view: FrontmatterState["view"]) => void;
   handleFmVisibility: () => void;
   handleFmClearConfirm: () => void;
   handleFmDisableConfirm: () => void;
@@ -47,6 +48,10 @@ export type FrontmatterMenuBarProps = {
 
 export type FrontmatterEditorProps = {
   frontmatter: FrontmatterState;
+  serializeFrontmatter: (
+    type: FrontmatterFormatType,
+    content: FrontmatterState["content"],
+  ) => string;
 };
 
 export type FileMenuBarProps = {
@@ -76,12 +81,6 @@ export type FileInfoProps = {
 
 export type DropDownMenuProps = {
   ref: React.RefObject<HTMLDivElement>;
-  children: React.ReactNode;
-};
-
-export type DropDownButtonProps = {
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  disabled?: boolean;
   children: React.ReactNode;
 };
 

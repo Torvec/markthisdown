@@ -6,7 +6,7 @@ import icon from "../../resources/icon.png?asset";
 import { type RecentFile, type ParsedFileType, type FmFormatResult } from "./types";
 
 //* Electron-Vite Boilerplate
-function createWindow(): void {
+const createWindow = (): void => {
   const { height } = screen.getPrimaryDisplay().workAreaSize;
   const size = height;
   const mainWindow = new BrowserWindow({
@@ -39,7 +39,7 @@ function createWindow(): void {
   } else {
     mainWindow.loadFile(path.join(__dirname, "../renderer/index.html"));
   }
-}
+};
 
 // This method will be called when Electron has finished initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -73,7 +73,7 @@ app.on("window-all-closed", () => {
 // You can also put them in separate files and require them here.
 
 //* Recent Files File Handling Functions
-function getRecentFilesPath(): string {
+const getRecentFilesPath = (): string => {
   const filepath = path.join(app.getPath("userData"), "recent-files.json");
   try {
     fs.accessSync(filepath, fs.constants.F_OK);
@@ -82,9 +82,9 @@ function getRecentFilesPath(): string {
     fs.writeFileSync(filepath, "[]");
   }
   return filepath;
-}
+};
 
-function filterRecentFiles(filepath): string {
+const filterRecentFiles = (filepath): string => {
   const fileContents = JSON.parse(fs.readFileSync(filepath, "utf8"));
   let modified = false;
   const filteredFilesList: RecentFile[] = fileContents.filter((item: RecentFile) => {
@@ -100,9 +100,9 @@ function filterRecentFiles(filepath): string {
     fs.writeFileSync(filepath, JSON.stringify(filteredFilesList));
   }
   return filepath;
-}
+};
 
-function updateRecentFilesList(recentFilesPath, addedFilePath): void {
+const updateRecentFilesList = (recentFilesPath, addedFilePath): void => {
   const fileContents = JSON.parse(fs.readFileSync(recentFilesPath, "utf8"));
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
@@ -116,10 +116,10 @@ function updateRecentFilesList(recentFilesPath, addedFilePath): void {
   fileContents.unshift(fileListItem);
   if (fileContents.length > maxSize) fileContents.pop();
   fs.writeFileSync(recentFilesPath, JSON.stringify(fileContents));
-}
+};
 
 //* Parsing functions
-function parseFileForEditors(filepath): ParsedFileType {
+const parseFileForEditors = (filepath): ParsedFileType => {
   const contents = fs.readFileSync(filepath, "utf8");
   const fmFormatResult = getFmFormat(contents);
   const filename = path.basename(filepath);
@@ -152,9 +152,9 @@ function parseFileForEditors(filepath): ParsedFileType {
     frontmatter,
     body,
   };
-}
+};
 
-function getFmFormat(contents): FmFormatResult {
+const getFmFormat = (contents): FmFormatResult => {
   const firstLine = contents.split(/\r?\n/, 1)[0].trim();
   if (firstLine === "---") {
     return { format: "yaml", delimiter: "---" };
@@ -163,7 +163,7 @@ function getFmFormat(contents): FmFormatResult {
   } else {
     return null;
   }
-}
+};
 
 //* IPC File Handlers
 ipcMain.handle("open-file-dialog", () => {

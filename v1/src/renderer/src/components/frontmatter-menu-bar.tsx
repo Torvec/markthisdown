@@ -34,8 +34,12 @@ export default function FrontmatterMenuBar({
     <div className="flex items-center justify-between">
       <div className="flex gap-0.5">
         <h2 className="bg-neutral-900 p-2 text-neutral-400">Frontmatter</h2>
-        <Button onClick={() => handleFmViewMode("edit")}>Edit</Button>
-        <Button onClick={() => handleFmViewMode("preview")}>Preview</Button>
+        <Button onClick={() => handleFmViewMode("edit")} disabled={!frontmatter.isEnabled}>
+          Edit
+        </Button>
+        <Button onClick={() => handleFmViewMode("preview")} disabled={!frontmatter.isEnabled}>
+          Preview
+        </Button>
       </div>
       <div className="flex gap-0.5">
         <div className="relative">
@@ -46,7 +50,7 @@ export default function FrontmatterMenuBar({
             <DropDownMenu ref={formatsFmDropdownRef}>
               <DropDownButton
                 onClick={() => {
-                  handleFmFormats();
+                  handleFmFormats("yaml");
                   setOpenDropdown(null);
                 }}
               >
@@ -54,7 +58,7 @@ export default function FrontmatterMenuBar({
               </DropDownButton>
               <DropDownButton
                 onClick={() => {
-                  handleFmFormats();
+                  handleFmFormats("toml");
                   setOpenDropdown(null);
                 }}
               >
