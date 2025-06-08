@@ -237,6 +237,44 @@ export default function App(): React.ReactElement {
     }));
   };
 
+  const handleFmContentChange = (index: number, position: 0 | 1, value: unknown): void => {
+    const newContent = [...frontmatter.content];
+    const item = [...newContent[index]];
+    item[position] = value;
+    newContent[index] = item;
+    setFrontmatter({ ...frontmatter, content: newContent });
+  };
+
+  const handleAddItem = (idxBeforeAdd: number): void => {
+    const itemToAdd: [string, unknown] = ["key", "value"];
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: [
+        ...prev.content.slice(0, idxBeforeAdd + 1),
+        itemToAdd,
+        ...prev.content.slice(idxBeforeAdd + 1),
+      ],
+    }));
+  };
+
+  const handleRemoveItem = (idxToRemove: number): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: prev.content.filter((_, i) => i !== idxToRemove),
+    }));
+  };
+
+  //! DOES NOT WORK YET
+  const handleMoveItem = (currentIdx: number, dir: "up" | "down"): void => {
+    const targetIdx = dir === "up" ? currentIdx - 1 : currentIdx + 1;
+    setFrontmatter((prev) => {
+      [[...prev.content][currentIdx], [...prev.content][targetIdx]] = [
+        [...prev.content][targetIdx],
+        [...prev.content][currentIdx],
+      ];
+    });
+  };
+
   //* BODY HANDLERS
   const handleClearBodyConfirm = (): void => {
     setBodyContent("");
@@ -253,7 +291,7 @@ export default function App(): React.ReactElement {
           handleSaveAsTrigger={handleSaveAsTrigger}
           handleSaveTrigger={handleSaveTrigger}
         />
-        <main className="grow">
+        <main className="flex grow flex-col">
           <FileInfo fileInfo={fileInfo} />
           <div className="p-2">
             <FrontmatterMenuBar
@@ -267,10 +305,14 @@ export default function App(): React.ReactElement {
             />
             <FrontmatterEditor
               frontmatter={frontmatter}
+              handleFmContentChange={handleFmContentChange}
+              handleAddItem={handleAddItem}
+              handleRemoveItem={handleRemoveItem}
+              handleMoveItem={handleMoveItem}
               serializeFrontmatter={serializeFrontmatter}
             />
           </div>
-          <div className="p-2">
+          <div className="flex grow flex-col p-2">
             <BodyMenuBar handleClearBodyConfirm={handleClearBodyConfirm} />
             <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
           </div>

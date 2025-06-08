@@ -3,6 +3,10 @@ import Button from "./button";
 
 export default function FrontmatterEditor({
   frontmatter,
+  handleFmContentChange,
+  handleAddItem,
+  handleRemoveItem,
+  handleMoveItem,
   serializeFrontmatter,
 }: FrontmatterEditorProps): React.ReactElement {
   if (!frontmatter.isVisible) return <div></div>;
@@ -19,24 +23,31 @@ export default function FrontmatterEditor({
     return (
       <div className="grid-cols-2 gap-3 border border-neutral-700">
         {frontmatter.content.map((item, index) => (
-          <div key={index} className="flex gap-2 p-2">
+          <div key={item[0]} className="flex gap-2 p-2">
             <div className="flex gap-0.5">
-              <Button onClick={() => console.log("Add")}>+</Button>
-              <Button onClick={() => console.log("Remove")}>-</Button>
-              <Button onClick={() => console.log("Move Up")}>up</Button>
-              <Button onClick={() => console.log("Move Down")}>dn</Button>
+              <Button onClick={() => handleAddItem(index)}>+</Button>
+              <Button onClick={() => handleRemoveItem(index)}>-</Button>
+              <Button onClick={() => handleMoveItem(index, "up")} disabled={index === 0}>
+                up
+              </Button>
+              <Button
+                onClick={() => handleMoveItem(index, "down")}
+                disabled={index === frontmatter.content.length - 1}
+              >
+                dn
+              </Button>
             </div>
             <input
               type="text"
               className="w-1/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
               value={item[0]}
-              onChange={() => console.log("key")}
+              onChange={(e) => handleFmContentChange(index, 0, e.target.value)}
             />
             <input
               type="text"
               className="w-2/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
               value={item[1]}
-              onChange={() => console.log("value")}
+              onChange={(e) => handleFmContentChange(index, 1, e.target.value)}
             />
           </div>
         ))}
@@ -51,7 +62,7 @@ export default function FrontmatterEditor({
 
     return (
       <textarea
-        className="min-h-48 w-full cursor-not-allowed resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
+        className="min-h-64 w-full cursor-not-allowed resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
         value={previewContent}
         disabled
       />

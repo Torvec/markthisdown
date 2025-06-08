@@ -38,7 +38,6 @@ export type UseDropdownCloseProps = {
 export type FrontmatterMenuBarProps = {
   frontmatter: FrontmatterState;
   handleFmFormats: (format: FrontmatterFormatType) => void;
-  // handlePreviewContent: () => string;
   handleFmViewMode: (view: FrontmatterState["view"]) => void;
   handleFmVisibility: () => void;
   handleFmClearConfirm: () => void;
@@ -48,6 +47,10 @@ export type FrontmatterMenuBarProps = {
 
 export type FrontmatterEditorProps = {
   frontmatter: FrontmatterState;
+  handleFmContentChange: (index: number, position: 0 | 1, value: unknown) => void;
+  handleAddItem: (idxBeforeAdd: number) => void;
+  handleRemoveItem: (idxToRemove: number) => void;
+  handleMoveItem: (currentIdx: number, dir: "up" | "down") => void;
   serializeFrontmatter: (
     type: FrontmatterFormatType,
     content: FrontmatterState["content"],
