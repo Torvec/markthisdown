@@ -3,16 +3,16 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-import { type FrontmatterMenuBarProps } from "@renderer/types";
+import {
+  type FrontmatterMenuBarProps,
+  type FrontmatterFormatType,
+  type FrontmatterState,
+} from "@renderer/types";
 
 export default function FrontmatterMenuBar({
+  defaults,
   frontmatter,
-  handleFmFormats,
-  handleFmViewMode,
-  handleFmVisibility,
-  handleFmClearConfirm,
-  handleFmDisableConfirm,
-  handleFmEnable,
+  setFrontmatter,
 }: FrontmatterMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
@@ -29,6 +29,55 @@ export default function FrontmatterMenuBar({
   useDropdownClose({ openDropdown, dropdownRefs, setOpenDropdown });
 
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
+
+  //* FRONTMATTER HANDLERS
+  const handleFmFormats = (format: FrontmatterFormatType): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      format: { type: format, delimiter: format === "yaml" ? "---" : "+++" },
+    }));
+  };
+
+  const handleFmViewMode = (view: FrontmatterState["view"]): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      view: view,
+      isVisible: prev.isVisible ? prev.isVisible : true,
+    }));
+  };
+
+  const handleFmVisibility = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      isVisible: !prev.isVisible,
+    }));
+  };
+
+  const handleFmClearConfirm = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: [["", ""]],
+    }));
+  };
+
+  const handleFmDisableConfirm = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      isEnabled: false,
+      isVisible: true,
+      content: "",
+    }));
+  };
+
+  const handleFmEnable = (): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      isEnabled: true,
+      format: prev.format ? prev.format : defaults.fm.format,
+      view: defaults.fm.view,
+      content: defaults.fm.content,
+    }));
+  };
 
   return (
     <div className="flex items-center justify-between">

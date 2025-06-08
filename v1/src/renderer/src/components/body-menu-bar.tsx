@@ -5,9 +5,7 @@ import Button from "./button";
 import DropDownButton from "./drop-down-button";
 import { type BodyMenuBarProps } from "@renderer/types";
 
-export default function BodyMenuBar({
-  handleClearBodyConfirm,
-}: BodyMenuBarProps): React.ReactElement {
+export default function BodyMenuBar({ setBodyContent }: BodyMenuBarProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const clearBodyDropdownRef = useRef<HTMLDivElement>(null!);
@@ -29,7 +27,7 @@ export default function BodyMenuBar({
           <DropDownMenu ref={clearBodyDropdownRef}>
             <DropDownButton
               onClick={() => {
-                handleClearBodyConfirm();
+                setBodyContent("");
                 setOpenDropdown(null);
               }}
             >

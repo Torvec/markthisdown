@@ -1,3 +1,15 @@
+export type DefaultsType = {
+  file: string;
+  fm: {
+    format: FrontmatterFormat;
+    view: FrontmatterState["view"];
+    content: [string, unknown][];
+  };
+  body: {
+    content: string;
+  };
+};
+
 export type FileData = {
   filepath: string;
   filename: string;
@@ -6,6 +18,23 @@ export type FileData = {
   frontmatter: string;
   body: string;
 };
+
+export type FileInfoType = {
+  isNew: boolean;
+  filename: string;
+  filepath: string;
+  buttonIsEnabled: boolean;
+};
+
+export type FileInfoProps = {
+  fileInfo: {
+    filename: string;
+    filepath: string;
+    buttonIsEnabled: boolean;
+  };
+};
+
+export type RecentFile = { filename: string; filepath: string };
 
 export type FrontmatterFormatType = "yaml" | "toml";
 
@@ -22,35 +51,15 @@ export type FrontmatterState = {
   content: [string, unknown][] | "";
 };
 
-export type FileInfoType = {
-  isNew: boolean;
-  filename: string;
-  filepath: string;
-  buttonIsEnabled: boolean;
-};
-
-export type UseDropdownCloseProps = {
-  openDropdown: string | null;
-  dropdownRefs: Record<string, React.RefObject<HTMLDivElement>>;
-  setOpenDropdown: (id: string | null) => void;
-};
-
 export type FrontmatterMenuBarProps = {
+  defaults: DefaultsType;
   frontmatter: FrontmatterState;
-  handleFmFormats: (format: FrontmatterFormatType) => void;
-  handleFmViewMode: (view: FrontmatterState["view"]) => void;
-  handleFmVisibility: () => void;
-  handleFmClearConfirm: () => void;
-  handleFmDisableConfirm: () => void;
-  handleFmEnable: () => void;
+  setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
 };
 
 export type FrontmatterEditorProps = {
   frontmatter: FrontmatterState;
-  handleFmContentChange: (index: number, position: 0 | 1, value: unknown) => void;
-  handleAddItem: (idxBeforeAdd: number) => void;
-  handleRemoveItem: (idxToRemove: number) => void;
-  handleMoveItem: (currentIdx: number, dir: "up" | "down") => void;
+  setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
   serializeFrontmatter: (
     type: FrontmatterFormatType,
     content: FrontmatterState["content"],
@@ -58,28 +67,28 @@ export type FrontmatterEditorProps = {
 };
 
 export type FileMenuBarProps = {
-  handleNewFileWithFm: ({
-    type,
-    delimiter,
-  }: {
-    type: FrontmatterFormatType;
-    delimiter: FrontmatterFormat["delimiter"];
-  }) => void;
-  handleNewFileNoFm: () => void;
-  handleOpenFileTrigger: () => void;
-  handleOpenRecentFile: (filepath: string) => void;
-  handleSaveAsTrigger: () => void;
-  handleSaveTrigger: () => void;
+  defaults: DefaultsType;
+  fileInfo: FileInfoType;
+  setFileInfo: React.Dispatch<React.SetStateAction<FileInfoType>>;
+  setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
+  setBodyContent: React.Dispatch<React.SetStateAction<string>>;
+  parseFrontmatter: (format: FrontmatterFormatType, frontmatter: string) => [string, unknown][];
+  combineEditorContent: () => string;
 };
 
-export type RecentFile = { filename: string; filepath: string };
+export type BodyMenuBarProps = {
+  setBodyContent: React.Dispatch<React.SetStateAction<string>>;
+};
 
-export type FileInfoProps = {
-  fileInfo: {
-    filename: string;
-    filepath: string;
-    buttonIsEnabled: boolean;
-  };
+export type BodyEditorProps = {
+  bodyContent: string;
+  setBodyContent: (value: string) => void;
+};
+
+export type UseDropdownCloseProps = {
+  openDropdown: string | null;
+  dropdownRefs: Record<string, React.RefObject<HTMLDivElement>>;
+  setOpenDropdown: (id: string | null) => void;
 };
 
 export type DropDownMenuProps = {
@@ -91,13 +100,4 @@ export type ButtonProps = {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
   disabled?: boolean;
   children: React.ReactNode;
-};
-
-export type BodyMenuBarProps = {
-  handleClearBodyConfirm: () => void;
-};
-
-export type BodyEditorProps = {
-  bodyContent: string;
-  setBodyContent: (value: string) => void;
 };

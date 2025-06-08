@@ -3,15 +3,21 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-import { type FileMenuBarProps, type RecentFile } from "@renderer/types";
+import {
+  type FileMenuBarProps,
+  type RecentFile,
+  type FrontmatterFormat,
+  type FileData,
+} from "@renderer/types";
 
 export default function FileMenuBar({
-  handleNewFileWithFm,
-  handleNewFileNoFm,
-  handleOpenFileTrigger,
-  handleOpenRecentFile,
-  handleSaveAsTrigger,
-  handleSaveTrigger,
+  defaults,
+  fileInfo,
+  setFileInfo,
+  setFrontmatter,
+  setBodyContent,
+  parseFrontmatter,
+  combineEditorContent,
 }: FileMenuBarProps): React.ReactElement {
   const [recentFiles, setRecentFiles] = useState<RecentFile[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -61,6 +67,123 @@ export default function FileMenuBar({
         )}
       </>
     );
+  };
+
+  //* FILE HANDLERS
+  const handleNewFileWithFm = ({ type, delimiter }: FrontmatterFormat): void => {
+    setFileInfo({
+      isNew: true,
+      filename: defaults.file,
+      filepath: defaults.file,
+      buttonIsEnabled: false,
+    });
+    setFrontmatter({
+      isEnabled: true,
+      isVisible: true,
+      format: { type: type, delimiter: delimiter },
+      view: defaults.fm.view,
+      content: defaults.fm.content,
+    });
+    setBodyContent(defaults.body.content);
+  };
+
+  const handleNewFileNoFm = (): void => {
+    setFileInfo({
+      isNew: true,
+      filename: defaults.file,
+      filepath: defaults.file,
+      buttonIsEnabled: false,
+    });
+    setFrontmatter({
+      isEnabled: false,
+      isVisible: true,
+      format: null,
+      view: null,
+      content: "",
+    });
+    setBodyContent(defaults.body.content);
+  };
+
+  const handleOpenFileTrigger = async (): Promise<void> => {
+    const openFileDialog = await window.electron.ipcRenderer.invoke("open-file-dialog");
+    handleOpenFile(openFileDialog);
+  };
+
+  const handleOpenRecentFile = async (filepath): Promise<void> => {
+    const openRecentFile = await window.electron.ipcRenderer.invoke("open-recent-file", filepath);
+    handleOpenFile(openRecentFile);
+  };
+
+  const handleSaveAsTrigger = async (): Promise<void> => {
+    const saveFileDialog = await window.electron.ipcRenderer.invoke(
+      "save-file-dialog",
+      fileInfo.filepath,
+      combineEditorContent(),
+    );
+    handleSaveFile(saveFileDialog);
+  };
+
+  const handleSaveTrigger = async (): Promise<void> => {
+    const savedFile = fileInfo.isNew
+      ? await window.electron.ipcRenderer.invoke(
+          "save-file-dialog",
+          fileInfo.filepath,
+          combineEditorContent(),
+        )
+      : await window.electron.ipcRenderer.invoke(
+          "save-file",
+          fileInfo.filepath,
+          combineEditorContent(),
+        );
+    handleSaveFile(savedFile);
+  };
+
+  const handleOpenFile = (file: FileData | undefined): void => {
+    if (file !== undefined) {
+      setFileInfo({
+        isNew: false,
+        filename: file.filename,
+        filepath: file.filepath,
+        buttonIsEnabled: true,
+      });
+      if (
+        !file.frontmatter ||
+        file.frontmatter.length === 0 ||
+        file.format === null ||
+        file.delimiter === null
+      ) {
+        setFrontmatter({
+          isEnabled: false,
+          isVisible: true,
+          format: null,
+          view: null,
+          content: "",
+        });
+      } else {
+        setFrontmatter({
+          isEnabled: true,
+          isVisible: true,
+          format: {
+            type: file.format,
+            delimiter: file.delimiter,
+          },
+          view: defaults.fm.view,
+          content: parseFrontmatter(file.format, file.frontmatter),
+        });
+      }
+      setBodyContent(file.body);
+    }
+  };
+
+  const handleSaveFile = (file: FileData | undefined): void => {
+    if (file !== undefined) {
+      setFileInfo({
+        isNew: false,
+        filename: file.filename,
+        filepath: file.filepath,
+        buttonIsEnabled: true,
+      });
+    }
   };
 
   return (

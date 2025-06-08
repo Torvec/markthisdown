@@ -3,12 +3,48 @@ import Button from "./button";
 
 export default function FrontmatterEditor({
   frontmatter,
-  handleFmContentChange,
-  handleAddItem,
-  handleRemoveItem,
-  handleMoveItem,
+  setFrontmatter,
   serializeFrontmatter,
 }: FrontmatterEditorProps): React.ReactElement {
+  //* EDIT VIEW HANDLERS
+  const handleFmContentChange = (index: number, position: 0 | 1, value: unknown): void => {
+    const newContent = [...frontmatter.content];
+    const item = [...newContent[index]];
+    item[position] = value;
+    newContent[index] = item;
+    setFrontmatter({ ...frontmatter, content: newContent });
+  };
+
+  const handleAddItem = (idxBeforeAdd: number): void => {
+    const itemToAdd: [string, unknown] = ["key", "value"];
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: [
+        ...prev.content.slice(0, idxBeforeAdd + 1),
+        itemToAdd,
+        ...prev.content.slice(idxBeforeAdd + 1),
+      ],
+    }));
+  };
+
+  const handleRemoveItem = (idxToRemove: number): void => {
+    setFrontmatter((prev) => ({
+      ...prev,
+      content: prev.content.filter((_, i) => i !== idxToRemove),
+    }));
+  };
+
+  //! DOES NOT WORK YET
+  const handleMoveItem = (currentIdx: number, dir: "up" | "down"): void => {
+    const targetIdx = dir === "up" ? currentIdx - 1 : currentIdx + 1;
+    setFrontmatter((prev) => {
+      [[...prev.content][currentIdx], [...prev.content][targetIdx]] = [
+        [...prev.content][targetIdx],
+        [...prev.content][currentIdx],
+      ];
+    });
+  };
+
   if (!frontmatter.isVisible) return <div></div>;
 
   if (!frontmatter.isEnabled) {
