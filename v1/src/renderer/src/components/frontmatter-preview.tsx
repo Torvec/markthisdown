@@ -8,7 +8,7 @@ export default function FrontmatterPreview({
   if (frontmatter.format) {
     const { type, delimiter } = frontmatter.format;
     const serialized = serializeFrontmatter(type, frontmatter.content);
-    previewContent = `${delimiter}\n${serialized}\n${delimiter}\n`;
+    previewContent = `${delimiter}\n${serialized.trim()}\n${delimiter}\n`;
   }
 
   return (

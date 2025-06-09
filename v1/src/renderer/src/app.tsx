@@ -69,7 +69,7 @@ export default function App(): React.ReactElement {
     const { type, delimiter } = frontmatter.format;
     const fmContentArr = frontmatter.content as [string, unknown][];
     const serializedFmContent = serializeFrontmatter(type, fmContentArr);
-    return delimiter + "\n" + serializedFmContent + "\n" + delimiter + "\n\n" + bodyContent.trim();
+    return `${delimiter}\n${serializedFmContent.trim()}\n${delimiter}\n\n${bodyContent.trim()}`;
   };
 
   return (
