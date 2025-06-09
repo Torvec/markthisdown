@@ -1,50 +1,12 @@
+import FrontmatterEdit from "./frontmatter-edit";
+import FrontmatterPreview from "./frontmatter-preview";
 import { type FrontmatterEditorProps } from "@renderer/types";
-import Button from "./button";
 
 export default function FrontmatterEditor({
   frontmatter,
   setFrontmatter,
   serializeFrontmatter,
 }: FrontmatterEditorProps): React.ReactElement {
-  //* EDIT VIEW HANDLERS
-  const handleFmContentChange = (index: number, position: 0 | 1, value: unknown): void => {
-    const newContent = [...frontmatter.content];
-    const item = [...newContent[index]];
-    item[position] = value;
-    newContent[index] = item;
-    setFrontmatter({ ...frontmatter, content: newContent });
-  };
-
-  const handleAddItem = (idxBeforeAdd: number): void => {
-    const itemToAdd: [string, unknown] = ["key", "value"];
-    setFrontmatter((prev) => ({
-      ...prev,
-      content: [
-        ...prev.content.slice(0, idxBeforeAdd + 1),
-        itemToAdd,
-        ...prev.content.slice(idxBeforeAdd + 1),
-      ],
-    }));
-  };
-
-  const handleRemoveItem = (idxToRemove: number): void => {
-    setFrontmatter((prev) => ({
-      ...prev,
-      content: prev.content.filter((_, i) => i !== idxToRemove),
-    }));
-  };
-
-  //! DOES NOT WORK YET
-  const handleMoveItem = (currentIdx: number, dir: "up" | "down"): void => {
-    const targetIdx = dir === "up" ? currentIdx - 1 : currentIdx + 1;
-    setFrontmatter((prev) => {
-      [[...prev.content][currentIdx], [...prev.content][targetIdx]] = [
-        [...prev.content][targetIdx],
-        [...prev.content][currentIdx],
-      ];
-    });
-  };
-
   if (!frontmatter.isVisible) return <div></div>;
 
   if (!frontmatter.isEnabled) {
@@ -55,60 +17,14 @@ export default function FrontmatterEditor({
     );
   }
 
-  const EditViewContent = (): React.ReactElement => {
-    return (
-      <div className="grid-cols-2 gap-3 border border-neutral-700">
-        {frontmatter.content.map((item, index) => (
-          <div key={item[0]} className="flex gap-2 p-2">
-            <div className="flex gap-0.5">
-              <Button onClick={() => handleAddItem(index)}>+</Button>
-              <Button onClick={() => handleRemoveItem(index)}>-</Button>
-              <Button onClick={() => handleMoveItem(index, "up")} disabled={index === 0}>
-                up
-              </Button>
-              <Button
-                onClick={() => handleMoveItem(index, "down")}
-                disabled={index === frontmatter.content.length - 1}
-              >
-                dn
-              </Button>
-            </div>
-            <input
-              type="text"
-              className="w-1/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
-              value={item[0]}
-              onChange={(e) => handleFmContentChange(index, 0, e.target.value)}
-            />
-            <input
-              type="text"
-              className="w-2/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
-              value={item[1]}
-              onChange={(e) => handleFmContentChange(index, 1, e.target.value)}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  const PreviewContent = (): React.ReactElement => {
-    const { type, delimiter } = frontmatter.format;
-    const serialized = serializeFrontmatter(type, frontmatter.content);
-    const previewContent = `${delimiter}\n${serialized}\n${delimiter}\n`;
-
-    return (
-      <textarea
-        className="min-h-64 w-full cursor-not-allowed resize-y border border-neutral-700 bg-neutral-800 p-4 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
-        value={previewContent}
-        disabled
-      />
-    );
-  };
-
   return (
     <div>
-      {frontmatter.view === "edit" && <EditViewContent />}
-      {frontmatter.view === "preview" && <PreviewContent />}
+      {frontmatter.view === "edit" && (
+        <FrontmatterEdit frontmatter={frontmatter} setFrontmatter={setFrontmatter} />
+      )}
+      {frontmatter.view === "preview" && (
+        <FrontmatterPreview frontmatter={frontmatter} serializeFrontmatter={serializeFrontmatter} />
+      )}
     </div>
   );
 }

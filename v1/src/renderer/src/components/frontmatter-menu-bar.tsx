@@ -5,7 +5,7 @@ import Button from "./button";
 import DropDownButton from "./drop-down-button";
 import {
   type FrontmatterMenuBarProps,
-  type FrontmatterFormatType,
+  type FrontmatterFormat,
   type FrontmatterState,
 } from "@renderer/types";
 
@@ -31,7 +31,7 @@ export default function FrontmatterMenuBar({
   const toggleDropdown = (id: string): void => setOpenDropdown(openDropdown === id ? null : id);
 
   //* FRONTMATTER HANDLERS
-  const handleFmFormats = (format: FrontmatterFormatType): void => {
+  const handleFmFormats = (format: FrontmatterFormat["type"]): void => {
     setFrontmatter((prev) => ({
       ...prev,
       format: { type: format, delimiter: format === "yaml" ? "---" : "+++" },

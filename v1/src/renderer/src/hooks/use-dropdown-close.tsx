@@ -12,7 +12,7 @@ export default function useDropdownClose({
         openDropdown &&
         dropdownRefs[openDropdown] &&
         dropdownRefs[openDropdown].current &&
-        !dropdownRefs[openDropdown].current!.contains(event.target as Node)
+        !dropdownRefs[openDropdown].current.contains(event.target as Node)
       ) {
         setOpenDropdown(null);
       }

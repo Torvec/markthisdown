@@ -84,7 +84,7 @@ const getRecentFilesPath = (): string => {
   return filepath;
 };
 
-const filterRecentFiles = (filepath): string => {
+const filterRecentFiles = (filepath: string): string => {
   const fileContents = JSON.parse(fs.readFileSync(filepath, "utf8"));
   let modified = false;
   const filteredFilesList: RecentFile[] = fileContents.filter((item: RecentFile) => {
@@ -96,13 +96,11 @@ const filterRecentFiles = (filepath): string => {
       return false;
     }
   });
-  if (modified) {
-    fs.writeFileSync(filepath, JSON.stringify(filteredFilesList));
-  }
+  if (modified) fs.writeFileSync(filepath, JSON.stringify(filteredFilesList));
   return filepath;
 };
 
-const updateRecentFilesList = (recentFilesPath, addedFilePath): void => {
+const updateRecentFilesList = (recentFilesPath: string, addedFilePath: string): void => {
   const fileContents = JSON.parse(fs.readFileSync(recentFilesPath, "utf8"));
   const addedFileName = path.basename(addedFilePath);
   const fileListItem = { filename: addedFileName, filepath: addedFilePath };
@@ -119,7 +117,7 @@ const updateRecentFilesList = (recentFilesPath, addedFilePath): void => {
 };
 
 //* Parsing functions
-const parseFileForEditors = (filepath): ParsedFileType => {
+const parseFileForEditors = (filepath: string): ParsedFileType => {
   const contents = fs.readFileSync(filepath, "utf8");
   const fmFormatResult = getFmFormat(contents);
   const filename = path.basename(filepath);
@@ -172,10 +170,7 @@ ipcMain.handle("open-file-dialog", () => {
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
     properties: ["openFile"],
   });
-  if (!openedFile) {
-    console.log("No file selected");
-    return;
-  }
+  if (!openedFile) return;
   updateRecentFilesList(getRecentFilesPath(), openedFile[0]);
   return parseFileForEditors(openedFile[0]);
 });
@@ -184,11 +179,7 @@ ipcMain.handle("get-recent-files", () => {
   try {
     return JSON.parse(fs.readFileSync(getRecentFilesPath(), "utf8"));
   } catch (err) {
-    if (err instanceof Error) {
-      console.error(err.message);
-    } else {
-      console.error(err);
-    }
+    if (err instanceof Error) console.error(err.message);
     return "[]";
   }
 });
@@ -204,21 +195,18 @@ ipcMain.handle("save-file-dialog", (_, filepath, content) => {
     defaultPath: filepath,
     filters: [{ name: "Markdown Files", extensions: ["md", "markdown"] }],
   });
-  if (!newFilePath) {
-    console.log("New File not created");
-    return;
-  }
+  if (!newFilePath) return;
   fs.writeFileSync(newFilePath, content, "utf8");
   updateRecentFilesList(getRecentFilesPath(), newFilePath);
   return parseFileForEditors(newFilePath);
 });
 
-ipcMain.handle("save-file", (_, filepath, content) => {
+ipcMain.handle("save-file", (_, filepath: string, content: string) => {
   fs.writeFileSync(filepath, content);
   updateRecentFilesList(getRecentFilesPath(), filepath);
   return parseFileForEditors(filepath);
 });
 
-ipcMain.handle("show-file-in-folder", (_, filepath) => {
+ipcMain.handle("show-file-in-folder", (_, filepath: string) => {
   return shell.showItemInFolder(filepath);
 });

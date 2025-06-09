@@ -1,5 +1,5 @@
 export type DefaultsType = {
-  file: string;
+  file: "untitled.md";
   fm: {
     format: FrontmatterFormat;
     view: FrontmatterState["view"];
@@ -13,7 +13,7 @@ export type DefaultsType = {
 export type FileData = {
   filepath: string;
   filename: string;
-  format: FrontmatterFormatType | null;
+  format: FrontmatterFormat["type"] | null;
   delimiter: FrontmatterFormat["delimiter"] | null;
   frontmatter: string;
   body: string;
@@ -36,10 +36,8 @@ export type FileInfoProps = {
 
 export type RecentFile = { filename: string; filepath: string };
 
-export type FrontmatterFormatType = "yaml" | "toml";
-
 export type FrontmatterFormat = {
-  type: FrontmatterFormatType;
+  type: "yaml" | "toml";
   delimiter: "---" | "+++";
 };
 
@@ -61,7 +59,20 @@ export type FrontmatterEditorProps = {
   frontmatter: FrontmatterState;
   setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
   serializeFrontmatter: (
-    type: FrontmatterFormatType,
+    type: FrontmatterFormat["type"],
+    content: FrontmatterState["content"],
+  ) => string;
+};
+
+export type FrontmatterEditProps = {
+  frontmatter: FrontmatterState;
+  setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
+};
+
+export type FrontmatterPreviewProps = {
+  frontmatter: FrontmatterState;
+  serializeFrontmatter: (
+    type: FrontmatterFormat["type"],
     content: FrontmatterState["content"],
   ) => string;
 };
@@ -72,7 +83,7 @@ export type FileMenuBarProps = {
   setFileInfo: React.Dispatch<React.SetStateAction<FileInfoType>>;
   setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
   setBodyContent: React.Dispatch<React.SetStateAction<string>>;
-  parseFrontmatter: (format: FrontmatterFormatType, frontmatter: string) => [string, unknown][];
+  parseFrontmatter: (format: FrontmatterFormat["type"], frontmatter: string) => [string, unknown][];
   combineEditorContent: () => string;
 };
 

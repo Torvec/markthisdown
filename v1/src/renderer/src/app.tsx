@@ -11,17 +11,17 @@ import {
   type FrontmatterFormat,
   type FrontmatterState,
   type FileInfoType,
-  type FrontmatterFormatType,
+  type DefaultsType,
 } from "./types";
 
 export default function App(): React.ReactElement {
   //* DEFAULTS
-  const defaults = {
+  const defaults: DefaultsType = {
     file: "untitled.md",
     fm: {
-      format: { type: "yaml", delimiter: "---" } as FrontmatterFormat,
-      view: "edit" as FrontmatterState["view"],
-      content: [["key", "value"]] as [string, unknown][],
+      format: { type: "yaml", delimiter: "---" },
+      view: "edit",
+      content: [["key", "value"]],
     },
     body: {
       content: "Body Content",
@@ -47,7 +47,7 @@ export default function App(): React.ReactElement {
   //* FILE HANDLER UTILITY FUNCTIONS
 
   const parseFrontmatter = (
-    format: FrontmatterFormatType,
+    format: FrontmatterFormat["type"],
     frontmatter: string,
   ): [string, unknown][] => {
     const parsed = format === "yaml" ? YAML.parse(frontmatter) : TOML.parse(frontmatter);
@@ -55,9 +55,10 @@ export default function App(): React.ReactElement {
   };
 
   const serializeFrontmatter = (
-    format: FrontmatterFormatType,
-    fmArr: [string, unknown][],
+    format: FrontmatterFormat["type"],
+    fmArr: [string, unknown][] | "",
   ): string => {
+    if (fmArr === "") return "";
     const fmObj = Object.fromEntries(fmArr);
     const serialized = format === "yaml" ? YAML.stringify(fmObj) : TOML.stringify(fmObj);
     return serialized;
