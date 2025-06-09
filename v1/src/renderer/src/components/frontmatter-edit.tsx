@@ -5,12 +5,12 @@ export default function FrontmatterEdit({
   frontmatter,
   setFrontmatter,
 }: FrontmatterEditProps): React.ReactElement {
-  const handleFmContentChange = (rowIndex: number, colIndex: number, value: string): void => {
+  const handleContentChange = (rowIdx: number, colIdx: number, newVal: string): void => {
     setFrontmatter((prev) => {
       const content = [...(prev.content as [string, unknown][])];
-      const row = [...content[rowIndex]] as [string, unknown];
-      row[colIndex] = value;
-      content[rowIndex] = row;
+      const row = [...content[rowIdx]] as [string, unknown];
+      row[colIdx] = newVal;
+      content[rowIdx] = row;
       return { ...prev, content };
     });
   };
@@ -34,8 +34,14 @@ export default function FrontmatterEdit({
     });
   };
 
-  const handleMoveItem = (): void => {
-    console.log("moved");
+  const handleMoveItem = (idxToMove: number, dir: "up" | "dn"): void => {
+    setFrontmatter((prev) => {
+      const content = [...(prev.content as [string, unknown][])];
+      const idxToSwap = dir === "up" ? idxToMove - 1 : idxToMove + 1;
+      if (idxToSwap < 0 || idxToSwap >= content.length) return prev;
+      [content[idxToMove], content[idxToSwap]] = [content[idxToSwap], content[idxToMove]];
+      return { ...prev, content };
+    });
   };
 
   return (
@@ -46,11 +52,11 @@ export default function FrontmatterEdit({
             <div className="flex gap-0.5">
               <Button onClick={() => handleAddItem(index)}>+</Button>
               <Button onClick={() => handleRemoveItem(index)}>-</Button>
-              <Button onClick={() => handleMoveItem()} disabled={index === 0}>
+              <Button onClick={() => handleMoveItem(index, "up")} disabled={index === 0}>
                 up
               </Button>
               <Button
-                onClick={() => handleMoveItem()}
+                onClick={() => handleMoveItem(index, "dn")}
                 disabled={index === frontmatter.content.length - 1}
               >
                 dn
@@ -60,13 +66,13 @@ export default function FrontmatterEdit({
               type="text"
               className="w-1/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
               value={key}
-              onChange={(e) => handleFmContentChange(index, 0, e.target.value)}
+              onChange={(e) => handleContentChange(index, 0, e.target.value)}
             />
             <input
               type="text"
               className="w-2/3 border border-neutral-800 bg-neutral-900 px-2 py-1 outline-0 focus-visible:border-neutral-600 focus-visible:bg-neutral-700/50"
               value={String(value)}
-              onChange={(e) => handleFmContentChange(index, 1, e.target.value)}
+              onChange={(e) => handleContentChange(index, 1, e.target.value)}
             />
           </div>
         ))}
