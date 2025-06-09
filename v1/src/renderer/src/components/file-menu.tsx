@@ -4,13 +4,13 @@ import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
 import {
-  type FileMenuBarProps,
+  type FileMenuProps,
   type RecentFile,
   type FrontmatterFormat,
   type FileData,
 } from "@renderer/types";
 
-export default function FileMenuBar({
+export default function FileMenu({
   defaults,
   fileInfo,
   setFileInfo,
@@ -18,7 +18,7 @@ export default function FileMenuBar({
   setBodyContent,
   parseFrontmatter,
   combineEditorContent,
-}: FileMenuBarProps): React.ReactElement {
+}: FileMenuProps): React.ReactElement {
   const [recentFiles, setRecentFiles] = useState<RecentFile[]>([]);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 

@@ -49,13 +49,13 @@ export type FrontmatterState = {
   content: [string, unknown][] | "";
 };
 
-export type FrontmatterMenuBarProps = {
+export type FrontmatterMenuProps = {
   defaults: DefaultsType;
   frontmatter: FrontmatterState;
   setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
 };
 
-export type FrontmatterEditorProps = {
+export type FrontmatterProps = {
   frontmatter: FrontmatterState;
   setFrontmatter: React.Dispatch<React.SetStateAction<FrontmatterState>>;
   serializeFrontmatter: (
@@ -77,7 +77,7 @@ export type FrontmatterPreviewProps = {
   ) => string;
 };
 
-export type FileMenuBarProps = {
+export type FileMenuProps = {
   defaults: DefaultsType;
   fileInfo: FileInfoType;
   setFileInfo: React.Dispatch<React.SetStateAction<FileInfoType>>;
@@ -87,7 +87,7 @@ export type FileMenuBarProps = {
   combineEditorContent: () => string;
 };
 
-export type BodyMenuBarProps = {
+export type BodyMenuProps = {
   setBodyContent: React.Dispatch<React.SetStateAction<string>>;
 };
 

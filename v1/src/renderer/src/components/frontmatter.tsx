@@ -1,12 +1,12 @@
 import FrontmatterEdit from "./frontmatter-edit";
 import FrontmatterPreview from "./frontmatter-preview";
-import { type FrontmatterEditorProps } from "@renderer/types";
+import { type FrontmatterProps } from "@renderer/types";
 
-export default function FrontmatterEditor({
+export default function Frontmatter({
   frontmatter,
   setFrontmatter,
   serializeFrontmatter,
-}: FrontmatterEditorProps): React.ReactElement {
+}: FrontmatterProps): React.ReactElement {
   if (!frontmatter.isVisible) return <div></div>;
 
   if (!frontmatter.isEnabled) {

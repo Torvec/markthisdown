@@ -4,16 +4,16 @@ import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
 import {
-  type FrontmatterMenuBarProps,
+  type FrontmatterMenuProps,
   type FrontmatterFormat,
   type FrontmatterState,
 } from "@renderer/types";
 
-export default function FrontmatterMenuBar({
+export default function FrontmatterMenu({
   defaults,
   frontmatter,
   setFrontmatter,
-}: FrontmatterMenuBarProps): React.ReactElement {
+}: FrontmatterMenuProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const formatsFmDropdownRef = useRef<HTMLDivElement>(null!);

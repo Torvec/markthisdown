@@ -1,12 +1,12 @@
 import { useState } from "react";
 import YAML from "yaml";
 import TOML from "smol-toml";
+import FileMenu from "./components/file-menu";
 import FileInfo from "./components/file-info";
-import FrontmatterEditor from "./components/frontmatter-editor";
+import FrontmatterMenu from "./components/frontmatter-menu";
+import Frontmatter from "./components/frontmatter";
+import BodyMenu from "./components/body-menu";
 import BodyEditor from "./components/body-editor";
-import FileMenuBar from "./components/file-menu-bar";
-import FrontmatterMenuBar from "./components/frontmatter-menu-bar";
-import BodyMenuBar from "./components/body-menu-bar";
 import {
   type FrontmatterFormat,
   type FrontmatterState,
@@ -75,7 +75,7 @@ export default function App(): React.ReactElement {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="flex grow">
-        <FileMenuBar
+        <FileMenu
           defaults={defaults}
           fileInfo={fileInfo}
           setFileInfo={setFileInfo}
@@ -87,19 +87,19 @@ export default function App(): React.ReactElement {
         <main className="flex grow flex-col">
           <FileInfo fileInfo={fileInfo} />
           <div className="p-2">
-            <FrontmatterMenuBar
+            <FrontmatterMenu
               defaults={defaults}
               frontmatter={frontmatter}
               setFrontmatter={setFrontmatter}
             />
-            <FrontmatterEditor
+            <Frontmatter
               frontmatter={frontmatter}
               setFrontmatter={setFrontmatter}
               serializeFrontmatter={serializeFrontmatter}
             />
           </div>
           <div className="flex grow flex-col p-2">
-            <BodyMenuBar setBodyContent={setBodyContent} />
+            <BodyMenu setBodyContent={setBodyContent} />
             <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
           </div>
         </main>

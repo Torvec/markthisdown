@@ -3,9 +3,9 @@ import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
 import Button from "./button";
 import DropDownButton from "./drop-down-button";
-import { type BodyMenuBarProps } from "@renderer/types";
+import { type BodyMenuProps } from "@renderer/types";
 
-export default function BodyMenuBar({ setBodyContent }: BodyMenuBarProps): React.ReactElement {
+export default function BodyMenu({ setBodyContent }: BodyMenuProps): React.ReactElement {
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const clearBodyDropdownRef = useRef<HTMLDivElement>(null!);
