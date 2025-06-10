@@ -7,6 +7,7 @@ import FrontmatterMenu from "./components/frontmatter-menu";
 import Frontmatter from "./components/frontmatter";
 import BodyMenu from "./components/body-menu";
 import BodyEditor from "./components/body-editor";
+import BodyPreview from "./components/body-preview";
 import {
   type FrontmatterFormat,
   type FrontmatterState,
@@ -101,6 +102,7 @@ export default function App(): React.ReactElement {
           <div className="flex grow flex-col p-2">
             <BodyMenu setBodyContent={setBodyContent} />
             <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
+            <BodyPreview bodyContent={bodyContent} />
           </div>
         </main>
       </div>
