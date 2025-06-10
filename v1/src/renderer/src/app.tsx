@@ -87,22 +87,28 @@ export default function App(): React.ReactElement {
         />
         <main className="flex grow flex-col">
           <FileInfo fileInfo={fileInfo} />
-          <div className="p-2">
-            <FrontmatterMenu
-              defaults={defaults}
-              frontmatter={frontmatter}
-              setFrontmatter={setFrontmatter}
-            />
-            <Frontmatter
-              frontmatter={frontmatter}
-              setFrontmatter={setFrontmatter}
-              serializeFrontmatter={serializeFrontmatter}
-            />
-          </div>
-          <div className="flex grow flex-col p-2">
-            <BodyMenu setBodyContent={setBodyContent} />
-            <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
-            <BodyPreview bodyContent={bodyContent} />
+          <div className="flex grow divide-x divide-neutral-700">
+            <div className="flex w-1/2 grow flex-col divide-y divide-neutral-700">
+              <div className="max-h-1/3 overflow-auto p-2">
+                <FrontmatterMenu
+                  defaults={defaults}
+                  frontmatter={frontmatter}
+                  setFrontmatter={setFrontmatter}
+                />
+                <Frontmatter
+                  frontmatter={frontmatter}
+                  setFrontmatter={setFrontmatter}
+                  serializeFrontmatter={serializeFrontmatter}
+                />
+              </div>
+              <div className="flex grow flex-col p-2">
+                <BodyMenu setBodyContent={setBodyContent} />
+                <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
+              </div>
+            </div>
+            <div className="w-1/2 grow p-4">
+              <BodyPreview bodyContent={bodyContent} />
+            </div>
           </div>
         </main>
       </div>
