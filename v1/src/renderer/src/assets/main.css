@@ -1,2 +1,10 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@plugin 'tailwind-scrollbar' {
+  nocompatible: true;
+  preferredstrategy: "pseudoelements";
+}
+
+.scrollbar-style {
+  @apply scrollbar-thin scrollbar-track-neutral-600 scrollbar-thumb-neutral-500 scrollbar-hover:cursor-default scrollbar-hover:scrollbar-thumb-neutral-400 overflow-y-scroll;
+}

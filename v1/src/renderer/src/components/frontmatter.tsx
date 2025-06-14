@@ -18,13 +18,13 @@ export default function Frontmatter({
   }
 
   return (
-    <div>
+    <>
       {frontmatter.view === "edit" && (
         <FrontmatterEdit frontmatter={frontmatter} setFrontmatter={setFrontmatter} />
       )}
       {frontmatter.view === "preview" && (
         <FrontmatterPreview frontmatter={frontmatter} serializeFrontmatter={serializeFrontmatter} />
       )}
-    </div>
+    </>
   );
 }

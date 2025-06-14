@@ -74,8 +74,8 @@ export default function App(): React.ReactElement {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <div className="flex grow">
+    <div className="flex h-screen flex-col bg-neutral-800 text-neutral-100">
+      <div className="flex min-h-0 grow">
         <FileMenu
           defaults={defaults}
           fileInfo={fileInfo}
@@ -85,11 +85,13 @@ export default function App(): React.ReactElement {
           parseFrontmatter={parseFrontmatter}
           combineEditorContent={combineEditorContent}
         />
-        <main className="flex grow flex-col">
+        <div className="flex min-h-0 grow flex-col">
           <FileInfo fileInfo={fileInfo} />
-          <div className="flex grow divide-x divide-neutral-700">
-            <div className="flex w-1/2 grow flex-col divide-y divide-neutral-700">
-              <div className="max-h-1/3 overflow-auto p-2">
+          <div className="flex min-h-0 grow">
+            {/* Col 1 */}
+            <div className="flex min-h-0 w-1/2 flex-col p-2 gap-4">
+              {/* Row 1 */}
+              <div className="flex h-1/3 flex-col">
                 <FrontmatterMenu
                   defaults={defaults}
                   frontmatter={frontmatter}
@@ -101,20 +103,20 @@ export default function App(): React.ReactElement {
                   serializeFrontmatter={serializeFrontmatter}
                 />
               </div>
-              <div className="flex grow flex-col p-2">
+              {/* Row 2 */}
+              <div className="flex min-h-0 grow flex-col">
                 <BodyMenu setBodyContent={setBodyContent} />
                 <BodyEditor bodyContent={bodyContent} setBodyContent={setBodyContent} />
               </div>
             </div>
-            <div className="w-1/2 grow p-4">
-              <BodyPreview bodyContent={bodyContent} />
-            </div>
+            {/* Col 2 */}
+            <BodyPreview bodyContent={bodyContent} />
           </div>
-        </main>
+        </div>
       </div>
-      <footer className="bg-blue-500/50 text-center text-neutral-200">
-        <p>Status Bar</p>
-      </footer>
+      <div className="bg-blue-500/50 text-center text-neutral-200">
+        <p>Status Bar *Under Development*</p>
+      </div>
     </div>
   );
 }

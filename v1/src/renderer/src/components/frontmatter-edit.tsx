@@ -45,7 +45,7 @@ export default function FrontmatterEdit({
   };
 
   return (
-    <div className="grid-cols-2 gap-3 border border-neutral-700">
+    <div className="scrollbar-style min-h-0 grow grid-cols-2 gap-3 border border-neutral-700">
       {Array.isArray(frontmatter.content) &&
         frontmatter.content.map(([key, value], index) => (
           <div key={index} className="flex gap-2 p-2">
