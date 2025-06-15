@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
 import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
-import Button from "./button";
+import IconButton from "./icon-button";
 import DropDownButton from "./drop-down-button";
+import { Pencil, View, FileText, Eye, EyeOff, Eraser, FileX, FileSpreadsheet } from "lucide-react";
 import {
   type FrontmatterMenuProps,
   type FrontmatterFormat,
@@ -81,20 +82,32 @@ export default function FrontmatterMenu({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex gap-0.5">
+      <div className="flex items-center">
         <h2 className="bg-neutral-900 p-2 text-neutral-400">Frontmatter</h2>
-        <Button onClick={() => handleFmViewMode("edit")} disabled={!frontmatter.isEnabled}>
-          Edit
-        </Button>
-        <Button onClick={() => handleFmViewMode("preview")} disabled={!frontmatter.isEnabled}>
-          Preview
-        </Button>
+        <IconButton
+          onClick={() => handleFmViewMode("edit")}
+          disabled={!frontmatter.isEnabled}
+          label="Edit"
+        >
+          <Pencil />
+        </IconButton>
+        <IconButton
+          onClick={() => handleFmViewMode("preview")}
+          disabled={!frontmatter.isEnabled}
+          label="Preview"
+        >
+          <View />
+        </IconButton>
       </div>
-      <div className="flex gap-0.5">
+      <div className="flex items-center gap-0.5">
         <div className="relative">
-          <Button onClick={() => toggleDropdown("formats")} disabled={!frontmatter.isEnabled}>
-            Formats +
-          </Button>
+          <IconButton
+            onClick={() => toggleDropdown("formats")}
+            disabled={!frontmatter.isEnabled}
+            label="Formats"
+          >
+            <FileText />
+          </IconButton>
           {openDropdown === "formats" && (
             <DropDownMenu ref={formatsFmDropdownRef}>
               <DropDownButton
@@ -116,13 +129,21 @@ export default function FrontmatterMenu({
             </DropDownMenu>
           )}
         </div>
-        <Button onClick={() => handleFmVisibility()} disabled={!frontmatter.isEnabled}>
-          {frontmatter.isVisible ? "Hide" : "Show"}
-        </Button>
+        <IconButton
+          onClick={() => handleFmVisibility()}
+          disabled={!frontmatter.isEnabled}
+          label={frontmatter.isVisible ? "Hide" : "Show"}
+        >
+          {frontmatter.isVisible ? <EyeOff /> : <Eye />}
+        </IconButton>
         <div className="relative">
-          <Button onClick={() => toggleDropdown("clear")} disabled={!frontmatter.isEnabled}>
-            Clear +
-          </Button>
+          <IconButton
+            onClick={() => toggleDropdown("clear")}
+            disabled={!frontmatter.isEnabled}
+            label="Clear"
+          >
+            <Eraser />
+          </IconButton>
           {openDropdown === "clear" && (
             <DropDownMenu ref={clearFmDropdownRef}>
               <DropDownButton
@@ -140,9 +161,13 @@ export default function FrontmatterMenu({
         <div className="relative">
           {frontmatter.isEnabled ? (
             <>
-              <Button onClick={() => toggleDropdown("disable")} disabled={!frontmatter.isEnabled}>
-                Disable +
-              </Button>
+              <IconButton
+                onClick={() => toggleDropdown("disable")}
+                disabled={!frontmatter.isEnabled}
+                label="Disable"
+              >
+                <FileX />
+              </IconButton>
               {openDropdown === "disable" && (
                 <DropDownMenu ref={disableFmDropdownRef}>
                   <DropDownButton
@@ -158,9 +183,9 @@ export default function FrontmatterMenu({
               )}
             </>
           ) : (
-            <Button onClick={handleFmEnable} disabled={frontmatter.isEnabled}>
-              Enable
-            </Button>
+            <IconButton onClick={handleFmEnable} label="Enable">
+              <FileSpreadsheet />
+            </IconButton>
           )}
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { type FrontmatterEditProps } from "@renderer/types";
-import Button from "./button";
+import IconButton from "./icon-button";
+import { Plus, Minus, ChevronUp, ChevronDown } from "lucide-react";
 
 export default function FrontmatterEdit({
   frontmatter,
@@ -45,22 +46,31 @@ export default function FrontmatterEdit({
   };
 
   return (
-    <div className="scrollbar-style min-h-0 grow grid-cols-2 gap-3 border border-neutral-700">
+    <div className="scrollbar-style min-h-0 grow grid-cols-2 gap-3 border-y border-l border-neutral-700">
       {Array.isArray(frontmatter.content) &&
         frontmatter.content.map(([key, value], index) => (
           <div key={index} className="flex gap-2 p-2">
-            <div className="flex gap-0.5">
-              <Button onClick={() => handleAddItem(index)}>+</Button>
-              <Button onClick={() => handleRemoveItem(index)}>-</Button>
-              <Button onClick={() => handleMoveItem(index, "up")} disabled={index === 0}>
-                up
-              </Button>
-              <Button
+            <div className="flex">
+              <IconButton onClick={() => handleAddItem(index)} label="Add">
+                <Plus size={16} />
+              </IconButton>
+              <IconButton onClick={() => handleRemoveItem(index)} label="Remove">
+                <Minus size={16} />
+              </IconButton>
+              <IconButton
+                onClick={() => handleMoveItem(index, "up")}
+                disabled={index === 0}
+                label="Move Up"
+              >
+                <ChevronUp size={16} />
+              </IconButton>
+              <IconButton
                 onClick={() => handleMoveItem(index, "dn")}
                 disabled={index === frontmatter.content.length - 1}
+                label="Move Down"
               >
-                dn
-              </Button>
+                <ChevronDown size={16} />
+              </IconButton>
             </div>
             <input
               type="text"

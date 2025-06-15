@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import useDropdownClose from "@renderer/hooks/use-dropdown-close";
 import DropDownMenu from "./drop-down-menu";
-import Button from "./button";
+import IconButton from "./icon-button";
 import DropDownButton from "./drop-down-button";
+import { FilePlus, FolderOpen, FileStack, Save, SaveAll } from "lucide-react";
 import {
   type FileMenuProps,
   type RecentFile,
@@ -187,9 +188,11 @@ export default function FileMenu({
   };
 
   return (
-    <div className="flex w-max flex-col gap-0.5 bg-neutral-900 p-2">
+    <div className="flex w-max flex-col bg-neutral-900">
       <div className="relative">
-        <Button onClick={() => toggleDropdown("new")}>Ne</Button>
+        <IconButton onClick={() => toggleDropdown("new")} label="New">
+          <FilePlus size={26} />
+        </IconButton>
         {openDropdown === "new" && (
           <DropDownMenu ref={newDropdownRef}>
             <DropDownButton
@@ -219,17 +222,25 @@ export default function FileMenu({
           </DropDownMenu>
         )}
       </div>
-      <Button onClick={handleOpenFileTrigger}>Op</Button>
+      <IconButton onClick={handleOpenFileTrigger} label="Open">
+        <FolderOpen size={26} />
+      </IconButton>
       <div className="relative">
-        <Button onClick={() => toggleDropdown("recent")}>Re</Button>
+        <IconButton onClick={() => toggleDropdown("recent")} label="Open Recent">
+          <FileStack size={26} />
+        </IconButton>
         {openDropdown === "recent" && (
           <DropDownMenu ref={recentDropdownRef}>
             <RecentFilesList recentFiles={recentFiles} />
           </DropDownMenu>
         )}
       </div>
-      <Button onClick={handleSaveAsTrigger}>Sa</Button>
-      <Button onClick={handleSaveTrigger}>Sv</Button>
+      <IconButton onClick={handleSaveAsTrigger} label="Save As">
+        <SaveAll size={26} />
+      </IconButton>
+      <IconButton onClick={handleSaveTrigger} label="Save">
+        <Save size={26} />
+      </IconButton>
     </div>
   );
 }

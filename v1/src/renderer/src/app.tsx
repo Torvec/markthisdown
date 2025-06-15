@@ -36,6 +36,7 @@ export default function App(): React.ReactElement {
     filepath: defaults.file,
     buttonIsEnabled: false,
   });
+
   const [frontmatter, setFrontmatter] = useState<FrontmatterState>({
     isEnabled: true,
     isVisible: true,
@@ -43,6 +44,7 @@ export default function App(): React.ReactElement {
     view: defaults.fm.view,
     content: defaults.fm.content,
   });
+
   const [bodyContent, setBodyContent] = useState<string>(defaults.body.content);
 
   //* FILE HANDLER UTILITY FUNCTIONS
@@ -89,7 +91,7 @@ export default function App(): React.ReactElement {
           <FileInfo fileInfo={fileInfo} />
           <div className="flex min-h-0 grow">
             {/* Col 1 */}
-            <div className="flex min-h-0 w-1/2 flex-col p-2 gap-4">
+            <div className="flex min-h-0 w-1/2 flex-col gap-4 p-2">
               {/* Row 1 */}
               <div className="flex h-1/3 flex-col">
                 <FrontmatterMenu
