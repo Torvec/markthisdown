@@ -110,7 +110,7 @@ export default function FileMenu({
     handleOpenFile(openFileDialog);
   };
 
-  const handleOpenRecentFile = async (filepath): Promise<void> => {
+  const handleOpenRecentFile = async (filepath: string): Promise<void> => {
     const openRecentFile = await window.electron.ipcRenderer.invoke("open-recent-file", filepath);
     handleOpenFile(openRecentFile);
   };
@@ -188,13 +188,13 @@ export default function FileMenu({
   };
 
   return (
-    <div className="flex w-max flex-col bg-neutral-900">
+    <div className="flex w-max flex-col gap-2 bg-neutral-900 p-2">
       <div className="relative">
         <IconButton onClick={() => toggleDropdown("new")} label="New">
           <FilePlus size={26} />
         </IconButton>
         {openDropdown === "new" && (
-          <DropDownMenu ref={newDropdownRef}>
+          <DropDownMenu ref={newDropdownRef} pos="left">
             <DropDownButton
               onClick={() => {
                 handleNewFileWithFm({ type: "yaml", delimiter: "---" });
@@ -230,7 +230,7 @@ export default function FileMenu({
           <FileStack size={26} />
         </IconButton>
         {openDropdown === "recent" && (
-          <DropDownMenu ref={recentDropdownRef}>
+          <DropDownMenu ref={recentDropdownRef} pos="left">
             <RecentFilesList recentFiles={recentFiles} />
           </DropDownMenu>
         )}

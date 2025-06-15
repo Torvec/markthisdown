@@ -82,12 +82,13 @@ export default function FrontmatterMenu({
 
   return (
     <div className="flex items-center justify-between">
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
         <h2 className="bg-neutral-900 p-2 text-neutral-400">Frontmatter</h2>
         <IconButton
           onClick={() => handleFmViewMode("edit")}
           disabled={!frontmatter.isEnabled}
           label="Edit"
+          labelPos="top"
         >
           <Pencil />
         </IconButton>
@@ -95,16 +96,18 @@ export default function FrontmatterMenu({
           onClick={() => handleFmViewMode("preview")}
           disabled={!frontmatter.isEnabled}
           label="Preview"
+          labelPos="top"
         >
           <View />
         </IconButton>
       </div>
-      <div className="flex items-center gap-0.5">
+      <div className="flex items-center gap-2">
         <div className="relative">
           <IconButton
             onClick={() => toggleDropdown("formats")}
             disabled={!frontmatter.isEnabled}
             label="Formats"
+            labelPos="top"
           >
             <FileText />
           </IconButton>
@@ -133,6 +136,7 @@ export default function FrontmatterMenu({
           onClick={() => handleFmVisibility()}
           disabled={!frontmatter.isEnabled}
           label={frontmatter.isVisible ? "Hide" : "Show"}
+          labelPos="top"
         >
           {frontmatter.isVisible ? <EyeOff /> : <Eye />}
         </IconButton>
@@ -141,6 +145,7 @@ export default function FrontmatterMenu({
             onClick={() => toggleDropdown("clear")}
             disabled={!frontmatter.isEnabled}
             label="Clear"
+            labelPos="top"
           >
             <Eraser />
           </IconButton>
@@ -165,6 +170,7 @@ export default function FrontmatterMenu({
                 onClick={() => toggleDropdown("disable")}
                 disabled={!frontmatter.isEnabled}
                 label="Disable"
+                labelPos="top"
               >
                 <FileX />
               </IconButton>
@@ -183,7 +189,7 @@ export default function FrontmatterMenu({
               )}
             </>
           ) : (
-            <IconButton onClick={handleFmEnable} label="Enable">
+            <IconButton onClick={handleFmEnable} label="Enable" labelPos="top">
               <FileSpreadsheet />
             </IconButton>
           )}

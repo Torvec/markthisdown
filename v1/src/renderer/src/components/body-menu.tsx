@@ -21,7 +21,7 @@ export default function BodyMenu({ setBodyContent }: BodyMenuProps): React.React
     <div className="flex items-center justify-between">
       <h2 className="bg-neutral-900 p-2 text-neutral-400">Body</h2>
       <div className="relative">
-        <IconButton onClick={() => toggleDropdown("clearBody")} label="Clear">
+        <IconButton onClick={() => toggleDropdown("clearBody")} label="Clear" labelPos="top">
           <Eraser />
         </IconButton>
         {openDropdown === "clearBody" && (

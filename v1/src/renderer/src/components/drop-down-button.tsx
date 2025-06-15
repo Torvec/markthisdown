@@ -7,7 +7,7 @@ export default function DropDownButton({
 }: ButtonProps): React.ReactElement {
   return (
     <button
-      className="not-disabled:hover:bg-neutral-900 w-full cursor-pointer px-6 py-2 text-white transition-colors duration-150 ease-in-out disabled:cursor-not-allowed disabled:text-white/50"
+      className="block w-full cursor-pointer px-4 py-2 text-neutral-300 transition-colors duration-300 ease-in-out hover:bg-neutral-900 hover:text-white"
       onClick={onClick}
       disabled={disabled}
     >

@@ -104,6 +104,7 @@ export type UseDropdownCloseProps = {
 
 export type DropDownMenuProps = {
   ref: React.RefObject<HTMLDivElement>;
+  pos?: "top" | "right" | "bottom" | "left";
   children: React.ReactNode;
 };
 

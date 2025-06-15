@@ -46,21 +46,22 @@ export default function FrontmatterEdit({
   };
 
   return (
-    <div className="scrollbar-style min-h-0 grow grid-cols-2 gap-3 border-y border-l border-neutral-700">
+    <div className="scrollbar-style min-h-0 grow space-y-2 border-y border-l border-neutral-700 p-2">
       {Array.isArray(frontmatter.content) &&
         frontmatter.content.map(([key, value], index) => (
-          <div key={index} className="flex gap-2 p-2">
+          <div key={index} className="flex gap-2">
             <div className="flex">
-              <IconButton onClick={() => handleAddItem(index)} label="Add">
+              <IconButton onClick={() => handleAddItem(index)} label="Add" labelPos="bottom">
                 <Plus size={16} />
               </IconButton>
-              <IconButton onClick={() => handleRemoveItem(index)} label="Remove">
+              <IconButton onClick={() => handleRemoveItem(index)} label="Remove" labelPos="bottom">
                 <Minus size={16} />
               </IconButton>
               <IconButton
                 onClick={() => handleMoveItem(index, "up")}
                 disabled={index === 0}
                 label="Move Up"
+                labelPos="bottom"
               >
                 <ChevronUp size={16} />
               </IconButton>
@@ -68,6 +69,7 @@ export default function FrontmatterEdit({
                 onClick={() => handleMoveItem(index, "dn")}
                 disabled={index === frontmatter.content.length - 1}
                 label="Move Down"
+                labelPos="bottom"
               >
                 <ChevronDown size={16} />
               </IconButton>
