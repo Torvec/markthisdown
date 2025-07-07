@@ -1,10 +1,10 @@
 {
   "name": "markthisdown",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A minimalist, local-only, markdown editor that supports frontmatter (Yaml/Toml)",
   "main": "./out/main/index.js",
   "author": "Edward Vonschondorf",
-  "homepage": "https://edward-vonschondorf.dev",
+  "homepage": "https://markthisdown.app",
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/markthisdown.git"
